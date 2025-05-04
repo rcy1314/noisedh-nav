@@ -211,11 +211,27 @@ endpoints = ["https://hot.noisework.cn", "https://hot.noisedh.link"]
   iframeLoading = "lazy"
 ```
 
+## 后端API
+
+配置请访问：https://github.com/rcy1314/nav-manage
+
+浏览器扩展插件：
+
+Gooogle chrome：[点击安装](https://chrome.google.com/webstore/detail/ajoeaonfioiahhhhccafflalopoolbop)
+
+Microsoft Edge：[点击安装](https://microsoftedge.microsoft.com/addons/detail/pogpiicgclbpchehmdgdeianhgpnjanl)
+
 ## 自定义魔改
 
 主题文件夹：layouts为所有模版文件夹，_default为hugo渲染的md文章页样式模版，partials为主题样式模版
 
 partials主模版：component_header为头部组件模版，content_footer为网址模块子级页脚模版，content_header为网址模块子级头部模版，content_main为网址模块父级模版，sidebar为侧边栏模版，notification_component为通知组件模版，footer及header为父级页脚及头部
+
+## 组件配置
+
+说说页面
+
+配置：https://github.com/rcy1314/echo-noise
 
 ------
 
