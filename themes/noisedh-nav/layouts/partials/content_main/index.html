@@ -1,0 +1,324 @@
+<!-- 弹窗提醒 -->
+ <div id="welcome-popup" class="popup" style="display: none;">
+    <div class="popup-content">
+        <p class="large-text">👏欢迎访问本站！</p>
+        <p class="large-text">正在为您加载和缓存，初始化页面中...</p>
+        <p class="large-text">下次进入可加速访问，请耐心等待。</p>
+        <p class="large-text">此信息仅在无缓存时弹出，5秒后自动关闭！</p>
+    </div>
+</div>
+
+ <!-- 弹窗提醒结束 -->
+<div id="content" class="content-site customize-site" style="background:#18191c;">
+    <style>
+    .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(27, 26, 26, 0.961); /* 不透明黑色背景 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* 确保在最上层 */
+    color: rgba(231, 128, 38, 0.974); /* 高对比度文字颜色 */
+    text-align: center;
+    padding: 20px; /* 添加内边距 */
+    width: 80%; /* 弹窗宽度 */
+    max-width: 600px; /* 最大宽度限制 */
+    box-shadow: 0 4px 10px rgba(26, 26, 26, 0.5); /* 添加阴影效果 */
+}
+
+.popup-content {
+    max-width: 100%; /* 内容宽度限制 */
+}
+
+.large-text {
+    font-size: 20px; /* 大文字 */
+    color: #ea660e; /* 文字颜色 */
+    margin: 15px 0; /* 为每段文字添加上下间距 */
+    line-height: 1.5; /* 增加行高，提升可读性 */
+    letter-spacing: 4px; /* 字与字之间的左右间隔 */
+}
+@media (max-width: 768px) { /* 通常，768px 是手机和平板的分界线 */
+    .large-text {
+        font-size: 14px; /* 在手机尺寸下字体大小为14px */
+    }
+}
+        .category-title {
+            font-size: 20px; /* 稍微调小一点 */
+            font-weight: 600; /* 加粗一点 */
+            margin-bottom: 15px; /* 调整间距 */
+            color: #e0e0e0; /* 柔和的白色 */
+            display: flex;
+            align-items: center;
+            padding-bottom: 5px; /* 底部增加一点内边距 */
+            /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 可选：添加分隔线 */
+        }
+        .category-title i {
+             margin-right: 8px; /* 图标和文字间距 */
+             color: #6c63ff; /* 图标颜色，可以自定义 */
+        }
+
+        body.io-black-mode .category-title { /* 使用 io-black-mode */
+             /* 暗黑模式：亮灰色标题 */
+             color: #e0e0e0;
+        }
+        .category-title i {
+             /* ... existing styles ... */
+             /* 白天模式：蓝色图标 */
+             color: #4a89f7;
+        }
+         body.io-black-mode .category-title i { /* 使用 io-black-mode */
+             /* 暗黑模式：稍亮的蓝紫色图标 */
+             color: #6c63ff;
+         }
+
+        /* --- 默认 (白天/io-grey-mode) 样式 --- */
+        .subcat-tabs {
+            display: inline-flex; /* 使宽度自适应内容 */
+            gap: 8px;
+            overflow-x: auto;
+            white-space: nowrap;
+            margin-bottom: 20px;
+            padding: 6px;
+            background-color: #f1f3f5; /* 白天模式：非常浅的灰色背景 (匹配图片) */
+            border-radius: 25px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+           
+            max-width: 100%;
+        }
+        .subcat-tabs::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .subcat-tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: transparent; /* 白天模式：透明标签背景 */
+            color: #6c757d; /* 白天模式：灰色文字 (匹配图片) */
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            margin-right: 0;
+           
+            flex-shrink: 0;
+        }
+
+        .subcat-tab:hover {
+            color: #212529; /* 白天模式：悬停时黑色文字 */
+            background-color: #c3c6c9; /* 白天模式：悬停时稍深灰色背景 */
+        }
+
+        .subcat-tab.active {
+            background: #4a89f7; /* 激活时蓝色背景 (匹配图片) */
+            color: #fff; /* 激活时白色文字 */
+            font-weight: 600;
+            transform: scale(1.03);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- 暗黑 (io-black-mode) 模式下的调整 --- */
+        body.io-black-mode .subcat-tabs { /* 使用 io-black-mode */
+             background-color: #2a2a2e; /* 暗黑模式：深灰色容器背景 (匹配图片) */
+             box-shadow: none;
+        }
+        body.io-black-mode .subcat-tab { /* 使用 io-black-mode */
+            background: #40404009; /* 暗黑模式：稍浅灰色标签背景 (匹配图片) */
+            color: #adb5bd; /* 暗黑模式：稍亮灰色文字 (匹配图片) */
+        }
+         body.io-black-mode .subcat-tab:hover { /* 使用 io-black-mode */
+             color: #fff; /* 暗黑模式：悬停时白色文字 */
+             background-color: #555555; /* 暗黑模式：悬停时更亮的灰色背景 */
+         }
+        body.io-black-mode .subcat-tab.active { /* 使用 io-black-mode */
+            background: #4a89f7; /* 暗黑模式：激活时蓝色背景 (匹配图片) */
+            color: #fff; /* 暗黑模式：激活时白色文字 */
+            transform: scale(1.03);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+    </style>
+    {{ $defaultLogo := $.Site.Params.defaultLogo }}
+    {{ $logosPath := $.Site.Params.logosPath }}
+    <link rel="preload" as="image" href="{{ $defaultLogo }}">
+
+    {{ range $i, $cat := .Site.Data.webstack }}
+        <div class="category-block mb-4" id="{{ if $cat.list }}{{ range first 1 $cat.list }}{{ md5 .term }}{{ end }}{{ else }}{{ md5 $cat.taxonomy }}{{ end }}">
+            <!-- 一级分类标题 -->
+            <div class="category-title"> <!-- 移除 mb-3，使用 category-block 的 mb-4 -->
+                {{ if $cat.icon }}<i class="{{ $cat.icon }} icon-fw icon-lg"></i>{{ end }}
+                {{ $cat.taxonomy }}
+            </div>
+            {{ if and $cat.list (gt (len $cat.list) 1) }}
+                <!-- 二级分类横向标签 -->
+                <div class="subcat-tabs"> <!-- 移除 mb-4 -->
+                    {{ range $j, $sub := $cat.list }}
+                        <button class="subcat-tab{{ if eq $j 0 }} active{{ end }}" data-cat="cat{{ $i }}" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 $sub.term }}">{{ $sub.term }}</button>
+                    {{ end }}
+                </div>
+                {{ range $j, $sub := $cat.list }}
+                    <div class="row card-list" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 (print $cat.taxonomy $sub.term) }}" style="{{ if ne $j 0 }}display:none;{{ end }}">
+                        {{ range $k, $link := $sub.links }}
+                        {{ $customLogo := cond (hasPrefix $link.logo "http") $link.logo (print $logosPath "/" $link.logo) }}
+                        {{ $domain := replaceRE "^https?://([^/]+).*" "$1" $link.url }}
+                        <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
+                            <div class="url-body default">
+                                <a href="{{ if $link.qrcode }}javascript:{{ else }}redirect.html?url={{ $link.url | safeURL }}{{ end }}"
+                                   target="{{ if $link.qrcode }}_self{{ else }}_blank{{ end }}"
+                                   class="card no-c mb-4"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   title="{{ if $link.qrcode }}<img src='{{ $logosPath }}/{{ $link.qrcode }}?width=128' width='128'>{{ else }}{{ $link.description }}{{ end }}">
+                                    <div class="card-body">
+                                        <div class="url-content d-flex align-items-center">
+                                            <div class="url-img mr-2 d-flex align-items-center justify-content-center">
+                                                <img class="lazy"
+                                                     src="{{ $defaultLogo }}"
+                                                     data-src="{{ $customLogo }}"
+                                                     data-fallback="{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
+                                                     alt="{{ $link.title }}"
+                                                     onerror="multiFallback(this)"
+                                                     loading="{{ if lt $k 6 }}eager{{ else }}lazy{{ end }}">
+                                            </div>
+                                            <div class="url-info flex-fill">
+                                                <div class="text-sm overflowClip_1">
+                                                    <strong>{{ $link.title }}</strong>
+                                                </div>
+                                                <p class="overflowClip_1 m-0 text-muted text-xs">{{ $link.description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="{{ $link.url | safeURL }}"
+                                   class="togo text-center text-muted is-views"
+                                   data-toggle="tooltip"
+                                   data-placement="right"
+                                   title="直达" rel="nofollow"
+                                   target="_blank">
+                                    <i class="iconfont icon-goto"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </div>
+                {{ end }}
+            {{ else if and $cat.list (eq (len $cat.list) 1) }}
+                <!-- 只有一个二级分类时不显示二级标签，直接展示内容 -->
+                {{ range $j, $sub := $cat.list }}
+                    <div class="row card-list">
+                        {{ range $sub.links }}
+                        {{ $customLogo := cond (hasPrefix .logo "http") .logo (print $logosPath "/" .logo) }}
+                        {{ $domain := replaceRE "^https?://([^/]+).*" "$1" .url }}
+                        <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
+                            <div class="url-body default">
+                                <a href="{{ if .qrcode }}javascript:{{ else }}redirect.html?url={{ .url | safeURL }}{{ end }}"
+                                   target="{{ if .qrcode }}_self{{ else }}_blank{{ end }}"
+                                   class="card no-c mb-4"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   title="{{ if .qrcode }}<img src='{{ $logosPath }}/{{ .qrcode }}?width=128' width='128'>{{ else }}{{ .description }}{{ end }}">
+                                    <div class="card-body">
+                                        <div class="url-content d-flex align-items-center">
+                                            <div class="url-img mr-2 d-flex align-items-center justify-content-center">
+                                                <img class="lazy"
+                                                     src="{{ $defaultLogo }}"
+                                                     data-src="{{ $customLogo }}"
+                                                     data-fallback="{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
+                                                     alt="{{ .title }}"
+                                                     onerror="multiFallback(this)"
+                                                     loading="lazy">
+                                            </div>
+                                            <div class="url-info flex-fill">
+                                                <div class="text-sm overflowClip_1">
+                                                    <strong>{{ .title }}</strong>
+                                                </div>
+                                                <p class="overflowClip_1 m-0 text-muted text-xs">{{ .description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="{{ .url | safeURL }}"
+                                   class="togo text-center text-muted is-views"
+                                   data-toggle="tooltip"
+                                   data-placement="right"
+                                   title="直达" rel="nofollow"
+                                   target="_blank">
+                                    <i class="iconfont icon-goto"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </div>
+                {{ end }}
+            {{ else }}
+                <!-- 没有二级分类时直接展示一级分类内容 -->
+                <div class="row card-list">
+                    {{ range $cat.links }}
+                    {{ $customLogo := cond (hasPrefix .logo "http") .logo (print $logosPath "/" .logo) }}
+                    {{ $domain := replaceRE "^https?://([^/]+).*" "$1" .url }}
+                    <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
+                        <div class="url-body default">
+                            <a href="{{ if .qrcode }}javascript:{{ else }}redirect.html?url={{ .url | safeURL }}{{ end }}"
+                               target="{{ if .qrcode }}_self{{ else }}_blank{{ end }}"
+                               class="card no-c mb-4"
+                               data-toggle="tooltip"
+                               data-placement="bottom"
+                               title="{{ if .qrcode }}<img src='{{ $logosPath }}/{{ .qrcode }}?width=128' width='128'>{{ else }}{{ .description }}{{ end }}">
+                                <div class="card-body">
+                                    <div class="url-content d-flex align-items-center">
+                                        <div class="url-img mr-2 d-flex align-items-center justify-content-center">
+                                            <img class="lazy"
+                                                 src="{{ $defaultLogo }}"
+                                                 data-src="{{ $customLogo }}"
+                                                 data-fallback="{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
+                                                 alt="{{ .title }}"
+                                                 onerror="multiFallback(this)"
+                                                 loading="lazy">
+                                        </div>
+                                        <div class="url-info flex-fill">
+                                            <div class="text-sm overflowClip_1">
+                                                <strong>{{ .title }}</strong>
+                                            </div>
+                                            <p class="overflowClip_1 m-0 text-muted text-xs">{{ .description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="{{ .url | safeURL }}"
+                               class="togo text-center text-muted is-views"
+                               data-toggle="tooltip"
+                               data-placement="right"
+                               title="直达" rel="nofollow"
+                               target="_blank">
+                                <i class="iconfont icon-goto"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {{ end }}
+                </div>
+            {{ end }}
+        </div>
+    {{ end }}
+
+    <!-- 友情链接 -->
+    <h4 class="text-gray text-lg mb-4">
+        <i class="iconfont icon-book-mark-line icon-lg mr-2" id="friendlink"></i>友情链接
+    </h4>
+    <div class="friendlink text-xs card">
+        <div class="card-body">
+            {{ range .Site.Data.friendlinks }}
+            <a href="redirect.html?url={{ .url | safeURL }}" title="{{ .description }}" target="_blank">{{ .title }}</a>
+            {{ end }}
+        </div>
+    </div>
+</div>
+
+
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/content_main.js' id='content_main-js' defer></script>
+<div id="popup" class="popup" style="display: none;"></div>
+<script src="/assets/js/poptext.js" defer></script>
+<!-- 弹窗提醒结束 -->

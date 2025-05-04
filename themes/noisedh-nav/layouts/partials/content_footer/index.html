@@ -1,0 +1,91 @@
+<footer class="main-footer footer-type-1 text-xs">
+            <div id="footer-tools" class="d-flex flex-column">
+                <a href="javascript:" id="go-to-up" class="btn rounded-circle go-up m-1" rel="go-top">
+                    <i class="iconfont icon-to-up"></i>
+                </a>
+                <a href="tougao" class="btn rounded-circle kefu m-1" target="_blank" data-toggle="tooltip" data-placement="left" title="投稿">
+                    <i class="fa fa-paper-plane"></i>
+                </a>
+                <!-- 右下角折叠菜单 -->
+                <div id="toggleSection" class="toggle-section">
+                    {{ with $.Site.Params.footer.toggleMenu }}
+                        {{ range . }}
+                            <a href="{{ .url }}" class="btn rounded-circle kefu m-1" {{ if .target }}target="{{ .target }}"{{ end }} data-toggle="tooltip" data-placement="left" title="{{ .title }}">
+                                <i class="{{ .icon }}"></i>
+                            </a>
+                        {{ end }}
+                    {{ end }}
+                </div>
+                <a href="javascript:void(0);" id="toggleButton" class="btn rounded-circle m-1" data-toggle="tooltip" data-placement="left" title="展开/折叠">
+                    <i class="fa fa-plus-circle"></i>
+                </a>
+
+                {{ if $.Site.Params.nightMode }} 
+                <a href="javascript:" onclick="switchNightMode()" class="btn rounded-circle switch-dark-mode m-1" id="yejian-night"
+                    data-toggle="tooltip" data-placement="left" title="夜间模式">
+                    <i class="mode-ico iconfont icon-light"></i>
+                </a>
+                {{ else }}
+                <a href="javascript:" onclick="switchNightMode()" class="btn rounded-circle switch-dark-mode m-1" id="yejian-day"
+                    data-toggle="tooltip" data-placement="left" title="日间模式">
+                    <i class="mode-ico iconfont icon-night"></i>
+                </a>
+                {{ end }}
+            </div>
+
+            <style>
+                .gradient-text {
+                    background: linear-gradient(90deg, red, yellow, green, blue, purple, red);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent; 
+                    animation: gradient 5s ease-in-out infinite;
+                }
+                
+                @keyframes gradient {
+                    0% { background-position: 0% }
+                    100% { background-position: 100% }
+                }
+
+                .toggle-section {
+                    display: none;
+                    transition: all 0.3s ease;
+                }
+
+                .toggle-section.show {
+                    display: block;
+                }
+
+                #toggleButton .fa-plus-circle {
+                    transition: transform 0.3s ease;
+                }
+
+                #toggleButton.active .fa-plus-circle {
+                    transform: rotate(45deg);
+                }
+            </style>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const toggleButton = document.getElementById('toggleButton');
+                    const toggleSection = document.getElementById('toggleSection');
+
+                    toggleButton.addEventListener('click', function() {
+                        toggleSection.classList.toggle('show');
+                        toggleButton.classList.toggle('active');
+                    });
+                });
+            </script>
+               
+            <footer>
+                <div class="footer-inner">
+                    <div class="footer-text gradient-text">{{ replace $.Site.Params.footer.copyright "{year}" now.Year | markdownify }}</div>
+                    {{ if $.Site.Params.footer.busuanzi }}
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <center class="gradient-text"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></center>
+                    {{ end }}
+                </div>
+            </footer>
+        </footer>
+      
+    </div><!-- main-content end -->
+</div><!-- page-container end -->

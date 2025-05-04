@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="google-adsense-account" content="{{ .Site.Params.seo.googleAdsenseAccount }}">
+    <meta name="description" content="{{ .Site.Params.description }}">
+    <meta name="keywords" content="{{ .Site.Params.keywords }}">
+    <meta itemprop="image" content="{{ .Site.Params.og_image }}" />
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="{{ .Site.Params.og_title }}" />
+    <meta property="og:description" content="{{ .Site.Params.og_description }}" />
+    <meta property="og:image" content="{{ .Site.Params.og_image }}" />
+    <meta property="og:url" content="{{ .Site.Params.og_url }}" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ .Site.Params.twitter_title }}" />
+    <meta name="twitter:description" content="{{ .Site.Params.twitter_description }}" />
+    <meta name="twitter:image" content="{{ .Site.Params.twitter_image }}" />
+    
+   <!-- Open Graph tags for WeChat sharing -->
+    <meta property="og:title" content="{{ .Site.Params.og_title }}" />
+    <meta property="og:description" content="{{ .Site.Params.og_description }}" />
+    <meta property="og:image" content="{{ .Site.Params.og_image }}" />
+    <meta property="og:url" content="{{ .Site.Params.og_url }}" />
+    <meta property="og:type" content="website" />
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+
+    <meta name="theme-color" content="#f9f9f9">
+    <title>{{ .Site.Title }}</title>
+    <link rel="shortcut icon" href="{{ $.Site.Params.images.favicon }}">
+    <meta name="keywords" content="{{ .Site.Title }}">
+    <meta name="baidu-site-verification" content="code-ERzo5lqNbW" />
+    <meta name="sogou_site_verification" content="c5kms0qkyL"/>
+    <meta name="360-site-verification" content="fcc13eac55051e381be8a06453359bc1" />
+    <link rel='stylesheet' id='iconfont-css' href='{{ $.Site.Params.siteurl }}/assets/css/iconfont-3.03029.1.css' type='text/css' media='all'>
+    <link rel='stylesheet' id='bootstrap-css' href='{{ $.Site.Params.siteurl }}/assets/css/bootstrap.min-4.3.1.css' type='text/css' media='all'>
+    <link rel='stylesheet' id='iowen-css' href='{{ $.Site.Params.siteurl }}/assets/css/styles.css' type='text/css' media='all'>
+    <link rel='stylesheet' id='loading-css' href='{{ $.Site.Params.siteurl }}/assets/css/loading.css' type='text/css' media='all'>
+    <link rel='stylesheet' id='custom-css' href='{{ $.Site.Params.siteurl }}/assets/css/custom-style.css' type='text/css' media='all'>
+    <link rel='stylesheet' id='APlayer.min-css' href='https://cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css.map' type='text/css' media='all'>
+    <link rel="stylesheet" id="fortawesome-css" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/all.min.css" type="text/css">
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js' id='jquery-js'></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <!-- 添加Service Worker -->
+    <script>
+       if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+			  registration.onupdatefound = function() {
+				var installingWorker = registration.installing;
+				installingWorker.onstatechange = function() {
+				  if (installingWorker.state === 'installed') {
+					if (navigator.serviceWorker.controller) {
+					  // 有新内容，自动刷新页面
+					  window.location.reload();
+					}
+				  }
+				};
+			  };
+			});
+		}
+    </script>
+     <link rel="manifest" href="manifest.json">
+     <!-- 引入热榜 -->
+     <link rel="stylesheet" href="{{ $.Site.Params.siteurl }}/assets/css/hot.css">
+     <script src="{{ $.Site.Params.siteurl }}/assets/js/hot.js"></script>
+</head>

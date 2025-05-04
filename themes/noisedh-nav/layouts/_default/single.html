@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="{{$.Site.Params.author}}" />
+    <title>{{.Title}} | {{ .Site.Title }}</title>
+    <meta name="description" content="{{ $.Site.Title }}">
+    <link rel="icon" href="../assets/images/favicon4.png">
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/waline/2.13.0/waline.css">
+    <!-- 添加灯箱效果CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+    <style>
+        body,
+        html {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+        }
+
+        :-webkit-scrollbar-thumb {
+            background-color: rgba(45, 43, 43, 0.707);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            color: #333;
+            background-color: #161616f9;
+            background-size: cover;
+            transition: color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            font-size: 16px;
+            margin: 30px 0 0;
+        }
+
+        code {
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        /* 添加链接样式 */
+        a {
+            color: #557990;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #ffa500;
+        }
+
+        pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .tiled-background {
+            background-repeat: repeat;
+            background-size: auto;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: inherit;
+            background-size: cover;
+            filter: blur(20px);
+            z-index: -1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode {
+            color: #fff;
+            background-color: #090909;
+        }
+
+        .dark-mode .container {
+            background-color: rgba(27, 26, 26, 0.8);
+        }
+
+        .toggle-dark-mode {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .toggle-dark-mode input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-dark-mode label {
+            display: inline-block;
+            width: 59px;
+            height: 34px;
+            position: relative;
+            cursor: pointer;
+            background-color: #36566f;
+            border-radius: 34px;
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-dark-mode label:after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 30px;
+            height: 30px;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-dark-mode input[type="checkbox"]:checked+label {
+            background-color: #2d2f2d;
+        }
+
+        .toggle-dark-mode input[type="checkbox"]:checked+label:after {
+            transform: translateX(26px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+                max-width: none;
+            }
+        }
+
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(25, 24, 24, 0.207);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .loader .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 0, 0, 0.231);
+            border-left-color: #478eda;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .panel-body {
+            overflow-wrap: break-word;
+        }
+
+        .main-footer {
+            text-align: center;
+            padding: 20px 0;
+        }
+    </style>
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="">
+    <meta property="og:title" content="">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="">
+    <meta property="og:site_name" content="">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="">
+</head>
+
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+    </div>
+    <div class="container">
+        <div class="toggle-dark-mode">
+            <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+            <label for="dark-mode-toggle"></label>
+        </div>
+        <div class="page-container">
+            <div class="main-content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <h4 class="text-gray">{{ .Title }}</h4>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        {{ .Content | markdownify | safeHTML }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="main-footer">
+                    <div class="footer-inner">
+                        <div class="footer-text">
+                            <iframe
+                                src="https://count.getloli.com/@noise?name=noise&theme=love-and-deepspace&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto"
+                                loading="lazy" frameborder="0"></iframe>
+                            <strong>
+                                {{ if $.Site.Params.footer.copyright }}
+                                {{ replace $.Site.Params.footer.copyright "{year}" now.Year | markdownify }}
+                                {{ else }}
+                                noise
+                                {{ end }}
+                            </strong> 2025
+                        </div>
+                    </div>
+                </footer>
+                <!-- Waline 评论容器 -->
+                <div id="waline" style="margin-top: 20px;"></div>
+            </div> <!-- .main-content -->
+        </div> <!-- .page-container -->
+    </div> <!-- .container -->
+
+    <!-- 将 jQuery 和 Fancybox 脚本放在 body 底部，并使用 defer -->
+    <script src="../assets/js/jquery-1.11.1.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
+    <!-- Waline 脚本使用 async 保持不变 -->
+    <script src="https://cdn.staticfile.org/waline/2.13.0/waline.js" async></script>
+
+    <script>
+        const backgrounds = [
+            'https://s2.loli.net/2024/12/01/VoIlv7M6HX8hyfR.png',
+            'https://s2.loli.net/2024/12/01/d3H2LvkizVxyqUC.png', // 修正：确保这里有正确的结束引号和逗号
+            'https://s2.loli.net/2024/12/01/yH6TBgWY73h2xN9.png',
+            'https://s2.loli.net/2024/12/01/Pw8mSDcXvea51iN.png',
+            'https://s2.loli.net/2024/12/01/KP91mWiBe8qRjHt.png',
+            'https://s2.loli.net/2024/12/01/RLFobE2ych9B64D.png',
+            'https://s2.loli.net/2024/12/01/qvBA9W17UzixnsF.png',
+            'https://s2.loli.net/2024/12/01/2Ye6tPILnjmuzhN.png'
+        ];
+
+        // --- 优化后的逻辑 ---
+        const loader = document.querySelector('.loader');
+
+        function hideLoader() {
+            if (loader) {
+                loader.style.opacity = 0;
+                // 使用 transitionend 事件确保过渡完成后再隐藏，避免闪烁
+                loader.addEventListener('transitionend', () => {
+                    // 检查透明度是否确实为0，防止 resize 等事件意外触发隐藏
+                    if (loader.style.opacity === '0') {
+                         loader.style.visibility = 'hidden';
+                    }
+                }, { once: true }); // 确保事件只触发一次
+            }
+        } // 修正：确保函数正确结束
+
+        // 修正：确保函数定义之间有正确的空格或换行
+        function setBackgroundImage() {
+            // 修正：移除 backgrounds 和 [ 之间的多余空格
+            const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            const img = new Image();
+            img.onload = function() {
+                document.body.style.backgroundImage = `url("${randomBackground}")`;
+                document.body.style.backgroundSize = 'cover';
+                checkBackgroundColor(); // 背景设置后再检查
+                hideLoader(); // 图片加载成功后隐藏 loader
+            };
+            img.onerror = function() {
+                // 图片加载失败，也隐藏 loader，避免一直显示
+                console.error("Failed to load background image:", randomBackground);
+                hideLoader();
+            }
+            img.src = randomBackground; // 开始加载选中的图片
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            // 可选：切换模式时也重新检查背景平铺逻辑
+            // checkBackgroundColor();
+            // 可选：保存用户偏好到 localStorage
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+            // 如果 Waline 支持主题切换，可以在这里调用其 API
+            // walineInstance.setTheme(document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        function checkBackgroundColor() {
+            const body = document.body;
+            const heightThreshold = 1800; // 这个阈值可能需要根据实际内容调整
+            const isTiled = body.scrollHeight > heightThreshold;
+            body.classList.toggle('tiled-background', isTiled);
+            // 仅在背景图片存在时调整 backgroundSize
+            if (body.style.backgroundImage && body.style.backgroundImage !== 'none') {
+                 body.style.backgroundSize = isTiled ? 'auto' : 'cover';
+            }
+        }
+
+        // --- DOMContentLoaded 替代部分 window.onload ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查 localStorage 中保存的主题偏好
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                const toggle = document.getElementById('dark-mode-toggle');
+                if (toggle) toggle.checked = true;
+            } else if (savedTheme === 'light') {
+                 document.body.classList.remove('dark-mode');
+                 const toggle = document.getElementById('dark-mode-toggle');
+                 if (toggle) toggle.checked = false;
+            } // 如果没有保存，则使用默认（亮色）或 CSS 媒体查询 (prefers-color-scheme)
+
+            // 尽早设置背景图片
+            setBackgroundImage();
+
+            // 为所有外部链接添加 target="_blank"
+            document.querySelectorAll('.panel-body a[href^="http"], .panel-body a[href^="//"]').forEach(link => {
+                 // 确保只修改内容区域的链接，避免修改导航等
+                 if (!link.target || link.target.toLowerCase() !== '_blank') {
+                    link.setAttribute('target', '_blank');
+                    link.setAttribute('rel', 'noopener noreferrer');
+                 }
+            });
+
+            // 检查背景平铺逻辑（初始检查）
+            setTimeout(checkBackgroundColor, 100); // 延迟检查以获得更准确的 scrollHeight
+        });
+
+        // --- window.onload 保留需要完整加载的逻辑 ---
+        window.onload = function () {
+            // 确保 checkBackgroundColor 在所有内容（包括图片）加载后再次运行
+            checkBackgroundColor();
+
+            // Fancybox 初始化依赖 jQuery 和 DOM 完全加载
+            if (typeof $ !== 'undefined' && typeof $.fn.fancybox !== 'undefined') {
+                 // 只对文章内容区域的图片应用 Fancybox
+                 document.querySelectorAll('.panel-body img').forEach(img => {
+                    const parent = img.parentNode;
+                    // 检查父元素是否已经是链接，并且不是指向自身的 Fancybox 链接
+                    if (parent.tagName !== 'A' || !parent.hasAttribute('data-fancybox')) {
+                        // 检查图片本身是否有 data-fancybox 属性，避免重复包裹
+                        if (!img.closest('a[data-fancybox]')) {
+                            const link = document.createElement('a');
+                            link.href = img.src;
+                            link.setAttribute('data-fancybox', 'gallery'); // 使用 gallery 将图片分组
+                            const caption = img.alt || img.title || ''; // 尝试获取 alt 或 title 作为标题
+                            if (caption) {
+                                link.setAttribute('data-caption', caption);
+                            }
+                            // 插入链接并移动图片
+                            img.parentNode.insertBefore(link, img);
+                            link.appendChild(img);
+                        }
+                    } else if (parent.tagName === 'A' && !parent.hasAttribute('data-fancybox')) {
+                        // 如果父元素是链接但没有 data-fancybox，也给它加上
+                        parent.setAttribute('data-fancybox', 'gallery');
+                        const caption = img.alt || img.title || '';
+                        if (caption && !parent.hasAttribute('data-caption')) {
+                             parent.setAttribute('data-caption', caption);
+                        }
+                    }
+                });
+
+                // 初始化 Fancybox
+                 $('[data-fancybox]').fancybox({
+                     buttons: [
+                         "zoom",
+                         "slideShow",
+                         "download",
+                         "thumbs",
+                         "close"
+                     ],
+                     loop: true // 允许循环查看
+                 });
+            } else {
+                console.warn("jQuery or Fancybox not loaded, skipping initialization.");
+            }
+        };
+
+        // 窗口大小改变时重新检查背景
+        window.onresize = checkBackgroundColor;
+
+    </script>
+
+</body>
+
+</html>

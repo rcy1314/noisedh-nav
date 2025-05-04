@@ -1,0 +1,142 @@
+.grid-container {
+  display: grid;
+  grid-gap: 1.5rem;
+  padding: 2rem;
+}
+
+.hotcard {
+  height: 360px; /* 设置固定高度 */
+  border-radius: 15px;
+  position: relative;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  background-color: #f1f5f9;
+  color: #111827;
+}
+
+.hotcard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.hotcard .header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.hotcard .header img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.hotcard h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.hotcard .update-time {
+  font-size: 12px;
+  color: #FFFFFF; /* 修改更新时间文本颜色为白色 */
+  margin-top: 5px;
+}
+
+.hotcard .refresh-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 1; /* 确保刷新图标层级高于卡片内容 */
+  color: #f1f2f5;
+}
+
+.hotcard .content {
+  margin-top: 20px;
+  text-align: left;
+  height: calc(100% - 80px); /* 适应卡片高度，减去顶部和底部的空间 */
+  overflow-y: auto; /* 启用垂直滚动 */
+  scrollbar-width: none; /* 隐藏滚动条（Firefox） */
+  -ms-overflow-style: none; /* 隐藏滚动条（IE和Edge） */
+}
+
+.hotcard .content::-webkit-scrollbar {
+  display: none; /* 隐藏滚动条（Chrome、Safari和Opera） */
+}
+
+.hotcard ol {
+  margin: 0;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.2); /* 透明毛玻璃背景 */
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 100%; /* 适应内容区域的高度 */
+  overflow-y: auto; /* 启用垂直滚动 */
+}
+.hotcard ol::-webkit-scrollbar {
+  display: none; /* 隐藏滚动条（Chrome、Safari和Opera） */
+}
+.hotcard ol li {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px; /* 缩小信息文本 */
+  padding: 5px 10px;
+  transition: background-color 0.3s;
+  text-align: left; /* 信息文字左对齐 */
+}
+
+.hotcard ol li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hotcard ol li::before {
+  content: attr(data-index);
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.hotcard ol li:nth-child(-n+3)::before {
+  color: red;
+}
+
+.bg-blue-500 { background-color: #3b82f6; }
+.bg-red-500 { background-color: #ef4444; }
+.bg-green-500 { background-color: #1454b3; }
+.bg-orange-500 { background-color: #b23cfb; }
+.bg-purple-500 { background-color: #8b5cf6; }
+.bg-yellow-500 { background-color: #367da6; }
+.bg-teal-500 { background-color: #4514b8; }
+.bg-indigo-500 { background-color: #6366f1; }
+
+.text-white { color: white; }
+.p-4 { padding: 1rem; }
+.rounded-lg { border-radius: 15px; }
+.shadow-lg { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); }
+
+/* 媒体查询：PC尺寸下每行四张卡片 */
+@media (min-width: 1024px) {
+  .grid-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 媒体查询：平板和手机尺寸下每行两张卡片 */
+@media (max-width: 1023px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 媒体查询：手机尺寸下每行一张卡片 */
+@media (max-width: 767px) {
+  .grid-container {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

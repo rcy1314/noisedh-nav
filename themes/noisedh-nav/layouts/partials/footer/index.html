@@ -1,0 +1,241 @@
+<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({id:"3KPnWbkdUF6PmFfg",ck:"3KPnWbkdUF6PmFfg"})</script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+
+</script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/APlayer.min.js' id='APlayer.min-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/Meting.min.js' id='Meting.min-js'></script>
+
+
+
+{{ if $.Site.Params.expandSidebar }}
+
+{{ else }}
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/app-mini.js' id='appmini-js'></script>
+{{ end }}
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>
+    // 使用 Hugo 模板语法生成变量
+    const componentImageL = "{{ $.Site.Params.images.componentImageL | safeURL }}";
+    const componentImageD = "{{ $.Site.Params.images.componentImageD | safeURL }}";
+
+    function setNightMode(night) {
+        const isNight = night === '1';
+
+        // 设置 body 的 class，快速切换样式
+        document.body.className = isNight ? 'io-black-mode' : 'io-grey-mode';
+
+        // 更新 cookie 和 localStorage
+        document.cookie = `night=${night};path=/`;
+        localStorage.setItem('night', night);
+
+        // 使用正确的背景图片
+        const componentBg = document.getElementById('component-bg');
+        if (componentBg) {
+            componentBg.style.backgroundImage = isNight
+                ? `url("${componentImageL}")` // 夜间模式的背景图
+                : `url("${componentImageD}")`; // 日间模式的背景图
+        }
+
+        console.log(isNight ? '夜间模式' : '日间模式');
+
+        // 更新切换按钮的文本
+        const switchDarkMode = document.querySelector('.switch-dark-mode');
+        if (switchDarkMode) {
+            switchDarkMode.setAttribute('data-original-title', isNight ? '日间模式' : '夜间模式');
+        }
+
+        // 更新图标样式
+        const modeIco = document.querySelector('.mode-ico');
+        if (modeIco) {
+            modeIco.classList.toggle('icon-light', isNight);
+            modeIco.classList.toggle('icon-night', !isNight);
+        }
+    }
+
+    // 初始化页面加载时的模式
+    (function () {
+        // 优先从 localStorage 读取用户选择
+        const night = localStorage.getItem('night') || (document.cookie.match(/night=([^;]+)/) || ['', '0'])[1];
+
+        // 如果有用户选择，直接应用
+        if (night !== null) {
+            setNightMode(night);
+        } else {
+            // 否则根据时间自动判断
+            const hour = new Date().getHours();
+            setNightMode(hour > 22 || hour < 6 ? '1' : '0');
+        }
+    })();
+
+    // 切换夜间模式
+    function switchNightMode() {
+        const night = localStorage.getItem('night') || '0';
+
+        // 切换模式
+        setNightMode(night === '0' ? '1' : '0');
+    }
+</script>
+
+<link rel="preload" href="{{ $.Site.Params.images.componentImageL }}" as="image">
+<link rel="preload" href="{{ $.Site.Params.images.componentImageD }}" as="image">
+
+<style>
+    /* 默认样式 */
+    html {
+        background-color: #000; /* 默认黑色 */
+        color: #fff; /* 默认白色 */
+    }
+
+    /* 夜间模式 */
+    .io-black-mode {
+        background-color: #000;
+        color: #fff;
+        transition: none; /* 避免闪烁，不使用过渡效果 */
+    }
+
+    /* 日间模式 */
+    .io-grey-mode {
+        background-color: #201f1f;
+        color: #000;
+        transition: none; /* 避免闪烁，不使用过渡效果 */
+    }
+
+    /* 优化：避免大规模重绘 */
+    body {
+        will-change: background-color, color; /* 提示浏览器优化 */
+    }
+
+    /* 图标样式 */
+    .mode-ico {
+        transition: opacity 0.1s ease; /* 优化图标过渡 */
+    }
+
+    /* 背景图片优化 */
+    #component-bg {
+        will-change: background-image; /* 提示浏览器优化 */
+    }
+</style>
+
+
+<script src="{{ $.Site.Params.siteurl }}/assets/js/Meting.min.js"></script>
+  
+<!-- 弹窗提示 -->	
+    <!--link rel="stylesheet" href="assets/css/tc.css" />
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <body>
+    <div class="layer"></div>
+    <div id="globalAd">
+        <div id='hero-img' style="background-color: #1a95ff;background: linear-gradient(to left, #5dadf3 0, #4583ca 100%);">
+        </div>
+        <div id='profile-img'>
+            <img src="https://cdn.jsdelivr.net/gh/rcy1314/tuchuang@main/NV/image.700l662bj680.jpg" />
+        </div>
+        <div id='content'>
+            <p style="font-size: 16px;font-weight: bold;">公告</p>
+            <p></p>
+            <p>Noise导航站正在完成静态化</p>
+            <p>收录来源于我的各个网站及频道</p>
+            <p>欢迎联系我提出建议及网站投稿</p>
+            <p>主域名：www.noisedh.cn</p>
+            <p>Netlify:noisedh.netlify.app</p>
+            <a onclick="closeGlobalAd();" class="btn btn-default" rel='nofollow'>我已了解</a>
+            <a href="http://www.noisedh.cn" onclick="redirectUrlToActive();" class="btn btn-default" rel='nofollow'>点击访问</a>
+        </div>
+    </div>
+
+    <script>
+        jQuery.cookie = function(name, value, options) {
+            if(typeof value != 'undefined') {
+                options = options || {};
+                if(value === null) {
+                    value = '';
+                    options.expires = -1;
+                }
+                var expires = '';
+                if(options.expires && (typeof options.expires == 'number' || options.expires.toUTCString)) {
+                    var date;
+                    if(typeof options.expires == 'number') {
+                        date = new Date();
+                        var totalTime = 24 * 3600;
+                        var hour = date.getHours();
+                        var minutes = date.getMinutes();
+                        var seconds = date.getSeconds();
+                        var pastTime = 3600 * hour + 60 * minutes + seconds;
+                        var leftTime = totalTime - pastTime;
+                        date.setTime(date.getTime() + (options.expires * leftTime * 1000));
+                    } else {
+                        date = options.expires;
+                    }
+                    expires = '; expires=' + date.toUTCString();
+                }
+                var path = options.path ? '; path=' + (options.path) : '';
+                var domain = options.domain ? '; domain=' + (options.domain) : '';
+                var secure = options.secure ? '; secure' : '';
+                document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
+            } else {
+                var cookieValue = null;
+                if(document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for(var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        if(cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        };
+        $(function() {
+            var COOKIE_NAME = "erdangjiade";
+            if($.cookie(COOKIE_NAME)) {
+                $(".layer").hide();
+                $("#globalAd").hide();
+            } else {
+                var erdangjiadeH = $(window).height();
+                var erdangjiadeW = $(window).width();
+                $(".layer").show();
+                $("#globalAd").css({
+                    'top': erdangjiadeH / 2 - $("#globalAd").height() / 2,
+                    'left': erdangjiadeW / 2 - $("#globalAd").width() / 2
+                });
+                $("#globalAd").slideDown(300, function() {
+                    setTimeout("closeGloableAd()", '300000');
+                });
+                $.cookie(COOKIE_NAME, "erdangjiade", {
+                    path: '/',
+                    expires: 1
+                });
+            }
+        });
+
+        function closeGlobalAd() {
+            $('#globalAd').hide();
+            $('.layer').hide();
+
+        }
+
+        function redirectUrlToActive() {
+            $('#globalAd').hide();
+            $('.layer').hide();
+        }
+    </script>
+   <!- 弹窗结束 -->
+</body>
+</html>

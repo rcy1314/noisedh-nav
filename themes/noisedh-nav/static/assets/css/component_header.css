@@ -1,0 +1,484 @@
+.title {
+  padding: 20px;
+  text-align: center;
+}
+
+.embed-container {
+  width: 100%;
+  height: 0;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+  position: relative;
+}
+
+.embed-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+@media (max-width: 800px) {
+  .recent-sites,
+  .recent-sites h2,
+  #site-list {
+      display: none !important;
+  }
+}
+
+.recent-sites h2 {
+  color: white;
+  font-size: 14px;
+  padding: 10px;
+  margin: 0;
+}
+
+#site-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 40px;
+  overflow: hidden;
+}
+
+#site-list li {
+  padding: 8px 12px;
+}
+
+#site-list li:last-child {
+  border-bottom: none;
+}
+
+#site-list .title {
+  color: white;
+}
+
+#site-list .url {
+  color: #e54911;
+  text-decoration: none;
+}
+
+#site-list .url:hover {
+  text-decoration: underline;
+}
+
+#site-list .description {
+  color: white;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.welcome-text {
+  color: white;
+  font-size: 18px;
+  text-align: center;
+}
+
+.main-title {
+  font-size: 36px;
+  text-align: center;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #FF0000, #39a4e5, #566cd7, #e56e33, #b333e5ce);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-animation 3s ease infinite;
+}
+
+@media (max-width: 800px) {
+  .main-title {
+      font-size: 34px;
+  }
+}
+
+@keyframes gradient-animation {
+  0% {
+      background-position: 0% 50%;
+  }
+
+  50% {
+      background-position: 100% 50%;
+  }
+
+  100% {
+      background-position: 0% 50%;
+  }
+}
+
+.title-spacing {
+  margin: 0;
+  display: inline-block;
+}
+
+/* ... existing styles ... */
+
+/* --- 搜索框与按钮优化 --- */
+#search-input {
+  padding: 10px 15px; /* 增加内边距 */
+  font-size: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* 统一边框风格 */
+  border-radius: 25px 0 0 25px; /* 平滑圆角 */
+  width: 70%;
+  max-width: 450px; /* 稍微增大最大宽度 */
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.1); /* 轻微背景 */
+  color: white;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡 */
+}
+#search-input:focus {
+   border-color: rgba(255, 255, 255, 0.5);
+   box-shadow: 0 0 8px rgba(255, 255, 255, 0.3); /* 增强聚焦效果 */
+   outline: none;
+}
+
+@media (max-width: 840px) {
+  #search-input {
+      width: 75%; /* 调整移动端宽度 */
+      max-width: 350px;
+  }
+}
+
+#search-button {
+  padding: 10px 15px; /* 匹配输入框内边距 */
+  font-size: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* 统一边框风格 */
+  border-left: none; /* 移除重叠边框 */
+  border-radius: 0 25px 25px 0; /* 平滑圆角 */
+  background-color: rgba(255, 255, 255, 0.2); /* 按钮背景稍深 */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#search-button:hover {
+   background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- 搜索结果优化 --- */
+#search-results {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: none;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  z-index: 1000;
+  top: 20%;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.results-header {
+  width: 100%;
+  font-size: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.result-item {
+  margin: 0;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background-color: rgba(32, 30, 30, 0.699);
+  width: 180px;
+  text-align: center;
+}
+
+.result-item a {
+  color: orange;
+  text-decoration: none;
+}
+
+.result-item a:hover {
+  text-decoration: underline;
+}
+
+#overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.result-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.result-description {
+  font-size: 12px;
+  color: #ccc;
+}
+
+.result-url {
+  font-size: 12px;
+  color: lightblue;
+}
+
+/* --- Ad Section / Carousel --- */
+.ad-section {
+  text-align: center;
+  overflow: hidden;
+  border-radius: 12px; /* Consistent radius */
+  position: relative;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3); /* Adjusted shadow */
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.ad-section img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   border-radius: 12px;
+   display: block;
+   transition: transform 0.4s ease; /* Add zoom effect on hover */
+}
+.carousel-item:hover img {
+   transform: scale(1.05); /* Zoom image on hover */
+}
+.ad-description {
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   width: 100%;
+   color: white;
+   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0)); /* Stronger gradient */
+   padding: 25px 15px 15px 15px; /* Adjusted padding */
+   border-radius: 0 0 12px 12px;
+   opacity: 0;
+   transition: opacity 0.4s ease;
+   text-align: left;
+   box-shadow: none;
+   transform: none;
+}
+.carousel-item {
+  position: relative;
+  overflow: hidden; /* Clip zoomed image */
+  border-radius: 12px; /* Match image radius */
+}
+.carousel-item:hover .ad-description {
+  opacity: 1;
+}
+.carousel-control-prev,
+.carousel-control-next {
+   position: absolute;
+   top: 50%;
+   transform: translateY(-50%);
+   z-index: 10;
+   background-color: rgba(20, 20, 20, 0.5); /* Adjusted background */
+   border-radius: 50%;
+   width: 45px; /* Slightly larger */
+   height: 45px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   opacity: 0.6; /* Start less visible */
+   transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+   opacity: 1;
+   background-color: rgba(0, 0, 0, 0.7);
+   transform: translateY(-50%) scale(1.1); /* Scale control on hover */
+}
+.carousel-control-prev {
+  left: 15px; /* Adjusted position */
+}
+.carousel-control-next {
+  right: 15px; /* Adjusted position */
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 2px;
+  margin: 0;
+  background-color: rgba(10, 10, 11, 0.234);
+  border: 2px solid #44444400;
+}
+
+.flex-item {
+  flex: 1;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-item.right {
+  flex: 2;
+}
+
+@media (max-width: 800px) {
+  .flex-container {
+      flex-direction: column;
+  }
+
+  .flex-item {
+      flex: 1;
+  }
+}
+
+.bilibiliindex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 25vh;
+  width: auto;
+  margin: auto;
+  background-color: #323232;
+  border: 2px solid #212020;
+  border-radius: 10px;
+}
+
+@media (max-width: 800px) {
+  .bilibiliindex {
+      display: none;
+  }
+}
+
+#lbl {
+  font-family: brushscriptmt;
+  font-size: 21px;
+  background: linear-gradient(90deg, #FF0000, #8939e5, #9e443a, #3383e5, #b333e5ce);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding: 5px;
+  border: 1px solid #212936ca;
+  text-align: center;
+  line-height: 1.5;
+  height: auto;
+}
+
+#date {
+  font-size: 18px;
+  background: linear-gradient(90deg, #FF0000, #39a4e5, #566cd7, #e56e33, #b333e5ce);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Center buttons */
+  margin: 18px 0; /* Increased margin */
+  padding: 5px 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  gap: 15px; /* Adjusted gap */
+  background-color: transparent; /* 确保背景透明 */
+  border: none; /* 显式移除边框 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.button-container::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-button {
+  background-color: rgba(30, 30, 30, 0.637); /* Darker background */
+  color: #f4efef; /* Softer text color */
+  border: none; /* 移除边框 */
+  padding: 5px 10px;/* 轻微调整内边距以补偿边框移除 */
+  border-radius: 25px; /* Fully rounded */
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease; /* Smooth all transitions */
+  min-width: auto;
+ 
+  flex-shrink: 0;
+}
+.nav-button:hover {
+  background-color: #7b84fe;
+ 
+  /* border-color: rgba(255, 255, 255, 0.2); */ /* 边框已移除 */
+  transform: translateY(-3px); /* Increased lift */
+
+}
+
+.nav-button svg, .nav-button i {
+  height: 16px; /* 稍微增大图标尺寸 */
+  width: 16px;
+  margin-right: 8px;
+  opacity: 1; /* 默认完全不透明 */
+  color: #eee; /* 设置更亮的图标颜色 */
+  transition: color 0.3s ease; /* 添加颜色过渡 */
+  fill: #eee; /* 确保 SVG 填充色也被设置 */
+}
+.nav-button:hover svg, .nav-button:hover i {
+  opacity: 1; /* hover 时保持不透明 */
+  color: #fff; /* hover 时图标颜色变为纯白 */
+  fill: #fff; /* hover 时 SVG 填充色变为纯白 */
+}
+.page {
+  display: none;
+}
+
+.active {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .button-container {
+      display: none; 
+  }
+}
+
+.recent-sites {
+  margin-top: 0;
+  padding: 10px;
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 1px solid rgba(128, 128, 128, 0.5);
+  overflow: hidden;
+  background-color: #1d233738;
+  opacity: 1; /* 由0改为1，确保可见 */
+  transition: opacity 0.3s ease;
+}
+
+.recent-sites.visible {
+  display: block;
+  opacity: 1;
+}

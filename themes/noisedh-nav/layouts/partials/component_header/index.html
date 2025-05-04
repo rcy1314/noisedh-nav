@@ -1,0 +1,694 @@
+<div class="header-big post-top css-color mb-4" id="component-bg">
+    <div class="s-search mx-auto">
+        <div id="search-list-menu" class="hide-type-list">
+            <div class="s-type text-center">
+                <div class="s-type-list big">
+                    <div class="anchor" style="position: absolute; left: 50%; opacity: 0;"></div>
+                </div>
+            </div>
+        </div>
+        {{ if .Site.Params.header.enableTabs }}
+        <div class="button-container">
+            {{ range .Site.Params.header.tabs }}
+                <button class="nav-button" onclick="showPage('{{ .key }}')">
+                    {{ if eq .icon "waline" }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width='24' height='24' fill='#ffffff' viewBox="0 0 16 16"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"></path></svg>
+                    {{ else if eq .icon "game" }}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill='#ffffff' width='24' height='24' viewBox="0 0 56 56"><path d="M 25.9257 28.5390 L 25.9257 16.1172 L 22.4335 16.1172 C 18.5663 16.1172 16.5272 13.6094 16.5272 11.1719 C 16.5272 8.6406 18.4023 7.1406 20.9101 7.1406 C 23.7929 7.1406 26.0429 9.3672 26.0429 13.0937 L 26.0429 16.1172 L 29.9570 16.1172 L 29.9570 13.0937 C 29.9570 9.3672 32.2070 7.1406 35.0897 7.1406 C 37.5976 7.1406 39.4960 8.6406 39.4960 11.1719 C 39.4960 13.6094 37.3866 16.1172 33.5663 16.1172 L 30.0741 16.1172 L 30.0741 28.5390 L 46.5976 28.5390 C 49.1524 28.5390 50.5352 27.5547 50.5352 25.0468 L 50.5352 19.6094 C 50.5352 17.1250 49.1524 16.1172 46.5976 16.1172 L 41.1366 16.1172 C 42.5897 14.8047 43.4570 13.0234 43.4570 11.0078 C 43.4570 6.4844 39.8710 3.2266 35.3241 3.2266 C 31.9492 3.2266 29.2070 5.1015 28.0116 8.4297 C 26.8163 5.1015 24.0507 3.2266 20.6757 3.2266 C 16.1523 3.2266 12.5429 6.4844 12.5429 11.0078 C 12.5429 13.0234 13.3866 14.8047 14.8632 16.1172 L 9.4023 16.1172 C 6.9882 16.1172 5.4648 17.1250 5.4648 19.6094 L 5.4648 25.0468 C 5.4648 27.5547 6.8710 28.5390 9.4023 28.5390 Z M 25.9257 52.7734 L 25.9257 31.0468 L 8.8163 31.0468 L 8.8163 46.8203 C 8.8163 50.7344 11.1132 52.7734 15.0272 52.7734 Z M 30.0741 31.0468 L 30.0741 52.7734 L 40.9726 52.7734 C 44.8866 52.7734 47.1835 50.7344 47.1835 46.8203 L 47.1835 31.0468 Z"></path></svg>
+                    {{ else if eq .icon "rss" }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width='24' height='24' fill='#ffffff' viewBox="0 0 16 16"><path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2m0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2m.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"></path></svg>
+                    {{ else }}
+                        <i class="fa {{ .icon }}" aria-hidden="true" style="margin-right: 10px;"></i>
+                    {{ end }}
+                    {{ .label }}
+                </button>
+            {{ end }}
+        </div>
+        {{ end }}
+
+        {{ range .Site.Params.header.tabs }}
+        <div id="{{ .key }}" class="page{{ if eq .key "default" }} active{{ end }}">
+            {{ if eq .key "default" }}
+                {{ if $.Site.Params.header.enableRecentSites }}
+                <div class="recent-sites" id="recent-sites">
+                    <h2 id="recent-sites-title"
+                        style="background: linear-gradient(90deg, #FF0000, #39a4e5, #566cd7, #e56e33, #b333e5ce); text-align: center; height: 45px; border-radius: 10px; box-shadow: inset 0 0 10px rgba(10, 10, 10, 0.086); display: flex; align-items: center; justify-content: center; font-size: 22px; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        {{ $.Site.Params.header.recentSitesTitle }}
+                    </h2>
+                    <ul id="site-list"></ul>
+                </div>
+                {{ end }}
+                <div class="flex-container">
+                    <div class="flex-item">
+                        <div id="lbl"></div>
+                        {{ if $.Site.Params.header.enableSearch }}
+                        <div style="text-align: center; margin-top: 20px;">
+                            <input type="text" id="search-input" placeholder="{{ $.Site.Params.header.searchPlaceholder }}" />
+                            <button id="search-button">🔍</button>
+                        </div>
+                        {{ end }}
+                        <div id="overlay"></div>
+                        <div id="search-results" style="display: none;">
+                            <div class="results-header" style="display: none;">当前搜索结果如下：</div>
+                        </div>
+                        {{ if $.Site.Params.bilibili.enable }}
+                        <div class="bilibiliindex" style="width: {{ $.Site.Params.bilibili.width }}; height: {{ $.Site.Params.bilibili.height }}; border-radius: 8px;">
+                            <iframe src="{{ $.Site.Params.bilibili.iframeUrl }}"
+                                style="width: {{ $.Site.Params.bilibili.iframeWidth }}; height: {{ $.Site.Params.bilibili.iframeHeight }}; border: none !important; background: transparent !important; box-shadow: none;"
+                                loading="{{ $.Site.Params.bilibili.iframeLoading }}"></iframe>
+                        </div>
+                        {{ end }}
+                    </div>
+                    <div class="flex-item right" style="color: white;">
+                      <!-- 播放器及占位 -->
+                      <div style="width: 100%; min-height: 75px; position: relative; margin-bottom: 10px;">
+                          <div id="aplayer-loading" style="width:100%;height:75px;display:flex;align-items:center;justify-content:center;background:rgb(30, 30, 30);color:#fff;font-size:16px;position:relative;z-index:2;">
+                              正在加载音乐组件...
+                          </div>
+                          <meting-js list-max-height="75px"
+                              server="{{ $.Site.Params.musicServer }}"
+                              type="playlist"
+                              data-fixed="true"
+                              data-autoplay="false"
+                              id="{{ $.Site.Params.musicId }}"></meting-js>
+                      </div>
+                      <!-- 广告位 -->
+                      {{ if $.Site.Params.header.enableAd }}
+                      <div class="ad-section">
+                          <div id="ad-carousel" class="carousel slide" data-ride="carousel">
+                              <div class="carousel-inner">
+                                  {{ range $i, $ad := $.Site.Params.header.adList }}
+                                  <div class="carousel-item{{ if eq $i 0 }} active{{ end }}">
+                                      <a href="{{ $ad.url }}" target="_blank">
+                                          <img src="{{ $ad.img }}" alt="{{ $ad.desc }}"
+                                              style="max-height: 220px; object-fit: cover;">
+                                          <div class="ad-description">{{ $ad.desc }}</div>
+                                      </a>
+                                  </div>
+                                  {{ end }}
+                              </div>
+                              <a class="carousel-control-prev" href="#ad-carousel" role="button" data-slide="prev">
+                                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                  <span class="sr-only">Previous</span>
+                              </a>
+                              <a class="carousel-control-next" href="#ad-carousel" role="button" data-slide="next">
+                                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                  <span class="sr-only">Next</span>
+                              </a>
+                              <br>
+                          </div>
+                      </div>
+                      {{ end }}
+                    </div>
+                </div>
+            {{ else if eq .key "rssmerge" }}
+                <div class="embed-container">
+                    <iframe src="{{ $.Site.Params.header.rssmergeUrl }}" loading="lazy" frameborder="0"></iframe>
+                </div>
+            {{ else if eq .key "talk" }}
+                <div class="embed-container">
+                    <iframe src="{{ $.Site.Params.header.talkUrl }}" loading="lazy" frameborder="0"></iframe>
+                </div>
+            {{ else if eq .key "time" }}
+                <div class="embed-container">
+                    <iframe src="{{ $.Site.Params.header.timeUrl }}" loading="lazy" frameborder="0"></iframe>
+                </div>
+            {{ else if eq .key "game" }}
+                <div class="embed-container">
+                    <iframe src="{{ $.Site.Params.header.gameUrl }}" loading="lazy" frameborder="0"></iframe>
+                </div>
+            {{ else if eq .key "waline" }}
+                <div class="grid-container">
+                    {{ range $.Site.Params.header.hotlist.items }}
+                    <div class="{{ .color }} text-white p-4 rounded-lg shadow-lg hotcard" id="{{ .id }}">
+                        <div class="header">
+                            <img src="{{ .icon }}" alt="{{ .title }}">
+                            <h2 class="text-lg font-bold">{{ .title }}</h2>
+                        </div>
+                        <p class="update-time">数据更新时间: -</p>
+                        <span class="refresh-icon" onclick="refreshData('{{ .id }}')"><i class="fas fa-refresh"></i></span>
+                        <div class="content">
+                            <ol class="list-decimal pl-5" id="{{ .id }}-list"></ol>
+                        </div>
+                    </div>
+                    {{ end }}
+                </div>
+            {{ else }}
+                {{/* 通用自定义tab渲染：支持iframe或自定义内容 */}}
+                {{ if .iframeUrl }}
+                <div class="embed-container">
+                    <iframe src="{{ .iframeUrl }}" loading="lazy" frameborder="0"
+                        {{ with .iframeWidth }}style="width:{{.}};"{{ end }}
+                        {{ with .iframeHeight }}height="{{.}}"{{ end }}></iframe>
+                </div>
+                {{ else if .html }}
+                <div class="custom-html-container">
+                    {{ .html | safeHTML }}
+                </div>
+                {{ else }}
+                <div class="embed-container">
+                    <p>请在 config.toml 的 tabs 配置中为 key={{ .key }} 设置 iframeUrl 或 html 字段。</p>
+                </div>
+                {{ end }}
+            {{ end }}
+        </div>
+        {{ end }}
+
+        <!-- 公告 -->
+        {{ if and .Site.Params.header.enableAnnouncements .Site.Params.header.announcements }}
+        <div class="wp zzbuluoled" style="margin-top:0;">
+            <div style="background: linear-gradient(rgba(46, 52, 72, 0.5), rgba(46, 52, 72, 0.1)); text-align: center; height: 45px; border-radius: 10px; box-shadow: inset 0 0 10px rgba(10, 10, 10, 0.5); display: flex; align-items: center; justify-content: center;">
+                <div id="zzbuluoled_sx" style="width:auto; overflow:hidden; height: 45px; text-align:left; display: flex; align-items: center; line-height: 45px;">
+                    <marquee direction="left" scrollamount="5">
+                        <strong>
+                        {{ range .Site.Params.header.announcements }}
+                            {{ if .url }}
+                                <a href="{{ .url }}" target="_blank">
+                                    <span style="font-family: 'Tahoma'; font-weight:600; color: {{ .color }}; font-size: 20px;">{{ .text }}</span>
+                                </a>
+                            {{ else }}
+                                <span style="font-family: 'Tahoma'; font-weight:600; color: {{ .color }}; font-size: 20px;">{{ .text }}</span>
+                            {{ end }}
+                        {{ end }}
+                        </strong>
+                    </marquee>
+                </div>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</div>
+<style>
+  .title {
+  padding: 20px;
+  text-align: center;
+}
+
+.embed-container {
+  width: 100%;
+  height: 0;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+  position: relative;
+}
+
+.embed-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+@media (max-width: 800px) {
+  .recent-sites,
+  .recent-sites h2,
+  #site-list {
+      display: none !important;
+  }
+}
+
+.recent-sites h2 {
+  color: white;
+  font-size: 14px;
+  padding: 10px;
+  margin: 0;
+}
+
+#site-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 40px;
+  overflow: hidden;
+  color: #e0e0e0;
+}
+
+#site-list li {
+  padding: 8px 12px;
+}
+
+#site-list li:last-child {
+  border-bottom: none;
+}
+
+#site-list .title {
+  color: white;
+}
+
+#site-list .url {
+  color: #e54911;
+  text-decoration: none;
+}
+
+#site-list .url:hover {
+  text-decoration: underline;
+}
+
+#site-list .description {
+  color: white;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.welcome-text {
+  color: white;
+  font-size: 18px;
+  text-align: center;
+}
+
+.main-title {
+  font-size: 36px;
+  text-align: center;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #FF0000, #39a4e5, #566cd7, #e56e33, #b333e5ce);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-animation 3s ease infinite;
+}
+
+@media (max-width: 800px) {
+  .main-title {
+      font-size: 34px;
+  }
+}
+
+@keyframes gradient-animation {
+  0% {
+      background-position: 0% 50%;
+  }
+
+  50% {
+      background-position: 100% 50%;
+  }
+
+  100% {
+      background-position: 0% 50%;
+  }
+}
+
+.title-spacing {
+  margin: 0;
+  display: inline-block;
+}
+
+/* ... existing styles ... */
+
+/* --- 搜索框与按钮优化 --- */
+#search-input {
+  padding: 10px 15px; /* 增加内边距 */
+  font-size: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* 统一边框风格 */
+  border-radius: 25px 0 0 25px; /* 平滑圆角 */
+  width: 70%;
+  max-width: 450px; /* 稍微增大最大宽度 */
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.1); /* 轻微背景 */
+  color: white;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡 */
+}
+#search-input:focus {
+   border-color: rgba(255, 255, 255, 0.5);
+   box-shadow: 0 0 8px rgba(255, 255, 255, 0.3); /* 增强聚焦效果 */
+   outline: none;
+}
+
+@media (max-width: 840px) {
+  #search-input {
+      width: 75%; /* 调整移动端宽度 */
+      max-width: 350px;
+  }
+}
+
+#search-button {
+  padding: 10px 15px; /* 匹配输入框内边距 */
+  font-size: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* 统一边框风格 */
+  border-left: none; /* 移除重叠边框 */
+  border-radius: 0 25px 25px 0; /* 平滑圆角 */
+  background-color: rgba(255, 255, 255, 0.2); /* 按钮背景稍深 */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#search-button:hover {
+   background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- 搜索结果优化 --- */
+#search-results {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: none;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  z-index: 1000;
+  top: 20%;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.results-header {
+  width: 100%;
+  font-size: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.result-item {
+  margin: 0;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background-color: rgba(32, 30, 30, 0.699);
+  width: 180px;
+  text-align: center;
+}
+
+.result-item a {
+  color: orange;
+  text-decoration: none;
+}
+
+.result-item a:hover {
+  text-decoration: underline;
+}
+
+#overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.result-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.result-description {
+  font-size: 12px;
+  color: #ccc;
+}
+
+.result-url {
+  font-size: 12px;
+  color: lightblue;
+}
+
+/* --- Ad Section / Carousel --- */
+.ad-section {
+  text-align: center;
+  overflow: hidden;
+  border-radius: 12px; /* Consistent radius */
+  position: relative;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3); /* Adjusted shadow */
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.ad-section img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   border-radius: 12px;
+   display: block;
+   transition: transform 0.4s ease; /* Add zoom effect on hover */
+}
+.carousel-item:hover img {
+   transform: scale(1.05); /* Zoom image on hover */
+}
+.ad-description {
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   width: 100%;
+   color: white;
+   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0)); /* Stronger gradient */
+   padding: 25px 15px 15px 15px; /* Adjusted padding */
+   border-radius: 0 0 12px 12px;
+   opacity: 0;
+   transition: opacity 0.4s ease;
+   text-align: left;
+   box-shadow: none;
+   transform: none;
+}
+.carousel-item {
+  position: relative;
+  overflow: hidden; /* Clip zoomed image */
+  border-radius: 12px; /* Match image radius */
+}
+.carousel-item:hover .ad-description {
+  opacity: 1;
+}
+.carousel-control-prev,
+.carousel-control-next {
+   position: absolute;
+   top: 50%;
+   transform: translateY(-50%);
+   z-index: 10;
+   background-color: rgba(20, 20, 20, 0.5); /* Adjusted background */
+   border-radius: 50%;
+   width: 45px; /* Slightly larger */
+   height: 45px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   opacity: 0.6; /* Start less visible */
+   transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+   opacity: 1;
+   background-color: rgba(0, 0, 0, 0.7);
+   transform: translateY(-50%) scale(1.1); /* Scale control on hover */
+}
+.carousel-control-prev {
+  left: 15px; /* Adjusted position */
+}
+.carousel-control-next {
+  right: 15px; /* Adjusted position */
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 2px;
+  margin: 0;
+  background-color: rgba(10, 10, 11, 0.234);
+  border: 2px solid #44444400;
+}
+
+.flex-item {
+  flex: 1;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-item.right {
+  flex: 2;
+}
+
+@media (max-width: 800px) {
+  .flex-container {
+      flex-direction: column;
+  }
+
+  .flex-item {
+      flex: 1;
+  }
+}
+
+.bilibiliindex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 25vh;
+  width: auto;
+  margin: auto;
+  background-color: #323232;
+  border: 2px solid #212020;
+  border-radius: 10px;
+}
+
+@media (max-width: 800px) {
+  .bilibiliindex {
+      display: none;
+  }
+}
+
+#lbl {
+  font-family: brushscriptmt;
+  font-size: 21px;
+  background: linear-gradient(90deg, #FF0000, #8939e5, #9e443a, #3383e5, #b333e5ce);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding: 5px;
+  border: 1px solid #212936ca;
+  text-align: center;
+  line-height: 1.5;
+  height: auto;
+}
+
+#date {
+  font-size: 18px;
+  background: linear-gradient(90deg, #FF0000, #39a4e5, #566cd7, #e56e33, #b333e5ce);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Center buttons */
+  margin: 18px 0; /* Increased margin */
+  padding: 5px 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  gap: 15px; /* Adjusted gap */
+  background-color: transparent; /* 确保背景透明 */
+  border: none; /* 显式移除边框 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.button-container::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-button {
+  background-color: rgba(30, 30, 30, 0.637); /* Darker background */
+  color: #f4efef; /* Softer text color */
+  border: none; /* 移除边框 */
+  padding: 5px 10px;/* 轻微调整内边距以补偿边框移除 */
+  border-radius: 25px; /* Fully rounded */
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease; /* Smooth all transitions */
+  min-width: auto;
+ 
+  flex-shrink: 0;
+}
+.nav-button:hover {
+  background-color: #7b84fe;
+ 
+  /* border-color: rgba(255, 255, 255, 0.2); */ /* 边框已移除 */
+  transform: translateY(-3px); /* Increased lift */
+
+}
+
+.nav-button svg, .nav-button i {
+  height: 16px; /* 稍微增大图标尺寸 */
+  width: 16px;
+  margin-right: 8px;
+  opacity: 1; /* 默认完全不透明 */
+  color: #eee; /* 设置更亮的图标颜色 */
+  transition: color 0.3s ease; /* 添加颜色过渡 */
+  fill: #eee; /* 确保 SVG 填充色也被设置 */
+}
+.nav-button:hover svg, .nav-button:hover i {
+  opacity: 1; /* hover 时保持不透明 */
+  color: #fff; /* hover 时图标颜色变为纯白 */
+  fill: #fff; /* hover 时 SVG 填充色变为纯白 */
+}
+.page {
+  display: none;
+}
+
+.active {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .button-container {
+      display: none; 
+  }
+}
+
+.recent-sites {
+  margin-top: 0;
+  padding: 10px;
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 1px solid rgba(128, 128, 128, 0.5);
+  overflow: hidden;
+  background-color: #1d233738;
+  opacity: 1; /* 由0改为1，确保可见 */
+  transition: opacity 0.3s ease;
+}
+
+.recent-sites.visible {
+  display: block;
+  opacity: 1;
+}
+</style>
+<script>
+    window.CONFIG = {
+      recentSitesApi: "{{ .Site.Params.header.recentSitesApi }}",
+      statisticsApi: "{{ .Site.Params.header.statisticsApi }}",
+      siteName: "{{ .Site.Params.author }}",
+      serverUrl: "{{ .Site.Params.header.serverUrl }}",
+      filePath: "{{ .Site.Params.header.filePath }}",
+      hotApiEndpoints: "{{ .Site.Params.hotApi.endpoints }}"
+    }
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // 监听APlayer加载完成
+      var checkAPlayer = setInterval(function() {
+          var ap = document.querySelector('.aplayer');
+          if(ap) {
+              document.getElementById('aplayer-loading').style.display = 'none';
+              clearInterval(checkAPlayer);
+          }
+      }, 200);
+  });
+  </script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/component_header.js' id='component_header-js'></script>
+<link rel="stylesheet" href="https://www.noisework.cn/css/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+<script src="https://www.noisework.cn/js/APlayer.min.js"></script>
+<script src="https://www.noisework.cn/js/Meting.min.js"></script>

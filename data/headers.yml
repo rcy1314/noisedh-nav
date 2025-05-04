@@ -1,0 +1,57 @@
+- item: 首页
+  icon: fa fa-home
+  link: "./"
+
+- item: 关于本站
+  icon: fa fa-info-circle
+  link: "./about/"
+
+- item: 投稿
+  icon: fa fa-paper-plane
+  link: "./tougao/"
+
+- item: 更新记录
+  icon: fa fa-pencil-square-o
+  link: "./update/"  
+  
+- item: 链接检测记录
+  icon: fa fa-star
+  link: "./invalidlinks"
+
+- item: Nav-Manage说明
+  icon: fa fa-coffee
+  link: "./nav/"
+
+- item: 程序下载
+  icon: fa fa-gift
+  link: ""
+  list:
+    - name: ⭐win平台
+      url: "https://noise.lanzoul.com/iWUOJ144fp1g"
+    - name: ⭐mac平台
+      url: "https://noise.lanzoul.com/ibM7u144ftih"
+
+- item: 更多
+  icon: fa fa-map-signs
+  link: ""
+  list:
+    - name: 😀Emoji
+      url: "./assets/emoji/"
+    - name: 🗳TG
+      url: "https://t.me/quanshoulu"
+    - name: 🎁备用1
+      url: "https://noisedaohang.netlify.app"
+    - name: 🎁备用2
+      url: "https://daohang-c5k.pages.dev"
+    - name: 🎁备用3
+      url: "https://noisedh.maozi.io"
+    - name: 🎁备用4
+      url: "https://noisedh.vercel.app"
+    - name: 🎁备用5
+      url: "https://noisedh.link"
+    - name: 📑旧版
+      url: "./jiuban/"
+    - name: 🚗博客版
+      url: "https://h5qqf-xqaaa-aaaag-aazea-cai.ic0.app"
+    - name: 🗒维格表
+      url: "https://spcqwserdvymm.com.vika.cn/share/shryNwH3HRgvzMTaZVAGx/fodkuzz5eaw0w"
