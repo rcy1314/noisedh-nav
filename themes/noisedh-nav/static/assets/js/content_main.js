@@ -229,12 +229,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         obs.unobserve(entry.target);
                     }
                 });
-            }, { rootMargin: '500px' });
+            }, { rootMargin: '100px' });
             lazyImages.forEach(img => observer.observe(img));
         } else {
             // 不支持 IntersectionObserver 时降级为原有方式
             lazyImages.forEach(img => {
-                if (img.getBoundingClientRect().top < window.innerHeight + 500 && img.dataset.src) {
+                if (img.getBoundingClientRect().top < window.innerHeight + 100 && img.dataset.src) {
                     loadImage(img);
                 }
             });
