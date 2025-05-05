@@ -1,6 +1,8 @@
 ## 一个hugo导航，可以通过简单配置配合不同的组件效果打造专属的导航网站
 
-它是通过WebStack-Hugo硬编码下的软编码改造实现，使用前请查看如下说明：
+![预览](https://s2.loli.net/2025/05/05/BQaNdGi8u1CDjJM.png)
+
+它是通过WebStack-Hugo硬编码下的软编码改造实现，可以纯静态化部署，使用前请查看如下说明：
 
 ## 配置
 
@@ -232,6 +234,24 @@ partials主模版：component_header为头部组件模版，content_footer为网
 说说页面
 
 配置：https://github.com/rcy1314/echo-noise
+
+热榜组件
+
+配置：hot.css+hot.js 配置可在config.toml设置api，如果你想要更多热榜，请在hot.js增加相关热榜接口，参考：https://docs.noisework.cn/guide/index/hotlist
+
+头部自定义页
+
+除了默认页面和热榜页面，其它所有 tab 都可以通过下面示例增加（支持内嵌及写入html）
+
+```
+{ key = "mab", icon = "fa-star", label = "主页", iframeHeight = "400px", iframeWidth = "100%",iframeUrl = "https://www.noisework.cn" },
+```
+
+
+
+```
+{ key = "custom", icon = "fa-code", label = "自定义", html = "<div style=\"color:white; text-align:center;\">这里是自定义HTML内容</div>" },
+```
 
 ------
 
