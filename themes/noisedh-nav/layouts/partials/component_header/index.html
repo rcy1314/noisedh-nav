@@ -62,8 +62,8 @@
                     <div class="flex-item right" style="color: white;">
                       <!-- 播放器及占位 -->
                       <div style="width: 100%; min-height: 75px; position: relative; margin-bottom: 10px;">
-                          <div id="aplayer-loading" style="width:100%;height:75px;display:flex;align-items:center;justify-content:center;background:rgb(30, 30, 30);color:#fff;font-size:16px;position:relative;z-index:2;">
-                              正在加载音乐组件...
+                          <div id="aplayer-loading" style="width:100%;height:75px;display:flex;align-items:center;justify-content:center;background:rgb(30, 30, 30);font-size:32px;position:relative;z-index:2;">
+                              <span class="dot-animate rainbow-dots"></span>
                           </div>
                           <meting-js list-max-height="75px"
                               server="{{ $.Site.Params.musicServer }}"
@@ -71,6 +71,44 @@
                               data-fixed="true"
                               data-autoplay="false"
                               id="{{ $.Site.Params.musicId }}"></meting-js>
+                          <style>
+                          .dot-animate {
+                              display: inline-block;
+                              letter-spacing: 2px;
+                              font-weight: bold;
+                              font-size: 2em;
+                              vertical-align: middle;
+                          }
+                          .rainbow-dots::after {
+                              content: '...';
+                              background: linear-gradient(90deg, #FF0000, #39a4e5, #566cd7, #e56e33, #b333e5ce);
+                              -webkit-background-clip: text;
+                              -webkit-text-fill-color: transparent;
+                              background-clip: text;
+                              animation: rainbow-dots-fade 1.2s steps(3, end) infinite;
+                          }
+                          @keyframes rainbow-dots-fade {
+                              0%, 20% { opacity: 0.2; }
+                              40% { opacity: 0.5; }
+                              60% { opacity: 0.8; }
+                              80%, 100% { opacity: 1; }
+                          }
+                          </style>
+                          <script>
+                          document.addEventListener('DOMContentLoaded', function() {
+                              var meting = document.querySelector('meting-js');
+                              var loading = document.getElementById('aplayer-loading');
+                              if (meting && loading) {
+                                  meting.addEventListener('loaded', function() {
+                                      loading.style.display = 'none';
+                                  });
+                                  // 兼容部分 meting-js 版本
+                                  meting.addEventListener('aplayerload', function() {
+                                      loading.style.display = 'none';
+                                  });
+                              }
+                          });
+                          </script>
                       </div>
                       <!-- 广告位 -->
                       {{ if $.Site.Params.header.enableAd }}
