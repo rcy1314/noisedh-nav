@@ -1,3 +1,5 @@
+## Noisedh-Nav
+
 ## 一个hugo导航，可以通过简单配置配合不同的组件效果打造专属的导航网站
 
 ![预览](https://s2.loli.net/2025/05/05/BQaNdGi8u1CDjJM.png)
