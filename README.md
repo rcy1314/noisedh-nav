@@ -2,7 +2,7 @@
 
 ![预览](https://s2.loli.net/2025/05/05/BQaNdGi8u1CDjJM.png)
 
-它是通过WebStack-Hugo硬编码下的软编码改造实现，可以纯静态化部署，使用前请查看如下说明：
+它是在WebStack-Hugo二次开发下的软编码改造实现，可以纯静态化部署，使用前请查看如下说明：
 
 ## 配置
 
