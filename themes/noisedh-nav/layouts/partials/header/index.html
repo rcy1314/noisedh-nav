@@ -49,14 +49,21 @@
     <!-- 添加Service Worker -->
     <script>
         // 延迟注册Service Worker
-    if ('serviceWorker' in navigator) {
-    setTimeout(function() {
-        navigator.serviceWorker.register('service-worker.js', {
-            scope: '/',
-            updateViaCache: 'none'
-        }).catch(console.error);
-    }, 2000);
-}
+        if ('serviceWorker' in navigator) {
+            setTimeout(function() {
+                navigator.serviceWorker.register('service-worker.js', {
+                    scope: '/',
+                    updateViaCache: 'none'
+                }).catch(console.error);
+
+                // 监听 Service Worker 消息，收到刷新指令时强制刷新页面
+                navigator.serviceWorker.addEventListener('message', function(event) {
+                    if (event.data && event.data.type === 'refresh') {
+                        window.location.reload(true);
+                    }
+                });
+            }, 2000);
+        }
     </script>
      <link rel="manifest" href="manifest.json">
      <!-- 引入热榜 -->
