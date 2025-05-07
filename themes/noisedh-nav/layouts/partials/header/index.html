@@ -48,21 +48,15 @@
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
     <!-- 添加Service Worker -->
     <script>
-       if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('service-worker.js').then(function(registration) {
-			  registration.onupdatefound = function() {
-				var installingWorker = registration.installing;
-				installingWorker.onstatechange = function() {
-				  if (installingWorker.state === 'installed') {
-					if (navigator.serviceWorker.controller) {
-					  // 有新内容，自动刷新页面
-					  window.location.reload();
-					}
-				  }
-				};
-			  };
-			});
-		}
+        // 延迟注册Service Worker
+    if ('serviceWorker' in navigator) {
+    setTimeout(function() {
+        navigator.serviceWorker.register('service-worker.js', {
+            scope: '/',
+            updateViaCache: 'none'
+        }).catch(console.error);
+    }, 2000);
+}
     </script>
      <link rel="manifest" href="manifest.json">
      <!-- 引入热榜 -->
