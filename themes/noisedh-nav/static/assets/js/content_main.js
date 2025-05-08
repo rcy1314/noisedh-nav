@@ -1,13 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 欢迎弹窗逻辑
     var popup = document.getElementById('welcome-popup');
-    var hasSeenPopup = localStorage.getItem('hasSeenPopup');
+    var hasSeenPopup = false;
+    try {
+        hasSeenPopup = localStorage.getItem('hasSeenPopup');
+    } catch (e) {
+        // localStorage 不可用时，降级处理
+        hasSeenPopup = false;
+    }
     if (!hasSeenPopup && popup) {
         popup.style.display = 'block';
         setTimeout(function() {
             popup.style.display = 'none';
         }, 5400);
-        localStorage.setItem('hasSeenPopup', 'true');
+        try {
+            localStorage.setItem('hasSeenPopup', 'true');
+        } catch (e) {
+            // localStorage 不可用时忽略
+        }
     }
 
     // 二级分类切换逻辑
