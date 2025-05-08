@@ -28,7 +28,24 @@
     max-width: 600px; /* 最大宽度限制 */
     box-shadow: 0 4px 10px rgba(26, 26, 26, 0.5); /* 添加阴影效果 */
 }
-
+@media (max-width: 480px) {
+  .popup {
+    width: 98%;
+    max-width: 98vw;
+    padding: 8px;
+  }
+  .large-text {
+    font-size: 12px;
+    word-break: break-all;
+  }
+  .category-title {
+    font-size: 14px;
+  }
+  .page-nav, .pagination, .overflow-x-auto {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+}
 .popup-content {
     max-width: 100%; /* 内容宽度限制 */
 }
