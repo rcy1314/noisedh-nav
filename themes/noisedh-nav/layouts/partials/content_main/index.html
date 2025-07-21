@@ -16,17 +16,17 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(27, 26, 26, 0.961); /* 不透明黑色背景 */
+    background-color: rgba(27, 26, 26, 0.961);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999; /* 确保在最上层 */
-    color: rgba(231, 128, 38, 0.974); /* 高对比度文字颜色 */
+    z-index: 9999;
+    color: rgba(231, 128, 38, 0.974);
     text-align: center;
-    padding: 20px; /* 添加内边距 */
-    width: 80%; /* 弹窗宽度 */
-    max-width: 600px; /* 最大宽度限制 */
-    box-shadow: 0 4px 10px rgba(26, 26, 26, 0.5); /* 添加阴影效果 */
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(26, 26, 26, 0.5);
 }
 @media (max-width: 480px) {
   .popup {
@@ -47,117 +47,108 @@
   }
 }
 .popup-content {
-    max-width: 100%; /* 内容宽度限制 */
+    max-width: 100%;
 }
 
 .large-text {
-    font-size: 20px; /* 大文字 */
-    color: #ea660e; /* 文字颜色 */
-    margin: 15px 0; /* 为每段文字添加上下间距 */
-    line-height: 1.5; /* 增加行高，提升可读性 */
-    letter-spacing: 4px; /* 字与字之间的左右间隔 */
+    font-size: 20px;
+    color: #ea660e;
+    margin: 15px 0;
+    line-height: 1.5;
+    letter-spacing: 4px;
 }
-@media (max-width: 768px) { /* 通常，768px 是手机和平板的分界线 */
+@media (max-width: 768px) {
     .large-text {
-        font-size: 14px; /* 在手机尺寸下字体大小为14px */
+        font-size: 14px;
     }
 }
         .category-title {
-            font-size: 20px; /* 稍微调小一点 */
-            font-weight: 600; /* 加粗一点 */
-            margin-bottom: 15px; /* 调整间距 */
-            color: #e0e0e0; /* 柔和的白色 */
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #e0e0e0;
             display: flex;
             align-items: center;
-            padding-bottom: 5px; /* 底部增加一点内边距 */
-            /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 可选：添加分隔线 */
+            padding-bottom: 5px;
         }
         .category-title i {
-             margin-right: 8px; /* 图标和文字间距 */
-             color: #6c63ff; /* 图标颜色，可以自定义 */
+             margin-right: 8px;
+             color: #6c63ff;
         }
 
-        body.io-black-mode .category-title { /* 使用 io-black-mode */
-             /* 暗黑模式：亮灰色标题 */
+        body.io-black-mode .category-title {
              color: #e0e0e0;
         }
         .category-title i {
-             /* ... existing styles ... */
-             /* 白天模式：蓝色图标 */
              color: #4a89f7;
         }
-         body.io-black-mode .category-title i { /* 使用 io-black-mode */
-             /* 暗黑模式：稍亮的蓝紫色图标 */
+         body.io-black-mode .category-title i {
              color: #6c63ff;
          }
 
-        /* --- 默认 (白天/io-grey-mode) 样式 --- */
         .subcat-tabs {
-            display: inline-flex; /* 使宽度自适应内容 */
+            display: inline-flex;
             gap: 8px;
             overflow-x: auto;
             white-space: nowrap;
             margin-bottom: 20px;
             padding: 6px;
-            background-color: #f1f3f5; /* 白天模式：非常浅的灰色背景 (匹配图片) */
+            background-color: #f1f3f5;
             border-radius: 25px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
-           
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             max-width: 100%;
         }
         .subcat-tabs::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
+            display: none;
         }
 
         .subcat-tab {
             padding: 8px 20px;
             border-radius: 20px;
-            background: transparent; /* 白天模式：透明标签背景 */
-            color: #6c757d; /* 白天模式：灰色文字 (匹配图片) */
+            background: transparent;
+            color: #6c757d;
             font-weight: 500;
             cursor: pointer;
             border: none;
             outline: none;
             margin-right: 0;
-           
             flex-shrink: 0;
+            transition: background 0.15s, color 0.15s;
         }
 
         .subcat-tab:hover {
-            color: #212529; /* 白天模式：悬停时黑色文字 */
-            background-color: #c3c6c9; /* 白天模式：悬停时稍深灰色背景 */
+            color: #212529;
+            background-color: #c3c6c9;
         }
 
         .subcat-tab.active {
-            background: #4a89f7; /* 激活时蓝色背景 (匹配图片) */
-            color: #fff; /* 激活时白色文字 */
+            background: #4a89f7;
+            color: #fff;
             font-weight: 600;
             transform: scale(1.03);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
         }
 
-        /* --- 暗黑 (io-black-mode) 模式下的调整 --- */
-        body.io-black-mode .subcat-tabs { /* 使用 io-black-mode */
-             background-color: #2a2a2e; /* 暗黑模式：深灰色容器背景 (匹配图片) */
+        body.io-black-mode .subcat-tabs {
+             background-color: #2a2a2e;
              box-shadow: none;
         }
-        body.io-black-mode .subcat-tab { /* 使用 io-black-mode */
-            background: #40404009; /* 暗黑模式：稍浅灰色标签背景 (匹配图片) */
-            color: #adb5bd; /* 暗黑模式：稍亮灰色文字 (匹配图片) */
+        body.io-black-mode .subcat-tab {
+            background: #40404009;
+            color: #adb5bd;
         }
-         body.io-black-mode .subcat-tab:hover { /* 使用 io-black-mode */
-             color: #fff; /* 暗黑模式：悬停时白色文字 */
-             background-color: #555555; /* 暗黑模式：悬停时更亮的灰色背景 */
+         body.io-black-mode .subcat-tab:hover {
+             color: #fff;
+             background-color: #555555;
          }
-        body.io-black-mode .subcat-tab.active { /* 使用 io-black-mode */
-            background: #4a89f7; /* 暗黑模式：激活时蓝色背景 (匹配图片) */
-            color: #fff; /* 暗黑模式：激活时白色文字 */
+        body.io-black-mode .subcat-tab.active {
+            background: #4a89f7;
+            color: #fff;
             transform: scale(1.03);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
-
     </style>
     {{ $defaultLogo := $.Site.Params.defaultLogo }}
     {{ $logosPath := $.Site.Params.logosPath }}
@@ -165,14 +156,12 @@
 
     {{ range $i, $cat := .Site.Data.webstack }}
         <div class="category-block mb-4" id="{{ if $cat.list }}{{ range first 1 $cat.list }}{{ md5 .term }}{{ end }}{{ else }}{{ md5 $cat.taxonomy }}{{ end }}">
-            <!-- 一级分类标题 -->
-            <div class="category-title"> <!-- 移除 mb-3，使用 category-block 的 mb-4 -->
+            <div class="category-title">
                 {{ if $cat.icon }}<i class="{{ $cat.icon }} icon-fw icon-lg"></i>{{ end }}
                 {{ $cat.taxonomy }}
             </div>
             {{ if and $cat.list (gt (len $cat.list) 1) }}
-                <!-- 二级分类横向标签 -->
-                <div class="subcat-tabs"> <!-- 移除 mb-4 -->
+                <div class="subcat-tabs">
                     {{ range $j, $sub := $cat.list }}
                         <button class="subcat-tab{{ if eq $j 0 }} active{{ end }}" data-cat="cat{{ $i }}" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 $sub.term }}">{{ $sub.term }}</button>
                     {{ end }}
@@ -196,9 +185,9 @@
                                                 <img class="lazy"
                                                      src="{{ $defaultLogo }}"
                                                      data-src="{{ $customLogo }}"
+                                                     data-default="{{ $defaultLogo }}"
                                                      data-fallback="{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
                                                      alt="{{ .title }}"
-                                                     onerror="multiFallback(this)"
                                                      loading="lazy">
                                             </div>
                                             <div class="url-info flex-fill">
@@ -224,7 +213,6 @@
                     </div>
                 {{ end }}
             {{ else if and $cat.list (eq (len $cat.list) 1) }}
-                <!-- 只有一个二级分类时不显示二级标签，直接展示内容 -->
                 {{ range $j, $sub := $cat.list }}
                     <div class="row card-list">
                         {{ range $sub.links }}
@@ -244,9 +232,9 @@
                                                 <img class="lazy"
                                                      src="{{ $defaultLogo }}"
                                                      data-src="{{ $customLogo }}"
-                                                     data-fallback="{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
+                                                     data-default="{{ $defaultLogo }}"
+                                                     data-fallback="{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://favicon.im/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
                                                      alt="{{ .title }}"
-                                                     onerror="multiFallback(this)"
                                                      loading="lazy">
                                             </div>
                                             <div class="url-info flex-fill">
@@ -272,7 +260,6 @@
                     </div>
                 {{ end }}
             {{ else }}
-                <!-- 没有二级分类时直接展示一级分类内容 -->
                 <div class="row card-list">
                     {{ range $cat.links }}
                     {{ $customLogo := cond (hasPrefix .logo "http") .logo (print $logosPath "/" .logo) }}
@@ -291,9 +278,9 @@
                                             <img class="lazy"
                                                  src="{{ $defaultLogo }}"
                                                  data-src="{{ $customLogo }}"
-                                                 data-fallback="{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
+                                                 data-default="{{ $defaultLogo }}"
+                                                 data-fallback="{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} ||  https://favicon.im/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
                                                  alt="{{ .title }}"
-                                                 onerror="multiFallback(this)"
                                                  loading="lazy">
                                         </div>
                                         <div class="url-info flex-fill">
@@ -334,21 +321,7 @@
     </div>
 </div>
 <script>
- 
-// 优化后的图片 fallback 逻辑，确保只尝试一次 yandex，再失败则用 google，最后回退默认
-function handleImgError(img, domain) {
-    if (!img._triedYandex) {
-        img._triedYandex = true;
-        img.src = 'https://favicon.yandex.net/favicon/' + domain;
-    } else if (!img._triedGoogle) {
-        img._triedGoogle = true;
-        img.src = 'https://www.google.com/s2/favicons?domain=' + domain + '&size=64';
-    } else {
-        img.src = '{{ $defaultLogo }}';
-    }
-}
-
-// 懒加载优化，移动端和桌面端都兼容
+// 优化：图片懒加载和切换时预加载，提升切换流畅度
 document.addEventListener('DOMContentLoaded', function() {
     // 欢迎弹窗逻辑
     var popup = document.getElementById('welcome-popup');
@@ -356,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         hasSeenPopup = localStorage.getItem('hasSeenPopup');
     } catch (e) {
-        // localStorage 不可用时，降级处理
         hasSeenPopup = false;
     }
     if (!hasSeenPopup && popup) {
@@ -366,12 +338,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5400);
         try {
             localStorage.setItem('hasSeenPopup', 'true');
-        } catch (e) {
-            // localStorage 不可用时忽略
-        }
+        } catch (e) {}
     }
 
-    // 二级分类切换逻辑
+    // 二级分类切换逻辑，切换时预加载当前卡片图片
     document.querySelectorAll('.subcat-tabs').forEach(function(tabBar){
         tabBar.querySelectorAll('.subcat-tab').forEach(function(tab){
             tab.addEventListener('click', function(){
@@ -380,7 +350,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 const subcat = tab.getAttribute('data-subcat');
                 const parent = tab.closest('.category-block');
                 parent.querySelectorAll('.row.card-list[data-subcat]').forEach(list=>{
-                    list.style.display = (list.getAttribute('data-subcat') === subcat) ? '' : 'none';
+                    if (list.getAttribute('data-subcat') === subcat) {
+                        list.style.display = '';
+                        // 预加载当前显示卡片的图片
+                        list.querySelectorAll('img.lazy').forEach(img => {
+                            if (!img._loaded) {
+                                // 如果图片未加载，确保src为defaultLogo
+                                if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+                                    img.src = img.dataset.default || "{{ $defaultLogo }}";
+                                }
+                                loadImage(img);
+                            }
+                        });
+                    } else {
+                        list.style.display = 'none';
+                    }
                 });
             });
         });
@@ -407,7 +391,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const subcat = targetTab.getAttribute('data-subcat');
             const parent = targetTab.closest('.category-block');
             parent.querySelectorAll('.row.card-list[data-subcat]').forEach(list => {
-                list.style.display = (list.getAttribute('data-subcat') === subcat) ? '' : 'none';
+                if (list.getAttribute('data-subcat') === subcat) {
+                    list.style.display = '';
+                    // 预加载当前显示卡片的图片
+                    list.querySelectorAll('img.lazy').forEach(img => {
+                        if (!img._loaded) {
+                            if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+                                img.src = img.dataset.default || "{{ $defaultLogo }}";
+                            }
+                            loadImage(img);
+                        }
+                    });
+                } else {
+                    list.style.display = 'none';
+                }
             });
         }
         const targetBlock = document.getElementById(hash);
@@ -436,154 +433,91 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 多级回退处理器
-
-    // 多级回退处理器
-    function multiFallback(img) {
-        // 优先保证 yandex 和 google favicon 顺序
-        let fallbacks = img.dataset.fallback ? img.dataset.fallback.split('||').map(s => s.trim()) : [];
-        const yandexIdx = fallbacks.findIndex(url => url.includes('favicon.yandex.net'));
-        const googleIdx = fallbacks.findIndex(url => url.includes('www.google.com/s2/favicons'));
-        let ordered = [];
-        if (yandexIdx !== -1) {
-            ordered.push(fallbacks[yandexIdx]);
-            fallbacks.splice(yandexIdx, 1);
-        }
-        if (googleIdx !== -1) {
-            const newGoogleIdx = fallbacks.findIndex(url => url.includes('www.google.com/s2/favicons'));
-            if (newGoogleIdx !== -1) {
-                ordered.push(fallbacks[newGoogleIdx]);
-                fallbacks.splice(newGoogleIdx, 1);
-            }
-        }
-        fallbacks = ordered.concat(fallbacks);
-    
-        let currentIndex = 0;
-        const tryNext = () => {
-            if (currentIndex < fallbacks.length) {
-                img.onerror = tryNext;
-                img.onload = () => {
-                    if (isTransparentImage(img)) {
-                        tryNext();
-                    }
-                };
-                img.src = fallbacks[currentIndex++].trim();
-            } else {
-                img.onerror = function() {
-                    img.onerror = null;
-                    img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAn8B9kQn2wAAAABJRU5ErkJggg==";
-                };
-                img.src = window.DEFAULT_LOGO;
-                img.classList.add('img-placeholder');
-            }
-        };
-        tryNext();
-    }
-
-    // 图片缓存与懒加载（优化版）
-    const cacheImage = (url, data) => {
-        try {
-            localStorage.setItem(url, data);
-        } catch (e) {
-            // localStorage 空间不足时忽略
-        }
-    };
-    const getCachedImage = (url) => {
-        return localStorage.getItem(url);
-    };
-    const loadImage = (img) => {
+    // 图片懒加载与缓存优化
+    function loadImage(img) {
+        if (img._loaded) return;
         const src = img.dataset.src;
-        if (!src) return;
-        const cachedImage = getCachedImage(src);
-        if (cachedImage) {
-            img.src = cachedImage;
-            img.removeAttribute('data-src');
-        } else {
+        if (!src) {
+            // 没有data-src，确保显示defaultLogo
+            if (img.dataset.default && img.src !== img.dataset.default) {
+                img.src = img.dataset.default;
+            }
+            return;
+        }
+        // 优先尝试缓存
+        let cached = false;
+        try {
+            const cachedData = localStorage.getItem(src);
+            if (cachedData) {
+                img.src = cachedData;
+                img._loaded = true;
+                img.removeAttribute('data-src');
+                cached = true;
+            }
+        } catch (e) {}
+        if (!cached) {
             img.src = src;
-            img.onload = () => {
-                // 不再限制图片格式，所有图片都缓存
+            img.onload = function() {
                 try {
-                    cacheImage(src, img.src);
-                } catch (e) {
-                    // localStorage 空间不足时忽略
-                }
+                    localStorage.setItem(src, img.src);
+                } catch (e) {}
+                img._loaded = true;
                 img.removeAttribute('data-src');
             };
-            img.addEventListener('error', function() {
-                // 回退时也尝试缓存 fallback 图片
-                multiFallbackWithCache(this);
-            });
+            img.onerror = function() {
+                multiFallback(img);
+            };
         }
-    };
+    }
 
-    // 回退机制优化：回退图片也尝试缓存
-    function multiFallbackWithCache(img) {
+    // 多级回退处理器，确保切换时也能快速 fallback
+    function multiFallback(img) {
         let fallbacks = img.dataset.fallback ? img.dataset.fallback.split('||').map(s => s.trim()) : [];
-        const yandexIdx = fallbacks.findIndex(url => url.includes('favicon.yandex.net'));
-        const googleIdx = fallbacks.findIndex(url => url.includes('www.google.com/s2/favicons'));
-        let ordered = [];
-        if (yandexIdx !== -1) {
-            ordered.push(fallbacks[yandexIdx]);
-            fallbacks.splice(yandexIdx, 1);
-        }
-        if (googleIdx !== -1) {
-            const newGoogleIdx = fallbacks.findIndex(url => url.includes('www.google.com/s2/favicons'));
-            if (newGoogleIdx !== -1) {
-                ordered.push(fallbacks[newGoogleIdx]);
-                fallbacks.splice(newGoogleIdx, 1);
-            }
-        }
-        fallbacks = ordered.concat(fallbacks);
-    
-        let currentIndex = 0;
-        const tryNext = () => {
-            if (currentIndex < fallbacks.length) {
-                const fallbackSrc = fallbacks[currentIndex++].trim();
+        let idx = 0;
+        function tryNext() {
+            if (idx < fallbacks.length) {
                 img.onerror = tryNext;
-                img.onload = () => {
-                    try {
-                        cacheImage(fallbackSrc, img.src);
-                    } catch (e) {}
-                    img.removeAttribute('data-src');
-                    if (isTransparentImage(img)) {
-                        tryNext();
-                    }
-                };
-                img.src = fallbackSrc;
+                img.src = fallbacks[idx++];
             } else {
-                img.onerror = function() {
-                    img.onerror = null;
-                    img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAn8B9kQn2wAAAABJRU5ErkJggg==";
-                };
-                img.src = window.DEFAULT_LOGO;
-                img.classList.add('img-placeholder');
+                img.onerror = null;
+                img.src = img.dataset.default || "{{ $defaultLogo }}";
             }
-        };
+        }
         tryNext();
     }
 
     // IntersectionObserver 懒加载
-    const lazyLoadImages = () => {
-        const lazyImages = document.querySelectorAll('.lazy[data-src]');
+    function lazyLoadImages() {
+        const lazyImages = document.querySelectorAll('.lazy[data-src]:not(._observed)');
         if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries, obs) => {
+            const observer = new window.IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
+                        // 确保未加载时显示defaultLogo
+                        if (!entry.target._loaded && (!entry.target.src || entry.target.src === '' || entry.target.src.endsWith('/') || entry.target.src.endsWith('about:blank'))) {
+                            entry.target.src = entry.target.dataset.default || "{{ $defaultLogo }}";
+                        }
                         loadImage(entry.target);
                         obs.unobserve(entry.target);
                     }
                 });
             }, { rootMargin: '100px' });
-            lazyImages.forEach(img => observer.observe(img));
+            lazyImages.forEach(img => {
+                observer.observe(img);
+                img.classList.add('_observed');
+            });
         } else {
-            // 不支持 IntersectionObserver 时降级为原有方式
+            // 不支持 IntersectionObserver 时降级
             lazyImages.forEach(img => {
                 if (img.getBoundingClientRect().top < window.innerHeight + 100 && img.dataset.src) {
+                    if (!img._loaded && (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank'))) {
+                        img.src = img.dataset.default || "{{ $defaultLogo }}";
+                    }
                     loadImage(img);
                 }
             });
         }
-    };
+    }
 
     // 展开所有页面块
     document.querySelectorAll('.page-content').forEach(page => {
@@ -592,8 +526,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 初始懒加载
     lazyLoadImages();
-    window.addEventListener('scroll', lazyLoadImages);
+    window.addEventListener('scroll', lazyLoadImages, {passive:true});
     window.addEventListener('resize', lazyLoadImages);
+
+    // 切换时预加载当前可见卡片图片
+    document.querySelectorAll('.row.card-list').forEach(list => {
+        if (list.style.display !== 'none') {
+            list.querySelectorAll('img.lazy').forEach(img => {
+                if (!img._loaded) {
+                    if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+                        img.src = img.dataset.default || "{{ $defaultLogo }}";
+                    }
+                    loadImage(img);
+                }
+            });
+        }
+    });
 });
 </script>
 <!-- 弹窗提醒结束 -->

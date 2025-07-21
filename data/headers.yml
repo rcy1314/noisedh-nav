@@ -9,27 +9,22 @@
 - item: 投稿
   icon: fa fa-paper-plane
   link: "./tougao/"
-
+  
 - item: 更新记录
   icon: fa fa-pencil-square-o
-  link: "./update/"  
+  link: "./update/"   
   
-- item: 链接检测记录
-  icon: fa fa-star
-  link: "./invalidlinks"
-
-- item: Nav-Manage说明
+- item: 开源仓库
+  icon: fa fa-github
+  link: "https://github.com/rcy1314/noisedh-nav"
+  
+- item: 扩展使用
   icon: fa fa-coffee
-  link: "./nav/"
-
-- item: 程序下载
-  icon: fa fa-gift
-  link: ""
-  list:
-    - name: ⭐win平台
-      url: "https://noise.lanzoul.com/iWUOJ144fp1g"
-    - name: ⭐mac平台
-      url: "https://noise.lanzoul.com/ibM7u144ftih"
+  link: "https://github.com/rcy1314/nav-manage"
+  
+- item: 订阅收录更新
+  icon: fa fa-rss-square
+  link: "https://www.noisedh.cn/rss.xml"
 
 - item: 更多
   icon: fa fa-map-signs
