@@ -20,9 +20,56 @@
 
 ------
 
+![截图1](https://s2.loli.net/2025/07/21/8HwXBNfmVshqWzb.png)
+
+![截图2](https://s2.loli.net/2025/07/21/o5ahZ1STbWg7HGd.png)
+
 它是在WebStack-Hugo二次开发下的软编码改造实现，可以纯静态化部署，使用前请查看如下说明：
 
-待补充完善...
+仓库给出的是直接hugo整站的代码，包含主题文件，所以你可以直接使用hugo命令来生成导航网站（前提是已安装过hugo）
+
+安装Hugo：https://hugo.opendocs.io/installation/
+
+## 测试安装 
+
+在安装Hugo之后，通过以下命令来测试安装是否成功：
+
+```sh
+hugo version
+```
+
+你应该能看到类似如下的输出：
+
+```text
+hugo v0.105.0-0e3b42b4a9bdeb4d866210819fc6ddcf51582ffa+extended linux/amd64 BuildDate=2022-10-28T12:29:05Z VendorInfo=snap:0.105.0
+```
+
+## 显示可用命令 
+
+要查看可用命令和标志的列表：
+
+```sh
+hugo help
+```
+
+要获取关于子命令的帮助，请使用`--help`标志。例如：
+
+```sh
+hugo server --help
+```
+
+## 构建站点 
+
+要构建站点，请进入项目目录并运行以下命令：
+
+```sh
+hugo
+```
+
+## 更新
+
+- 优化图标加载逻辑，同时增加了https://favicon.im/zh/ 自动读取网站图标
+- 增加页面强制刷新的提示弹窗和相关按钮
 
 ## 配置
 
@@ -233,6 +280,19 @@ endpoints = ["https://hot.noisework.cn", "https://hot.noisedh.link"]
   iframeLoading = "lazy"
 ```
 
+网站分类及数据文件-位于data文件夹下
+
+```
+content
+├── friendlinks.yml # 友情链接
+├── headers.yml     # 顶部导航
+└── webstack.yml    # 网址列表
+```
+
+格式请直接打开文件查看
+
+content文件夹为页面文档夹，默认样式文件为`themes/noisedh-nav/layouts/_default/single.html`
+
 ## 后端API
 
 配置请访问：https://github.com/rcy1314/nav-manage
@@ -251,15 +311,15 @@ partials主模版：component_header为头部组件模版，content_footer为网
 
 ## 组件配置
 
-说说页面
+### 说说页面
 
 配置：https://github.com/rcy1314/echo-noise
 
-热榜组件
+### 热榜组件
 
 配置：hot.css+hot.js 配置可在config.toml设置api，如果你想要更多热榜，请在hot.js增加相关热榜接口，参考：https://docs.noisework.cn/guide/index/hotlist
 
-头部自定义页
+### 头部自定义页
 
 除了默认页面和热榜页面，其它所有 tab 都可以通过下面示例增加（支持内嵌及写入html）
 
@@ -273,7 +333,28 @@ partials主模版：component_header为头部组件模版，content_footer为网
 { key = "custom", icon = "fa-code", label = "自定义", html = "<div style=\"color:white; text-align:center;\">这里是自定义HTML内容</div>" },
 ```
 
-------
+### rss聚合阅读组件
 
-待补充...
+仓库地址：https://github.com/rcy1314/rss-server-ag
 
+- 支持docker一键部署，支持fly.io等平台部署
+
+```
+docker run -d \
+  --name rss-server-ag \
+  -p 3000:3000 \
+  -e PORT=3000 \
+  -e RSS_URLS="https://example.com/rss1.xml,https://example.com/rss2.xml" \
+  -e ADMIN_API_KEY=your_admin_key \
+  noise233/rss-server-ag
+```
+
+部署成功后请在主题文件夹noisedh-nav下static文件夹的rssfollow.html中填入你的路由地址
+
+281行处
+
+```
+const response = await fetch('https://example.com/rss', {
+                    cache: 'force-cache'
+                });
+```
