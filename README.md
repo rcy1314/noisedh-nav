@@ -283,7 +283,7 @@ endpoints = ["https://hot.noisework.cn", "https://hot.noisedh.link"]
 网站分类及数据文件-位于data文件夹下
 
 ```
-content
+data
 ├── friendlinks.yml # 友情链接
 ├── headers.yml     # 顶部导航
 └── webstack.yml    # 网址列表
