@@ -155,12 +155,12 @@
     <link rel="preload" as="image" href="{{ $defaultLogo }}">
 
     {{ range $i, $cat := .Site.Data.webstack }}
-        <div class="category-block mb-4" id="{{ if $cat.list }}{{ range first 1 $cat.list }}{{ md5 .term }}{{ end }}{{ else }}{{ md5 $cat.taxonomy }}{{ end }}">
+        <div class="category-block mb-4" id="{{ if (and (isset $cat "list") (gt (len (default (slice) $cat.list)) 0)) }}{{ range first 1 $cat.list }}{{ md5 .term }}{{ end }}{{ else }}{{ md5 $cat.taxonomy }}{{ end }}">
             <div class="category-title">
                 {{ if $cat.icon }}<i class="{{ $cat.icon }} icon-fw icon-lg"></i>{{ end }}
                 {{ $cat.taxonomy }}
             </div>
-            {{ if and $cat.list (gt (len $cat.list) 1) }}
+            {{ if and (isset $cat "list") (gt (len (default (slice) $cat.list)) 1) }}
                 <div class="subcat-tabs">
                     {{ range $j, $sub := $cat.list }}
                         <button class="subcat-tab{{ if eq $j 0 }} active{{ end }}" data-cat="cat{{ $i }}" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 $sub.term }}">{{ $sub.term }}</button>
@@ -212,7 +212,7 @@
                         {{ end }}
                     </div>
                 {{ end }}
-            {{ else if and $cat.list (eq (len $cat.list) 1) }}
+            {{ else if and (isset $cat "list") (eq (len (default (slice) $cat.list)) 1) }}
                 {{ range $j, $sub := $cat.list }}
                     <div class="row card-list">
                         {{ range $sub.links }}
