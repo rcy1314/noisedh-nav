@@ -77,6 +77,8 @@ hugo
 
 默认tag页面、音乐组件、广告位组件、seo设置、右下角折叠菜单、头部导航tag页自定义、公告组件、热榜组件、b站视频收藏组件
 
+示例数据：请自行修改
+
 ```
 baseURL = "https://www.noisedh.cn"
 languageCode = "zh-CN"
@@ -159,7 +161,7 @@ relativeURLs = true
   toggleMenu = [
   { url = "https://www.noisework.cn/lianxi/weixin.png", icon = "far fa-comment-dots", title = "联系我", target = "_blank" },
   { url = "./invalidlinks/", icon = "fa fa-question-circle", title = "失效检测记录", target = "_blank" },
-  { url = "https://extension.noisework.cn/api/export-bookmarks", icon = "fa fa-download", title = "导出为书签文件", target = "_blank" }
+  { url = "https://example.com/api/export-bookmarks", icon = "fa fa-download", title = "导出为书签文件", target = "_blank" }
 ]
 # 头部tab导航配置
 [params.header]
@@ -185,9 +187,9 @@ gameUrl = "https://www.noisework.cn/e/fcgame/index.html"
 
 
 # 头部收录通知路由recentSitesApi、网址统计路由statisticsApi、后端服务地址serverUrl、数据文件路径filePath
-recentSitesApi = "https://extension.noisework.cn/api/notifications"
-statisticsApi = "https://extension.noisework.cn/api/statistics"
-serverUrl = "https://extension.noisework.cn"
+recentSitesApi = "https://example.com/api/notifications"
+statisticsApi = "https://example.com/api/statistics"
+serverUrl = "https://example.com"
 filePath = "/www/wwwroot/www.noisedh.cn/data/webstack.yml"
 
 # 广告位配置
@@ -225,7 +227,7 @@ announcements = [
 
 # 热榜卡片配置
 [params.hotApi]
-endpoints = ["https://hot.noisework.cn", "https://hot.noisedh.link"]
+endpoints = ["https://hot.noisework.cn", "https://example.com"]
 [params.header.hotlist]
   [[params.header.hotlist.items]]
     id = "zhihu"
@@ -292,6 +294,10 @@ data
 格式请直接打开文件查看
 
 content文件夹为页面文档夹，默认样式文件为`themes/noisedh-nav/layouts/_default/single.html`
+
+链接跳转页为`themes/noisedh-nav/themes/noisedh-nav/static/redirect.html`
+
+可在186行加入可跳转的网址白名单和黑名单
 
 ## 后端API
 

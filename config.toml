@@ -79,7 +79,7 @@ relativeURLs = true
   toggleMenu = [
   { url = "https://www.noisework.cn/lianxi/weixin.png", icon = "far fa-comment-dots", title = "联系我", target = "_blank" },
   { url = "./invalidlinks/", icon = "fa fa-question-circle", title = "失效检测记录", target = "_blank" },
-  { url = "https://extension.noisework.cn/api/export-bookmarks", icon = "fa fa-download", title = "导出为书签文件", target = "_blank" }
+  { url = "https://example.com/api/export-bookmarks", icon = "fa fa-download", title = "导出为书签文件", target = "_blank" }
 ]
 # 头部tab导航配置
 [params.header]
@@ -105,9 +105,9 @@ gameUrl = "https://www.noisework.cn/e/fcgame/index.html"
 
 
 # 头部收录通知路由recentSitesApi、网址统计路由statisticsApi、后端服务地址serverUrl、数据文件路径filePath
-recentSitesApi = "https://extension.noisework.cn/api/notifications"
-statisticsApi = "https://extension.noisework.cn/api/statistics"
-serverUrl = "https://extension.noisework.cn"
+recentSitesApi = "https://example.com/api/notifications"
+statisticsApi = "https://example.com/api/statistics"
+serverUrl = "https://example.com"
 filePath = "/www/wwwroot/www.noisedh.cn/data/webstack.yml"
 
 # 广告位配置
@@ -145,7 +145,7 @@ announcements = [
 
 # 热榜卡片配置
 [params.hotApi]
-endpoints = ["https://hot.noisework.cn", "https://hot.noisedh.link"]
+endpoints = ["https://hot.noisework.cn", "https://example.com"]
 [params.header.hotlist]
   [[params.header.hotlist.items]]
     id = "zhihu"
