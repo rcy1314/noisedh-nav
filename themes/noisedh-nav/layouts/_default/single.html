@@ -10,9 +10,11 @@
     <meta name="description" content="{{ $.Site.Title }}">
     <link rel="icon" href="../assets/images/favicon4.png">
     
-    <link rel="stylesheet" href="https://cdn.staticfile.org/waline/2.13.0/waline.css">
+    <link rel="preload" href="https://cdn.staticfile.org/waline/2.13.0/waline.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.staticfile.org/waline/2.13.0/waline.css"></noscript>
     <!-- 添加灯箱效果CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"></noscript>
 
     <style>
         body,
@@ -79,14 +81,18 @@
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            width: calc(100% + 40px);
+            height: calc(100% + 40px);
             background-image: inherit;
             background-size: cover;
+            background-position: center;
             filter: blur(20px);
             z-index: -1;
+            transform: scale(1.1);
         }
 
         .container {
@@ -162,12 +168,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(25, 24, 24, 0.207);
+            background-color: rgba(25, 24, 24, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.2s ease;
+            backdrop-filter: blur(10px);
         }
 
         .loader .spinner {
@@ -257,6 +264,9 @@
         </div> <!-- .page-container -->
     </div> <!-- .container -->
 
+    <!-- 预加载关键脚本 -->
+    <link rel="preload" href="../assets/js/jquery-1.11.1.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" as="script">
     <!-- 将 jQuery 和 Fancybox 脚本放在 body 底部，并使用 defer -->
     <script src="../assets/js/jquery-1.11.1.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
@@ -293,21 +303,39 @@
 
         // 修正：确保函数定义之间有正确的空格或换行
         function setBackgroundImage() {
-            // 修正：移除 backgrounds 和 [ 之间的多余空格
+            // 优化：使用缓存和预加载提升性能
             const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            
+            // 检查是否已缓存
+            const cachedBg = localStorage.getItem('cachedBackground');
+            if (cachedBg && backgrounds.includes(cachedBg)) {
+                document.body.style.backgroundImage = `url("${cachedBg}")`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                checkBackgroundColor();
+                hideLoader();
+                return;
+            }
+            
             const img = new Image();
             img.onload = function() {
                 document.body.style.backgroundImage = `url("${randomBackground}")`;
                 document.body.style.backgroundSize = 'cover';
-                checkBackgroundColor(); // 背景设置后再检查
-                hideLoader(); // 图片加载成功后隐藏 loader
+                document.body.style.backgroundPosition = 'center';
+                // 缓存成功加载的背景
+                try {
+                    localStorage.setItem('cachedBackground', randomBackground);
+                } catch(e) {
+                    console.warn('无法缓存背景图片:', e);
+                }
+                checkBackgroundColor();
+                hideLoader();
             };
             img.onerror = function() {
-                // 图片加载失败，也隐藏 loader，避免一直显示
                 console.error("Failed to load background image:", randomBackground);
                 hideLoader();
-            }
-            img.src = randomBackground; // 开始加载选中的图片
+            };
+            img.src = randomBackground;
         }
 
         function toggleDarkMode() {
@@ -335,8 +363,14 @@
             }
         }
 
-        // --- DOMContentLoaded 替代部分 window.onload ---
+        // --- 优化的初始化逻辑 ---
         document.addEventListener('DOMContentLoaded', function() {
+            // 立即隐藏加载器，提升感知性能
+            const loader = document.querySelector('.loader');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+            
             // 检查 localStorage 中保存的主题偏好
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
@@ -347,22 +381,27 @@
                  document.body.classList.remove('dark-mode');
                  const toggle = document.getElementById('dark-mode-toggle');
                  if (toggle) toggle.checked = false;
-            } // 如果没有保存，则使用默认（亮色）或 CSS 媒体查询 (prefers-color-scheme)
+            }
 
-            // 尽早设置背景图片
-            setBackgroundImage();
+            // 使用 requestAnimationFrame 优化背景设置
+            requestAnimationFrame(() => {
+                setBackgroundImage();
+            });
 
             // 为所有外部链接添加 target="_blank"
             document.querySelectorAll('.panel-body a[href^="http"], .panel-body a[href^="//"]').forEach(link => {
-                 // 确保只修改内容区域的链接，避免修改导航等
                  if (!link.target || link.target.toLowerCase() !== '_blank') {
                     link.setAttribute('target', '_blank');
                     link.setAttribute('rel', 'noopener noreferrer');
                  }
             });
 
-            // 检查背景平铺逻辑（初始检查）
-            setTimeout(checkBackgroundColor, 100); // 延迟检查以获得更准确的 scrollHeight
+            // 使用 requestIdleCallback 或 setTimeout 进行非关键操作
+            if (window.requestIdleCallback) {
+                requestIdleCallback(() => checkBackgroundColor());
+            } else {
+                setTimeout(checkBackgroundColor, 50);
+            }
         });
 
         // --- window.onload 保留需要完整加载的逻辑 ---
