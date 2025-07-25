@@ -354,11 +354,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         list.style.display = '';
                         // 预加载当前显示卡片的图片
                         list.querySelectorAll('img.lazy').forEach(img => {
+                            const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+                            // 确保始终显示defaultLogo，不允许空白
+                            if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+                                img.src = defaultLogo;
+                            }
                             if (!img._loaded) {
-                                // 如果图片未加载，确保src为defaultLogo
-                                if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
-                                    img.src = img.dataset.default || "{{ $defaultLogo }}";
-                                }
                                 loadImage(img);
                             }
                         });
@@ -395,10 +396,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     list.style.display = '';
                     // 预加载当前显示卡片的图片
                     list.querySelectorAll('img.lazy').forEach(img => {
+                        const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+                        // 确保始终显示defaultLogo，不允许空白
+                        if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+                            img.src = defaultLogo;
+                        }
                         if (!img._loaded) {
-                            if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
-                                img.src = img.dataset.default || "{{ $defaultLogo }}";
-                            }
                             loadImage(img);
                         }
                     });
@@ -436,14 +439,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // 图片懒加载与缓存优化
     function loadImage(img) {
         if (img._loaded) return;
+        
+        // 确保始终有defaultLogo作为src
+        const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+        if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+            img.src = defaultLogo;
+        }
+        
         const src = img.dataset.src;
         if (!src) {
             // 没有data-src，确保显示defaultLogo
-            if (img.dataset.default && img.src !== img.dataset.default) {
-                img.src = img.dataset.default;
+            if (img.src !== defaultLogo) {
+                img.src = defaultLogo;
             }
             return;
         }
+        
         // 优先尝试缓存
         let cached = false;
         try {
@@ -455,18 +466,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 cached = true;
             }
         } catch (e) {}
+        
         if (!cached) {
-            img.src = src;
-            img.onload = function() {
+            // 创建新的Image对象来预加载，避免显示空白
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                img.src = src;
                 try {
-                    localStorage.setItem(src, img.src);
+                    localStorage.setItem(src, src);
                 } catch (e) {}
                 img._loaded = true;
                 img.removeAttribute('data-src');
             };
-            img.onerror = function() {
+            tempImg.onerror = function() {
                 multiFallback(img);
             };
+            tempImg.src = src;
         }
     }
 
@@ -474,18 +489,39 @@ document.addEventListener('DOMContentLoaded', function() {
     function multiFallback(img) {
         let fallbacks = img.dataset.fallback ? img.dataset.fallback.split('||').map(s => s.trim()) : [];
         let idx = 0;
+        const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+        
         function tryNext() {
             if (idx < fallbacks.length) {
-                img.onerror = tryNext;
-                img.src = fallbacks[idx++];
+                // 使用临时Image对象测试，避免显示空白
+                const tempImg = new Image();
+                tempImg.onload = function() {
+                    img.src = fallbacks[idx];
+                };
+                tempImg.onerror = function() {
+                    idx++;
+                    tryNext();
+                };
+                tempImg.src = fallbacks[idx];
             } else {
-                img.onerror = null;
-                img.src = img.dataset.default || "{{ $defaultLogo }}";
+                // 所有fallback都失败，使用defaultLogo
+                img.src = defaultLogo;
+                img._loaded = true;
             }
         }
         tryNext();
     }
 
+    // 确保所有图片都有defaultLogo作为初始src
+    function ensureDefaultLogo() {
+        document.querySelectorAll('img.lazy').forEach(img => {
+            const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+            if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+                img.src = defaultLogo;
+            }
+        });
+    }
+    
     // IntersectionObserver 懒加载
     function lazyLoadImages() {
         const lazyImages = document.querySelectorAll('.lazy[data-src]:not(._observed)');
@@ -494,8 +530,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         // 确保未加载时显示defaultLogo
+                        const defaultLogo = entry.target.dataset.default || "{{ $defaultLogo }}";
                         if (!entry.target._loaded && (!entry.target.src || entry.target.src === '' || entry.target.src.endsWith('/') || entry.target.src.endsWith('about:blank'))) {
-                            entry.target.src = entry.target.dataset.default || "{{ $defaultLogo }}";
+                            entry.target.src = defaultLogo;
                         }
                         loadImage(entry.target);
                         obs.unobserve(entry.target);
@@ -503,6 +540,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }, { rootMargin: '100px' });
             lazyImages.forEach(img => {
+                // 确保观察前就有defaultLogo
+                const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+                if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+                    img.src = defaultLogo;
+                }
                 observer.observe(img);
                 img.classList.add('_observed');
             });
@@ -510,8 +552,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // 不支持 IntersectionObserver 时降级
             lazyImages.forEach(img => {
                 if (img.getBoundingClientRect().top < window.innerHeight + 100 && img.dataset.src) {
+                    const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
                     if (!img._loaded && (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank'))) {
-                        img.src = img.dataset.default || "{{ $defaultLogo }}";
+                        img.src = defaultLogo;
                     }
                     loadImage(img);
                 }
@@ -524,6 +567,9 @@ document.addEventListener('DOMContentLoaded', function() {
         page.style.display = 'block';
     });
 
+    // 确保所有图片都有defaultLogo
+    ensureDefaultLogo();
+    
     // 初始懒加载
     lazyLoadImages();
     window.addEventListener('scroll', lazyLoadImages, {passive:true});
@@ -533,10 +579,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.row.card-list').forEach(list => {
         if (list.style.display !== 'none') {
             list.querySelectorAll('img.lazy').forEach(img => {
+                const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+                // 确保始终显示defaultLogo，不允许空白
+                if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+                    img.src = defaultLogo;
+                }
                 if (!img._loaded) {
-                    if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
-                        img.src = img.dataset.default || "{{ $defaultLogo }}";
-                    }
                     loadImage(img);
                 }
             });
