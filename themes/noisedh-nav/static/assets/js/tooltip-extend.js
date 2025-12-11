@@ -45,10 +45,17 @@ function trigger_resizable() {
 		$('[data-toggle="tooltip"]').each(function (i, el) {
 			var $this = $(el),
 				placement = $this.data('placement') || 'top',
-				trigger = $this.data('trigger') || 'hover';
+				trigger = $this.data('trigger') || 'hover',
+				delay = $this.data('delay') || { show: 0, hide: 0 },
+				html = !!$this.data('html'),
+				animation = $this.data('animation');
 			$this.tooltip({
 				placement: placement,
-				trigger: trigger
+				trigger: trigger,
+				delay: delay,
+				html: html,
+				animation: typeof animation === 'undefined' ? false : !!animation,
+				container: 'body'
 			});
 		});
 		// 侧边栏菜单收起/展开

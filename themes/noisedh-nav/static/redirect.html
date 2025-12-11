@@ -18,6 +18,7 @@
             --main-card-border: #e3e8f7;
             --main-card-background: #fff;
             --main-font-color: #363636;
+            --main-shadow: 0 8px 24px rgba(0,0,0,0.05);
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -25,6 +26,7 @@
                 --main-card-border: #3d3d3f;
                 --main-card-background: #1b1c20;
                 --main-font-color: #f7f7fa;
+                --main-shadow: 0 8px 24px rgba(0,0,0,0.2);
             }
         }
         a {
@@ -48,11 +50,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-bottom: 20px;
         }
         header .logo img {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 20px;
+            width: 140px;
+            height: 140px;
+            margin-bottom: 24px;
+            transition: transform 0.3s ease;
+        }
+        header .logo img:hover {
+            transform: scale(1.05);
         }
         header .title {
             display: flex;
@@ -60,37 +67,46 @@
             align-items: center;
         }
         header .title .site-name {
-            font-size: 30px;
+            font-size: 32px;
             font-weight: bold;
+            letter-spacing: 1px;
         }
         header .title .site-tip {
             font-size: 20px;
-            margin-top: 8px;
-            opacity: 0.6;
+            margin-top: 10px;
+            opacity: 0.7;
         }
         main {
-            margin: 30px 20px 60px;
-            border-radius: 16px;
-            padding: 30px;
+            margin: 20px 20px 60px;
+            border-radius: 20px;
+            padding: 35px;
             max-width: 768px;
             min-width: 380px;
             background-color: var(--main-card-background);
             border: 1px solid var(--main-card-border);
+            box-shadow: var(--main-shadow);
+            transition: transform 0.3s ease;
+        }
+        main:hover {
+            transform: translateY(-2px);
         }
         main .tip {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
-            opacity: 0.4;
+            opacity: 0.5;
+            font-size: 15px;
         }
         main #url {
             display: block;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 14px 20px;
+            border-radius: 12px;
             width: 100%;
             text-align: center;
             border: 1px solid var(--main-card-border);
             background-color: var(--main-site-background);
+            font-size: 14px;
+            word-break: break-all;
         }
         main #site-info {
             display: inline-flex;
@@ -98,8 +114,8 @@
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            margin-top: 20px;
-            font-size: 18px;
+            margin-top: 24px;
+            font-size: 16px;
         }
         main #jump-content.warn {
             color: #286d9d;
@@ -114,17 +130,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 44px;
-            width: 160px;
-            margin: 30px auto 0;
-            border-radius: 8px;
+            height: 46px;
+            width: 180px;
+            margin: 35px auto 0;
+            border-radius: 12px;
             color: var(--main-font-color);
             background-color: var(--main-card-border);
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
             cursor: pointer;
+            font-weight: 500;
         }
         main #jump-button:hover {
             background-color: var(--main-site-background);
+            transform: translateY(-2px);
         }
         footer {
             width: 100%;
@@ -133,7 +151,7 @@
             bottom: 0;
             margin: 20px;
             opacity: 0.6;
-            font-size: 15px;
+            font-size: 14px;
         }
         footer .icp::before {
             content: "|";
@@ -142,7 +160,6 @@
             opacity: 0.2;
         }
     </style>
-
 </head>
 <body>
     <header>

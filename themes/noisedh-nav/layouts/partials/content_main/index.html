@@ -159,6 +159,38 @@
             background: #4a89f7;
             color: #fff;
         }
+        :root {
+            --tooltip-bg: rgba(255, 255, 255, 0.96);
+            --tooltip-fg: #222;
+            --tooltip-border: rgba(0, 0, 0, 0.08);
+        }
+        body.io-black-mode {
+            --tooltip-bg: rgba(18, 18, 20, 0.92);
+            --tooltip-fg: #fff;
+            --tooltip-border: rgba(255, 255, 255, 0.12);
+        }
+        a.card.no-c.mb-4 { position: relative; overflow: visible; }
+        a.card.no-c.mb-4[data-desc]::after { display: none; }
+        .instant-tooltip {
+            position: fixed;
+            background: var(--tooltip-bg);
+            color: var(--tooltip-fg);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: normal;
+            word-break: break-word;
+            text-align: left;
+            max-width: min(72vw, 640px);
+            max-height: 40vh;
+            overflow: auto;
+            border: 1px solid var(--tooltip-border);
+            z-index: 2147483647;
+            pointer-events: none;
+            display: none;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
     </style>
     {{ $defaultLogo := $.Site.Params.defaultLogo }}
     {{ $logosPath := $.Site.Params.logosPath }}
@@ -186,9 +218,7 @@
                                 <a href="{{ if $link.qrcode }}javascript:{{ else }}redirect.html?url={{ $link.url | safeURL }}{{ end }}"
                                    target="{{ if $link.qrcode }}_self{{ else }}_blank{{ end }}"
                                    class="card no-c mb-4"
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   title="{{ if $link.qrcode }}<img src='{{ $logosPath }}/{{ $link.qrcode }}?width=128' width='128'>{{ else }}{{ $link.description }}{{ end }}">
+                                   data-desc="{{ $link.description }}">
                                     <div class="card-body">
                                         <div class="url-content d-flex align-items-center">
                                             <div class="url-img mr-2 d-flex align-items-center justify-content-center">
@@ -213,6 +243,7 @@
                                    class="togo text-center text-muted is-views"
                                    data-toggle="tooltip"
                                    data-placement="right"
+                                   data-delay='{"show":0,"hide":0}'
                                    title="直达" rel="nofollow"
                                    target="_blank">
                                     <i class="iconfont icon-goto"></i>
@@ -233,9 +264,7 @@
                                 <a href="{{ if .qrcode }}javascript:{{ else }}redirect.html?url={{ .url | safeURL }}{{ end }}"
                                    target="{{ if .qrcode }}_self{{ else }}_blank{{ end }}"
                                    class="card no-c mb-4"
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   title="{{ if .qrcode }}<img src='{{ $logosPath }}/{{ .qrcode }}?width=128' width='128'>{{ else }}{{ .description }}{{ end }}">
+                                   data-desc="{{ .description }}">
                                     <div class="card-body">
                                         <div class="url-content d-flex align-items-center">
                                             <div class="url-img mr-2 d-flex align-items-center justify-content-center">
@@ -260,6 +289,7 @@
                                    class="togo text-center text-muted is-views"
                                    data-toggle="tooltip"
                                    data-placement="right"
+                                   data-delay='{"show":0,"hide":0}'
                                    title="直达" rel="nofollow"
                                    target="_blank">
                                     <i class="iconfont icon-goto"></i>
@@ -279,9 +309,7 @@
                             <a href="{{ if .qrcode }}javascript:{{ else }}redirect.html?url={{ .url | safeURL }}{{ end }}"
                                target="{{ if .qrcode }}_self{{ else }}_blank{{ end }}"
                                class="card no-c mb-4"
-                               data-toggle="tooltip"
-                               data-placement="bottom"
-                               title="{{ if .qrcode }}<img src='{{ $logosPath }}/{{ .qrcode }}?width=128' width='128'>{{ else }}{{ .description }}{{ end }}">
+                               data-desc="{{ .description }}">
                                 <div class="card-body">
                                     <div class="url-content d-flex align-items-center">
                                         <div class="url-img mr-2 d-flex align-items-center justify-content-center">
@@ -306,6 +334,7 @@
                                class="togo text-center text-muted is-views"
                                data-toggle="tooltip"
                                data-placement="right"
+                               data-delay='{"show":0,"hide":0}'
                                title="直达" rel="nofollow"
                                target="_blank">
                                 <i class="iconfont icon-goto"></i>
@@ -590,7 +619,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (list.style.display !== 'none') {
             list.querySelectorAll('img.lazy').forEach(img => {
                 const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
-                // 确保始终显示defaultLogo，不允许空白
                 if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
                     img.src = defaultLogo;
                 }
@@ -600,6 +628,52 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    (function(){
+        const pad = 4;
+        const gap = 4;
+        const tooltip = document.createElement('div');
+        tooltip.className = 'instant-tooltip';
+        document.body.appendChild(tooltip);
+        let currentAnchor = null;
+        function position(anchor){
+            if (!anchor || tooltip.style.display !== 'block') return;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const a = anchor.getBoundingClientRect();
+            const t = tooltip.getBoundingClientRect();
+            let yBottom = a.bottom + gap;
+            let yTop = a.top - t.height - gap;
+            let useBottom = yBottom + t.height + pad <= vh || yTop < pad ? true : false;
+            let y = useBottom ? yBottom : yTop;
+            let x = a.left + (a.width - t.width) / 2;
+            if (x < pad) x = pad;
+            if (x + t.width + pad > vw) x = vw - t.width - pad;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = Math.max(pad, y) + 'px';
+        }
+        function show(anchor){
+            const text = anchor.getAttribute('data-desc') || '';
+            tooltip.textContent = text;
+            tooltip.style.display = text ? 'block' : 'none';
+            currentAnchor = anchor;
+            void tooltip.offsetWidth;
+            position(anchor);
+            window.addEventListener('resize', onChange, { passive: true });
+            window.addEventListener('scroll', onChange, { passive: true });
+        }
+        function hide(){
+            tooltip.style.display = 'none';
+            window.removeEventListener('resize', onChange);
+            window.removeEventListener('scroll', onChange);
+            currentAnchor = null;
+        }
+        function onChange(){ if (currentAnchor) position(currentAnchor); }
+        document.querySelectorAll('a.card.no-c.mb-4[data-desc]').forEach(a => {
+            a.addEventListener('mouseenter', () => show(a));
+            a.addEventListener('mouseleave', hide);
+        });
+    })();
 });
 </script>
 <!-- 弹窗提醒结束 -->

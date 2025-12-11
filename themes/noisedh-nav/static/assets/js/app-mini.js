@@ -206,7 +206,20 @@ $(function() {
                 if (response.trim()) {
                     const $url = $(response);
                     $box.html($url);
-                    if (isPC()) $url.find('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    if (isPC()) {
+                        $url.find('[data-toggle="tooltip"]').each(function(){
+                            var $t = $(this);
+                            var placement = $t.data('placement') || 'top';
+                            var delay = $t.data('delay') || { show: 0, hide: 0 };
+                            $t.tooltip({
+                                trigger: 'hover',
+                                placement: placement,
+                                delay: delay,
+                                animation: false,
+                                container: 'body'
+                            });
+                        });
+                    }
                 }
                 $this.removeClass('disabled');
             }).fail(function() {

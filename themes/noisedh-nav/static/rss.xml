@@ -11,315 +11,323 @@
     </image>
     
         <item>
-            <title>Duckfolio</title>
-            <link>https://github.com/Yorlg/Duckfolio</link>
-            <description>一个简洁、现代、有趣的个人主页模板</description>
-            <guid>https://github.com/Yorlg/Duckfolio</guid>
-            <pubDate>2025/5/8 20:08:18</pubDate>
+            <title>RapidChart</title>
+            <link>https://www.rapidcharts.ai/</link>
+            <description>使用 AI 立即创建专业的 UML 图。从简单的文本描述生成类图、ER 图等。快速、直观且功能强大。</description>
+            <guid>https://www.rapidcharts.ai/</guid>
+            <pubDate>2025/7/19 20:50:56</pubDate>
         </item>
     
         <item>
-            <title>聚合数据</title>
-            <link>https://www.juhe.cn/</link>
-            <description>聚合数据为天聚地合(股票代码: 2479.HK )旗下品牌,是国内领先的综合数据服务平台,以严选安全数据源为核心优势,为互联网企业提供短信服务,身份核验,银行卡核验,企业信息核验等热门API数据接口。天聚地合(苏州)科技有限公司作为AI数据服务商,致力于通过隐私计算,区块链,AI大模型等数据技术,为企业和政府机构提供AI数据及政务AI解决方案,为数字经济发展注入新动能。</description>
-            <guid>https://www.juhe.cn/</guid>
-            <pubDate>2025/5/8 20:06:47</pubDate>
+            <title>Untitled UI</title>
+            <link>https://www.untitledui.com/</link>
+            <description>Untitled UI 是世界上最大的 Figma UI 工具包和 React 组件库。快速启动任何项目，提供设计和开发所需的一切。</description>
+            <guid>https://www.untitledui.com/</guid>
+            <pubDate>2025/7/19 20:48:18</pubDate>
         </item>
     
         <item>
-            <title>ChatCopilot</title>
-            <link>https://github.com/lw396/ChatCopilot</link>
-            <description>ChatCopilot 是一款用 golang 实现的获取微信聊天记录并支持实时存储到数据库的工具，支持在 MacOS 上运行</description>
-            <guid>https://github.com/lw396/ChatCopilot</guid>
-            <pubDate>2025/5/8 20:03:52</pubDate>
+            <title>Grabcube</title>
+            <link>https://www.grabcube.ai/zh-CN</link>
+            <description>Grabcube 帮助您从 YouTube、Bilibili、Facebook、X、Twitter 等平台下载视频，将语音转换为文字，将字幕翻译成多种语言并播放 — 非常适合内容创作者、学习者和专业人士。</description>
+            <guid>https://www.grabcube.ai/zh-CN</guid>
+            <pubDate>2025/7/19 20:46:29</pubDate>
         </item>
     
         <item>
-            <title>XYBotV2</title>
-            <link>https://github.com/HenryXiaoYang/XYBotV2</link>
-            <description>🤖 功能丰富的微信机器人框架 | AI对话、对接Dify、积分系统、游戏互动、每日新闻、天气查询 | 非Hook非Web实现 | 支持 Windows✅ Linux✅ MacOS✅ | 全新架构解决XYBot第一代痛点！</description>
-            <guid>https://github.com/HenryXiaoYang/XYBotV2</guid>
-            <pubDate>2025/5/8 20:02:25</pubDate>
+            <title>MARS AI</title>
+            <link>https://marsai.site/zh</link>
+            <description>MARS AI提供的免费AI视频生成器和图像生成器工具。通过文本或图像创建专业视频和图像。使用我们强大的AI技术，将您的创意转化为令人惊叹的视觉内容。无需技术技能。</description>
+            <guid>https://marsai.site/zh</guid>
+            <pubDate>2025/7/19 20:44:57</pubDate>
         </item>
     
         <item>
-            <title>BugPk-Api</title>
-            <link>https://api.bugpk.com/</link>
-            <description>BugPk-API，致力于为用户提供稳定、快速的免费API数据接口服务。</description>
-            <guid>https://api.bugpk.com/</guid>
-            <pubDate>2025/5/8 19:59:01</pubDate>
+            <title>简易教程</title>
+            <link>https://jyjc.cloudns.org/</link>
+            <description>用心做好每一期教程！</description>
+            <guid>https://jyjc.cloudns.org/</guid>
+            <pubDate>2025/7/19 19:40:13</pubDate>
         </item>
     
         <item>
-            <title>FUSE</title>
-            <link>https://jayjd.github.io/</link>
-            <description>聚合直播(FUSE),一站式观看虎牙/抖音/快手/B站/斗鱼/YY等直播平台,支持全平台设备,让直播观看更简单</description>
-            <guid>https://jayjd.github.io/</guid>
-            <pubDate>2025/5/8 19:57:42</pubDate>
+            <title>SZ Games</title>
+            <link>https://sz-games.online/</link>
+            <description>立即在浏览器中玩 1000+ 免费在线游戏。无需下载！享受动作、拼图、街机、赛车和更多的HTML5游戏。现在就开始玩吧！</description>
+            <guid>https://sz-games.online/</guid>
+            <pubDate>2025/7/19 19:39:35</pubDate>
         </item>
     
         <item>
-            <title>搜索推荐词采集与内容生成助手 - Chrome 应用商店</title>
-            <link>https://chromewebstore.google.com/detail/%E6%90%9C%E7%B4%A2%E6%8E%A8%E8%8D%90%E8%AF%8D%E9%87%87%E9%9B%86%E4%B8%8E%E5%86%85%E5%AE%B9%E7%94%9F%E6%88%90%E5%8A%A9%E6%89%8B/fcagfkfghjcdbefpcnghjmnlkohcppfn</link>
-            <description>提取小红书、抖音、B站、知乎、百度、google搜索推荐词，chatgpt关键词自动化内容生产</description>
-            <guid>https://chromewebstore.google.com/detail/%E6%90%9C%E7%B4%A2%E6%8E%A8%E8%8D%90%E8%AF%8D%E9%87%87%E9%9B%86%E4%B8%8E%E5%86%85%E5%AE%B9%E7%94%9F%E6%88%90%E5%8A%A9%E6%89%8B/fcagfkfghjcdbefpcnghjmnlkohcppfn</guid>
-            <pubDate>2025/5/8 19:56:31</pubDate>
+            <title>Witsy</title>
+            <link>https://witsyai.com/</link>
+            <description>桌面 AI 助手/通用 MCP 客户端</description>
+            <guid>https://witsyai.com/</guid>
+            <pubDate>2025/7/19 14:52:40</pubDate>
         </item>
     
         <item>
-            <title>HarmonyHuesTheme</title>
-            <link>https://github.com/wugeng20/HarmonyHuesTheme</link>
-            <description>Typecho主题-HarmonyHues,设计灵感源自自然界中的和谐之美</description>
-            <guid>https://github.com/wugeng20/HarmonyHuesTheme</guid>
-            <pubDate>2025/5/8 19:54:59</pubDate>
+            <title>horizon</title>
+            <link>https://github.com/ultrazg/horizon</link>
+            <description>第三方小宇宙桌面客户端，支持 Windows 和 MacOS</description>
+            <guid>https://github.com/ultrazg/horizon</guid>
+            <pubDate>2025/7/19 14:52:10</pubDate>
         </item>
     
         <item>
-            <title>AI文档翻译</title>
-            <link>https://aitranspdf.com/zh-CN</link>
-            <description>高质量翻译各类文档;支持pdf/pptx/xlsx/epub/doc 都可以保留格式并翻译；支持免费翻译预览，支持扫描件，操作简单即刻开始</description>
-            <guid>https://aitranspdf.com/zh-CN</guid>
-            <pubDate>2025/5/7 19:10:37</pubDate>
+            <title>怼怼侠</title>
+            <link>https://duiduixia.com/</link>
+            <description>优雅怼人神器，骂人不带脏话</description>
+            <guid>https://duiduixia.com/</guid>
+            <pubDate>2025/7/19 14:50:16</pubDate>
         </item>
     
         <item>
-            <title>Nova AI 工具箱</title>
-            <link>https://www.novatoolkit.ai/zh</link>
-            <description>Nova AI 工具箱是一个集成各种AI工具的综合平台，包括写作、学习、邮件、图表和PDF处理工具。</description>
-            <guid>https://www.novatoolkit.ai/zh</guid>
-            <pubDate>2025/5/7 19:09:03</pubDate>
+            <title>notion-astro-tpl</title>
+            <link>https://github.com/thinkerchan/notion-astro-tpl</link>
+            <description>基于notion+astro的作品网站模板，可直接部署到vercel.</description>
+            <guid>https://github.com/thinkerchan/notion-astro-tpl</guid>
+            <pubDate>2025/7/19 14:49:18</pubDate>
         </item>
     
         <item>
-            <title>动漫脚部AI</title>
-            <link>https://www.animefeet.online/zh</link>
-            <description>动漫脚部AI是一款先进的工具，可生成高质量的动漫脚部图像和动画。使用我们尖端的AI技术，以各种风格创建精美的动漫脚部。</description>
-            <guid>https://www.animefeet.online/zh</guid>
-            <pubDate>2025/5/7 19:07:53</pubDate>
+            <title>LinkJob AI</title>
+            <link>https://www.linkjob.ai/</link>
+            <description>linkjob.ai 是一个为科技和金融领域求职面试者提供的AI实时面试助手和AI模拟面试助手工具</description>
+            <guid>https://www.linkjob.ai/</guid>
+            <pubDate>2025/7/19 14:47:05</pubDate>
         </item>
     
         <item>
-            <title>List Compare</title>
-            <link>https://list-compare.net/zh</link>
-            <description>在线比较列表的最佳工具。用于查找列表之间的匹配项、差异、重复项和唯一项的免费工具</description>
-            <guid>https://list-compare.net/zh</guid>
-            <pubDate>2025/5/7 19:05:46</pubDate>
+            <title>PanSou</title>
+            <link>https://so.252035.xyz/</link>
+            <description>网盘搜索工具</description>
+            <guid>https://so.252035.xyz/</guid>
+            <pubDate>2025/7/19 14:45:16</pubDate>
         </item>
     
         <item>
-            <title>Flipbook Maker</title>
-            <link>https://www.flipbook3d.com/</link>
-            <description>使用 Flipbook3D 将您的视频转换为引人入胜的 Flipbook 动画</description>
-            <guid>https://www.flipbook3d.com/</guid>
-            <pubDate>2025/5/7 19:04:23</pubDate>
+            <title>Sera UI</title>
+            <link>https://seraui.seraprogrammer.com/</link>
+            <description>使用 Sera UI 的现代 React 组件构建令人惊叹的 Web 应用程序。免费，开源，并使用Tailwind CSS和Framer Motion构建。</description>
+            <guid>https://seraui.seraprogrammer.com/</guid>
+            <pubDate>2025/7/19 14:43:58</pubDate>
         </item>
     
         <item>
-            <title>随机生成器中心</title>
-            <link>https://www.randomgenerator.vip/zh</link>
-            <description>随机名称生成器</description>
-            <guid>https://www.randomgenerator.vip/zh</guid>
-            <pubDate>2025/5/7 19:02:33</pubDate>
+            <title>Anytype</title>
+            <link>https://anytype.io/</link>
+            <description>去中心化笔记程序，用来设计分享你的自主页面</description>
+            <guid>https://anytype.io/</guid>
+            <pubDate>2025/7/19 14:43:19</pubDate>
         </item>
     
         <item>
-            <title>rss-server-ag</title>
-            <link>https://github.com/rcy1314/rss-server-ag</link>
-            <description>一个便捷的rss聚合订阅api服务. Contribute to rcy1314/rss-server-ag development by creating an account on GitHub.</description>
-            <guid>https://github.com/rcy1314/rss-server-ag</guid>
-            <pubDate>2025/5/7 18:58:42</pubDate>
+            <title>Sevalla®</title>
+            <link>https://sevalla.com/</link>
+            <description>Sevalla 是您 Web 项目的主页。 在一个直观的平台中托管和管理您的应用程序、存储、数据库和静态站点。</description>
+            <guid>https://sevalla.com/</guid>
+            <pubDate>2025/7/19 14:41:18</pubDate>
         </item>
     
         <item>
-            <title>FeedMe:</title>
-            <link>https://github.com/Seanium/FeedMe</link>
-            <description>用 AI 重新定义你的 RSS 阅读体验</description>
-            <guid>https://github.com/Seanium/FeedMe</guid>
-            <pubDate>2025/5/7 18:57:42</pubDate>
+            <title>Media Saber</title>
+            <link>https://wiki.msaber.fun/</link>
+            <description>一款全新、高效、稳定、快速、方便好用、功能强大的媒体管理工具！</description>
+            <guid>https://wiki.msaber.fun/</guid>
+            <pubDate>2025/7/18 18:43:52</pubDate>
         </item>
     
         <item>
-            <title>waterfall</title>
-            <link>https://github.com/xuemian168/waterfall</link>
-            <description>个人/工作室摄影作品展示平台，融合艺术性与技术性，提供沉浸式的视觉体验和实用的摄影工具</description>
-            <guid>https://github.com/xuemian168/waterfall</guid>
-            <pubDate>2025/5/7 18:55:19</pubDate>
+            <title>prompt-minder</title>
+            <link>https://www.prompt-minder.com/public</link>
+            <description>精选提示词合集</description>
+            <guid>https://www.prompt-minder.com/public</guid>
+            <pubDate>2025/7/18 18:42:30</pubDate>
         </item>
     
         <item>
-            <title>图封简创</title>
-            <link>https://pcd.talen.top/</link>
-            <description>轻松简创封面，瞬间点亮视觉焦点。</description>
-            <guid>https://pcd.talen.top/</guid>
-            <pubDate>2025/5/6 20:38:11</pubDate>
+            <title>AI时代的资讯管理工具 | Revornix</title>
+            <link>https://revornix.com/zh</link>
+            <description>AI时代的资讯管理工具</description>
+            <guid>https://revornix.com/zh</guid>
+            <pubDate>2025/7/18 18:40:27</pubDate>
         </item>
     
         <item>
-            <title>eechat</title>
-            <link>https://www.ee.chat/</link>
-            <description>强大的本地部署 AI 聊天应用 eechat 是一款简单易用的本地部署 LLM 工具，注重隐私、安全和性能</description>
-            <guid>https://www.ee.chat/</guid>
-            <pubDate>2025/5/6 20:34:21</pubDate>
+            <title>Witsy • AI 桌面助手</title>
+            <link>https://witsyai.com/</link>
+            <description>AI 只需一个键盘快捷键即可</description>
+            <guid>https://witsyai.com/</guid>
+            <pubDate>2025/7/18 18:39:36</pubDate>
         </item>
     
         <item>
-            <title>发现更多有趣的表情包</title>
-            <link>https://allsticker.org/zh</link>
-            <description>发现并下载最有趣的表情包，让您的聊天更加有趣！</description>
-            <guid>https://allsticker.org/zh</guid>
-            <pubDate>2025/5/6 20:30:21</pubDate>
+            <title>SoundWise.ai </title>
+            <link>https://soundwise.ai/zh-CN</link>
+            <description>永久免费无限音频和视频转文字。直接在浏览器中将音频和视频转换为准确的文本。</description>
+            <guid>https://soundwise.ai/zh-CN</guid>
+            <pubDate>2025/7/18 18:38:49</pubDate>
         </item>
     
         <item>
-            <title>StyleMagicAi</title>
-            <link>https://stylemagicai.com/zh</link>
-            <description>使用在线 AI 图像生成器，将您的文本或图像转换为令人惊叹的视觉效果。轻松创作专业的艺术作品，无需任何复杂的操作。</description>
-            <guid>https://stylemagicai.com/zh</guid>
-            <pubDate>2025/5/6 20:29:32</pubDate>
+            <title>Bullet-Time</title>
+            <link>https://www.bullet-time.xyz/</link>
+            <description>使用先进的人工智能技术将您的图像转换为令人惊叹的子弹时间效果视频。在几秒钟内创建电影般的慢动作体验。</description>
+            <guid>https://www.bullet-time.xyz/</guid>
+            <pubDate>2025/7/18 18:38:27</pubDate>
         </item>
     
         <item>
-            <title>Parakeet TDT </title>
-            <link>https://parakeettdt.com/</link>
-            <description>NVIDIA Parakeet TDT：以创纪录的速度实现 98% 的语音转文本准确率 - 只需 1 秒即可转录 60 分钟的音频。</description>
-            <guid>https://parakeettdt.com/</guid>
-            <pubDate>2025/5/6 20:28:34</pubDate>
+            <title>免費 YouTube 轉 MP4 轉換器</title>
+            <link>https://youtubetomp4.pro/zh-TW</link>
+            <description>在數秒内將 YouTube 影片轉換為 MP4。我們的免費線上影片下載器 100% 安全，無廣告，免登入。支援高品質的 MP4、MP3 及更多格式。</description>
+            <guid>https://youtubetomp4.pro/zh-TW</guid>
+            <pubDate>2025/7/18 18:37:51</pubDate>
         </item>
     
         <item>
-            <title>Notion Flat Style Illustration Generator</title>
-            <link>https://illustration.imglab.dev/</link>
-            <description>使用AI 驱动的工具生成精美的插图。体验具有柔和色彩和梦幻氛围的艺术品的魔力。</description>
-            <guid>https://illustration.imglab.dev/</guid>
-            <pubDate>2025/5/6 20:27:23</pubDate>
+            <title>Fast3D</title>
+            <link>https://fast3d.io/zh</link>
+            <description>Fast3D是领先的AI驱动3D模型生成器。几秒钟内从文本或图像创建高质量3D模型。</description>
+            <guid>https://fast3d.io/zh</guid>
+            <pubDate>2025/7/18 18:37:08</pubDate>
         </item>
     
         <item>
-            <title>Challympics</title>
-            <link>https://challympics.com/</link>
-            <description>Challympics（赛林匹克平台）是聚集于IT、人工智能技术领域进行的赛事、大会、活动的信息聚合服务平台，提供行业热点、大咖技术分享、社区交流、竞赛活动、大会宣传等丰富的内容与服务。</description>
-            <guid>https://challympics.com/</guid>
-            <pubDate>2025/5/6 20:25:54</pubDate>
+            <title>Kiro IDE</title>
+            <link>https://www.kiroide.net/</link>
+            <description>Kiro IDE 是亚马逊革命性的 AI 代理开发环境，可通过智能自动化将模糊的想法转化为可部署的软件。</description>
+            <guid>https://www.kiroide.net/</guid>
+            <pubDate>2025/7/18 18:36:34</pubDate>
         </item>
     
         <item>
-            <title>Football Bros</title>
-            <link>https://onlinefootballbros.com/</link>
-            <description>免费在线 Football Bros 游戏，探索数以万计的精彩游戏，现在就开始吧！</description>
-            <guid>https://onlinefootballbros.com/</guid>
-            <pubDate>2025/5/6 20:24:56</pubDate>
+            <title>飞影数字人</title>
+            <link>https://hifly.cc/</link>
+            <description>只需拍摄10秒，一键生成您的专属数字分身，还原形象和音色，能说30多国语言。适用于口播短视频、视频翻译、跨境电商、教育等场景</description>
+            <guid>https://hifly.cc/</guid>
+            <pubDate>2025/7/18 18:35:57</pubDate>
         </item>
     
         <item>
-            <title>Web Clock - Free Online Clock &amp; Time Tools</title>
-            <link>https://webclock.online/</link>
-            <description>简单、美观、准确的在线时钟工具（时钟、计时器、秒表、世界时区等）。</description>
-            <guid>https://webclock.online/</guid>
-            <pubDate>2025/5/6 20:24:00</pubDate>
+            <title>Free Image Enhancer</title>
+            <link>https://imageenhancer.art/</link>
+            <description>Image Enhancer 是一款免费的在线工具，用于利用 AI 提高图像质量。立即改善照片、增强色彩、减少噪点并锐化细节。</description>
+            <guid>https://imageenhancer.art/</guid>
+            <pubDate>2025/7/18 18:35:19</pubDate>
         </item>
     
         <item>
-            <title>AI Couple Photo Maker | Create Beautiful Couple Photos Instantly</title>
-            <link>https://aicouplephoto.net/</link>
-            <description>使用我们的 AI 驱动的照片生成器将您的照片变成令人惊叹的情侣肖像。在几秒钟内创建浪漫、婚礼和个性化的 ai 情侣照片。</description>
-            <guid>https://aicouplephoto.net/</guid>
-            <pubDate>2025/5/6 20:23:10</pubDate>
+            <title>夏日音乐 - 你的无尽夏日原声带</title>
+            <link>https://summer-music.net/zh</link>
+            <description>你的无尽夏日原声带。发现并串流来自世界各地的直播电台，无论你身在何处，都能为你带来夏日的声音。</description>
+            <guid>https://summer-music.net/zh</guid>
+            <pubDate>2025/7/18 18:34:42</pubDate>
         </item>
     
         <item>
-            <title>EasyTidy</title>
-            <link>https://easytidy.luckyits.com/</link>
-            <description>一个简单易用的桌面整理工具</description>
-            <guid>https://easytidy.luckyits.com/</guid>
-            <pubDate>2025/5/5 22:23:34</pubDate>
+            <title>百度云盘资源搜索引擎 - 专业的百度网盘资源搜索平台</title>
+            <link>https://baiduyunpan.app/</link>
+            <description>百度云盘资源搜索引擎是一个强大、专业的网盘资源聚合平台。我们致力于为广大用户提供精准、快速的百度网盘资源搜索服务，涵盖电影、剧集、学习资料、软件、电子书等各类文件，助您轻松找到并下载所需资源。</description>
+            <guid>https://baiduyunpan.app/</guid>
+            <pubDate>2025/7/18 18:33:54</pubDate>
         </item>
     
         <item>
-            <title>Copicseal</title>
-            <link>https://copicseal.kohai.top/</link>
-            <description>Copicseal 是一个图片加水印工具，支持读取 EXIF 信息，用户可自定义水印样式和位置，快速为照片添加快门、ISO 等相机参数。</description>
-            <guid>https://copicseal.kohai.top/</guid>
-            <pubDate>2025/5/5 22:13:37</pubDate>
+            <title>百度网盘搜索引擎</title>
+            <link>https://baiduwangpan.app/</link>
+            <description>专业的百度网盘资源搜索引擎(baiduwangpan),提供海量网盘资源秒级检索服务。支持电影、电视剧、音乐、文档、软件等多类型资源搜索,帮助用户快速找到需要的资源。安全、高效、精准的网盘资源搜索工具。</description>
+            <guid>https://baiduwangpan.app/</guid>
+            <pubDate>2025/7/18 18:33:32</pubDate>
         </item>
     
         <item>
-            <title>AI Answer Generator </title>
-            <link>https://aianswergenerator.pro/</link>
-            <description>尝试最好的免费在线 AI 答案生成器。无需登录，无限使用。立即为家庭作业、问题或想法生成准确的答案。</description>
-            <guid>https://aianswergenerator.pro/</guid>
-            <pubDate>2025/5/5 21:11:01</pubDate>
+            <title>夸克百度云盘搜索</title>
+            <link>https://yunpansousuo.com/</link>
+            <description>yunpansousuo是一款强大的网盘资源搜索引擎，提供百度网盘、夸克网盘、阿里云盘等资源的免费搜索和下载。海量资源，极速搜索，即刻找到您所需！</description>
+            <guid>https://yunpansousuo.com/</guid>
+            <pubDate>2025/7/18 18:33:13</pubDate>
         </item>
     
         <item>
-            <title>搜资源吧</title>
-            <link>https://www.souziyuanba.com/</link>
-            <description>搜资源吧是一款真实可靠的夸克网盘搜索引擎，支持百度网盘、阿里云盘、夸克云盘等网盘资源的全文检索，短剧搜索，影视搜索</description>
-            <guid>https://www.souziyuanba.com/</guid>
-            <pubDate>2025/5/5 21:09:43</pubDate>
+            <title>Free PNG to WebP</title>
+            <link>https://towebp.org/</link>
+            <description>在线免费将PNG图像转换为WebP格式。在保持完美图像质量和透明度的条件下，可将文件大小缩减多达35%。操作快速、安全，并支持批量转换，具有广泛的浏览器兼容性。</description>
+            <guid>https://towebp.org/</guid>
+            <pubDate>2025/7/18 18:32:42</pubDate>
         </item>
     
         <item>
-            <title>AigcFan</title>
-            <link>https://aigc-fan.com/</link>
-            <description>AigcFan专业AI工具导航平台 - 精选全球顶级人工智能工具，涵盖聊天、绘画、写作、音频、视频等多个领域。助您快速发现实用AI应用，提升工作效率，释放创意潜能。</description>
-            <guid>https://aigc-fan.com/</guid>
-            <pubDate>2025/5/5 21:08:34</pubDate>
+            <title>Mahjong Link</title>
+            <link>https://www.mahjonglink.org/</link>
+            <description>免费在线玩 Mahjong Link！匹配麻将牌，通过所有 12 个关卡，并在这款经典的麻将游戏中挑战您的技能。可用 畅通无阻！</description>
+            <guid>https://www.mahjonglink.org/</guid>
+            <pubDate>2025/7/16 21:05:09</pubDate>
         </item>
     
         <item>
-            <title>Microsoft SAM Text to Speech - Classic Windows Voice Synthesizer | SAM TTS</title>
-            <link>https://samtts.com/</link>
-            <description>体验来自Windows XP的怀旧微软SAM文本到语音声音SAM TTS，将经典的微软语音API声音带到您的浏览器，带有真实的复古计算机语音声音。</description>
-            <guid>https://samtts.com/</guid>
-            <pubDate>2025/5/5 21:08:04</pubDate>
+            <title>Earth Zoom Out</title>
+            <link>https://aiearthzoomout.org/</link>
+            <description>使用 AI 生成令人惊叹的地球缩小视频。上传任何图像并观看它变成史诗般的地球缩小序列。在几秒钟内创建专业品质的视频。</description>
+            <guid>https://aiearthzoomout.org/</guid>
+            <pubDate>2025/7/16 21:01:27</pubDate>
         </item>
     
         <item>
-            <title>TikTok Emojis List</title>
-            <link>https://tiktokemojis.us/</link>
-            <description>此页面上列出的 TikTok 表情符号代码。您可以将隐藏的表情符号插入 TikTok 字幕或评论中。适用于 iOS 和 Android 上的表情符号。</description>
-            <guid>https://tiktokemojis.us/</guid>
-            <pubDate>2025/5/5 21:06:04</pubDate>
+            <title>Free Blur Image Online - Easily Blur Your Photos</title>
+            <link>https://www.blurimageonline.com/</link>
+            <description>使用强大的图像模糊工具快速轻松地在线模糊您的图像。增强您的照片、保护隐私并创建令人惊叹的视觉效果。</description>
+            <guid>https://www.blurimageonline.com/</guid>
+            <pubDate>2025/7/16 21:00:49</pubDate>
         </item>
     
         <item>
-            <title>探索 AI Tool Trek – May 2025 年最全面的 AI 工具目录</title>
-            <link>https://aitooltrek.com/cn</link>
-            <description>AI Tool Trek 是您必备的 AI 工具目录！探索并了解顶级 AI 工具及其概览与统计数据。开始您的 AI 之旅吧！</description>
-            <guid>https://aitooltrek.com/cn</guid>
-            <pubDate>2025/5/5 21:05:12</pubDate>
+            <title>Voxtral</title>
+            <link>https://voxtral.org/zh</link>
+            <description>Voxtral 是一款前沿的语音智能平台，可将音频转化为可操作的洞察。享受高质量转录、多语言支持与智能音频分析体验。</description>
+            <guid>https://voxtral.org/zh</guid>
+            <pubDate>2025/7/16 20:59:55</pubDate>
         </item>
     
         <item>
-            <title>故障文本生成器</title>
-            <link>https://glitchtextgenerator.app/</link>
-            <description>在几秒钟内创建令人惊叹的 AI 生成的毛刺文本效果</description>
-            <guid>https://glitchtextgenerator.app/</guid>
-            <pubDate>2025/5/5 21:03:52</pubDate>
+            <title>Midjourney V1</title>
+            <link>https://www.mjvideoai.com/</link>
+            <description>使用 Midjourney V1 AI 视频生成器创建令人惊叹的视频。使用我们先进的 AI 技术将文本和图像转换为专业的视频内容。</description>
+            <guid>https://www.mjvideoai.com/</guid>
+            <pubDate>2025/7/16 20:59:13</pubDate>
         </item>
     
         <item>
-            <title>Brat 生成器</title>
-            <link>https://brat-generator.top/zh/</link>
-            <description>受 Charli XCX 启发，创作你自己的 Brat 风格专辑封面。免费在线工具，可生成绿色或白色背景的自定义专辑封面。加入 Brat Summer 潮流！</description>
-            <guid>https://brat-generator.top/zh/</guid>
-            <pubDate>2025/5/5 21:02:34</pubDate>
+            <title>Kiro AI</title>
+            <link>https://kiroai.ai/index_zh.html</link>
+            <description>革命性的AI驱动IDE，将编程从概念转化为生产。规范驱动开发，配备智能代理、多模态聊天和无缝AWS集成。</description>
+            <guid>https://kiroai.ai/index_zh.html</guid>
+            <pubDate>2025/7/16 20:58:46</pubDate>
         </item>
     
         <item>
-            <title>Free AI Beauty Test</title>
-            <link>https://aibeautytest.org/</link>
-            <description>在线试用AI Beauty 测试和分析工具，并获得即时 AI Beauty Rating。先进的面部分析技术，通过详细的分数和个性化的提示来评估您的吸引力。</description>
-            <guid>https://aibeautytest.org/</guid>
-            <pubDate>2025/5/5 21:02:00</pubDate>
+            <title>Kimi K2 </title>
+            <link>https://kimi-k2.com/</link>
+            <description>探索 Kimi K2，这是 Moonshot AI 推出的一款高级 AI 模型，专为复杂的语言任务、推理和问题解决而设计。了解其功能、性能以及如何访问它。</description>
+            <guid>https://kimi-k2.com/</guid>
+            <pubDate>2025/7/16 20:57:39</pubDate>
         </item>
     
         <item>
-            <title>Reve Art AI</title>
-            <link>https://reveart.org</link>
-            <description>使用 Reve Art AI 创建令人惊叹的 AI 艺术。在线 AI 图像生成器将您的想法转化为精美的艺术品。无需注册。</description>
-            <guid>https://reveart.org</guid>
-            <pubDate>2025/5/5 21:01:04</pubDate>
+            <title>Copy2AI智能创作助手</title>
+            <link>https://www.copy2ai.com/creator.html</link>
+            <description>Copy2AI智能创作助手让文字创作变得轻松有趣！六大核心功能：智能对话、AI仿写改写、AI灵感中心、AI辅助创作、AI文本工具、20+专业工具。集成国内外顶级AI引擎，支持本地部署，让所有人都能享受AI创作的便利与乐趣。</description>
+            <guid>https://www.copy2ai.com/creator.html</guid>
+            <pubDate>2025/7/16 20:56:15</pubDate>
+        </item>
+    
+        <item>
+            <title>Grabcube</title>
+            <link>https://www.grabcube.ai/zh-CN</link>
+            <description>Grabcube 帮助您从 YouTube、Bilibili、Facebook、X、Twitter 等平台下载视频，将语音转换为文字，将字幕翻译成多种语言并播放 — 非常适合内容创作者、学习者和专业人士。</description>
+            <guid>https://www.grabcube.ai/zh-CN</guid>
+            <pubDate>2025/7/16 09:00:11</pubDate>
         </item>
     
 </channel>

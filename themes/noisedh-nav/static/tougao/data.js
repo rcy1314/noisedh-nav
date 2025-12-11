@@ -3,8 +3,8 @@ var isEN = path.indexOf('en') > -1;
 path = isEN ? path.replace('en/', '') : path;
 new Valine({
     el: '.vcomment',
-    appId: '',
-    appKey: '',
+    appId: 's9cEwsCbkayraMf1gyfUc60H-gzGzoHsz',
+    appKey: 'xLbHMuo7pzQanQx89W5KNE4s',
     placeholder: '请输入评论',
     admin_email:'1129159201@qq.com',
     avatar: 'mp',
