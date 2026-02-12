@@ -1553,3 +1553,13 @@
           logo: github.jpg
           url: https://github.com/ihmily/StreamCap
           description: 多平台直播流自动录制工具 · 基于FFmpeg · 支持监控/定时/转码
+
+- taxonomy: AI 时代
+  icon: fas fa-robot
+  list:
+    - term: AI视频
+      links:
+        - title: Seedance 2.0
+          logo: seedance2_logo.png
+          url: https://www.seedance2.ink
+          description: a multimodal AI video engine controlled by text, image, audio, and video.
