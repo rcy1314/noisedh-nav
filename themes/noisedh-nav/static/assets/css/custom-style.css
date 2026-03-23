@@ -54,15 +54,23 @@ img, video {
 .compact-header{min-height:58px}
 .compact-header .navbar{min-height:58px}
 .compact-header .container-fluid{min-height:58px;align-items:center}
+.compact-header .header-mini-btn{height:58px}
+.compact-header .header-mini-btn svg{height:58px}
 .compact-header .navbar .navbar-nav li>a{padding:7px 12px;line-height:1.2}
 .compact-header .header-mini-btn label{margin-bottom:0}
 .compact-menu{margin-right:10px}
 .compact-header-placeholder{height:60px}
-@media (max-width:767.98px){
-    .compact-header{min-height:52px}
-    .compact-header .navbar{min-height:52px}
-    .compact-header .container-fluid{min-height:52px}
-    .compact-header-placeholder{height:54px}
+@media (max-width:991.98px){
+    .compact-header{
+        min-height:44px;
+        padding-top:env(safe-area-inset-top, 0px);
+    }
+    .compact-header .navbar{min-height:44px}
+    .compact-header .container-fluid{min-height:44px}
+    .compact-header .header-mini-btn{height:44px}
+    .compact-header .header-mini-btn svg{height:44px}
+    .compact-header .navbar-brand img{max-height:30px}
+    .compact-header-placeholder{height:calc(46px + env(safe-area-inset-top, 0px))}
 }
 
 
@@ -106,8 +114,6 @@ footer.main-footer .footer-text a:hover {
 .url-card .url-img > img {
     border-radius: 20%;
 }
-
-
 
 
 
