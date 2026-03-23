@@ -43,21 +43,21 @@
                                 {{ range .Site.Data.webstack }}
                                     {{ if .list }}
                                     <li class="sidebar-item">
-                                        <a href="#{{ range first 1 .list }}{{ md5 .term }}{{ end }}" class="smooth change-href" data-change="#{{ range first 1 .list }}{{ md5 .term }}{{ end }}">
+                                        <a href="#{{ range first 1 .list }}{{ md5 .term }}{{ end }}" class="smooth change-href" data-change="#{{ range first 1 .list }}{{ md5 .term }}{{ end }}" onclick="return handleSidebarClick('{{ range first 1 .list }}{{ md5 .term }}{{ end }}')">
                                             <i class="{{ .icon }} icon-fw icon-lg mr-2"></i>
                                             <span>{{ .taxonomy }}</span>
                                             <i class="iconfont icon-arrow-r-m sidebar-more text-sm"></i>
                                         </a>
                                         <ul>
                                             {{ range .list }}
-                                            <li><a href="#{{ md5 .term }}" class="smooth" onclick="handleSidebarClick('{{ md5 .term }}')"><span>{{ .term }}</span></a></li>
+                                            <li><a href="#{{ md5 .term }}" class="smooth" onclick="return handleSidebarClick('{{ md5 .term }}')"><span>{{ .term }}</span></a></li>
                                             {{ end }}
                                         </ul>
                                     </li> 
                                     {{ else }}
                                     <li class="sidebar-item">
                                         <!-- 注意这里的 onclick -->
-                                        <a href="#{{ md5 .taxonomy }}" class="smooth" onclick="handleSidebarClick('{{ md5 .taxonomy }}')">
+                                        <a href="#{{ md5 .taxonomy }}" class="smooth" onclick="return handleSidebarClick('{{ md5 .taxonomy }}')">
                                             <i class="{{ .icon }} fa-lg icon-fw icon-lg mr-2"></i>
                                             <span>{{ .taxonomy }}</span>
                                         </a>

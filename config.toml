@@ -42,6 +42,7 @@ relativeURLs = true
   logosPath     = "assets/images/logos"  # 网站每个导航地址logo存放地址
   defaultLogo   = "assets/images/favicon5.png"  # logo图片资源不存在或者错误时, 默认显示的logo; 该参数如为空,将会一直加载对应的logo,直至成功
   nightMode     = false  # 默认站点为深色(夜间)模式
+  cardListCollapseLimit = 24  # 超过该数量显示“查看更多网址”按钮
 
 
 

@@ -3,6 +3,8 @@ html{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-
 body{width:100%;min-height:100vh;vertical-align:baseline;word-wrap:break-word;color:#282a2d;background:#f9f9f9;transition:background-color .3s}
 body,input,button,select,optgroup,option,textarea,blockquote,dd,dl,figure,form,pre,.h1,.h2,.h3,.h4,.h5,.h6,h1,h2,h3,h4,h5,h6{font-family:"SF Pro SC","SF Pro Text","SF Pro Icons",PingFang SC,Lantinghei SC,Microsoft Yahei,Hiragino Sans GB,Microsoft Sans Serif,WenQuanYi Micro Hei,sans-serif;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
 body,html{height:100%;margin:0;padding:0;border:0}
+:root{--anchor-offset:94px}
+html{scroll-padding-top:var(--anchor-offset)}
 a{color:#282a2d;outline:0!important;text-decoration:none}
 a:hover{text-decoration:none;color:#f1404b}
 p{color:#1d232b;margin:0;white-space:normal;word-break:break-all} 
@@ -16,6 +18,7 @@ p{color:#1d232b;margin:0;white-space:normal;word-break:break-all}
 .content-site{padding:0 15px;width:100%;margin-right:auto;margin-left:auto}
 .down-content img,.site-content img,.apd img,.post-apd img,.panel-body img{max-width:100%;height:auto}
 .nothing{padding:20px 0;text-align:center;color:#888;background:rgba(136,136,136,.2);border-radius:5px}
+.category-block[id],.subcat-tab[id],.row.card-list[id],#friendlink{scroll-margin-top:var(--anchor-offset)}
 .sticky{position:-webkit-sticky;position:sticky;top:0;z-index:1080} 
 .io{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;display:inline-block;font-style:normal;font-variant:normal;text-rendering:auto;line-height:1}
 .avatar{background:#888;border-radius: 100%;-ms-flex-pack: center;justify-content: center;-ms-flex-align: center;align-items: center;-ms-flex-negative: 0;flex-shrink: 0;overflow: hidden;}

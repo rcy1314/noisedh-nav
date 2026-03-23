@@ -1,7 +1,7 @@
 <div class="main-content flex-fill grid-bg">
     <div class="big-header-banner">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <div id="header" class="page-header sticky">
+        <div id="header" class="page-header sticky compact-header">
             <div class="navbar navbar-expand-md">
                 <div class="container-fluid p-0">
                     <a href="" class="navbar-brand d-md-none" title="{{ .Site.Title }}" target="_blank">
@@ -21,7 +21,7 @@
                                 </svg>
                             </label>
                         </div>
-                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        <ul class="navbar-nav site-menu compact-menu">
                             {{ range .Site.Data.headers }}
                             <li {{ if .list }}class="menu-item-has-children"{{ end }}>
                                 <a href="{{ .link }}" target="_blank">
@@ -47,5 +47,5 @@
                 </div>
             </div>
         </div>
-        <div class="placeholder" style="height:74px"></div>
+        <div class="placeholder compact-header-placeholder"></div>
     </div>

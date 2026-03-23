@@ -104,151 +104,358 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 多级回退处理器
-    function multiFallback(img) {
-        // 优先保证 yandex 和 google favicon 顺序
-        let fallbacks = img.dataset.fallback ? img.dataset.fallback.split('||').map(s => s.trim()) : [];
-        const yandexIdx = fallbacks.findIndex(url => url.includes('favicon.yandex.net'));
-        const googleIdx = fallbacks.findIndex(url => url.includes('www.google.com/s2/favicons'));
-        let ordered = [];
-        if (yandexIdx !== -1) {
-            ordered.push(fallbacks[yandexIdx]);
-            fallbacks.splice(yandexIdx, 1);
-        }
-        if (googleIdx !== -1) {
-            const newGoogleIdx = fallbacks.findIndex(url => url.includes('www.google.com/s2/favicons'));
-            if (newGoogleIdx !== -1) {
-                ordered.push(fallbacks[newGoogleIdx]);
-                fallbacks.splice(newGoogleIdx, 1);
-            }
-        }
-        fallbacks = ordered.concat(fallbacks);
-    
-        let currentIndex = 0;
-        const tryNext = () => {
-            if (currentIndex < fallbacks.length) {
-                img.onerror = tryNext;
-                img.onload = () => {
-                    if (isTransparentImage(img)) {
-                        tryNext();
-                    }
-                };
-                img.src = fallbacks[currentIndex++].trim();
-            } else {
-                img.onerror = function() {
-                    img.onerror = null;
-                    img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAn8B9kQn2wAAAABJRU5ErkJggg==";
-                };
-                img.src = window.DEFAULT_LOGO;
-                img.classList.add('img-placeholder');
-            }
-        };
-        tryNext();
-    }
+    const LOGO_SUCCESS_TTL = 7 * 24 * 60 * 60 * 1000;
+    const LOGO_FAILED_URL_TTL = 5 * 60 * 1000;
+    const LOGO_DOMAIN_BLOCK_TTL = 15 * 60 * 1000;
+    const LOGO_DOMAIN_FAIL_THRESHOLD = 2;
+    const LOGO_DOMAIN_FAIL_WINDOW = 3 * 60 * 1000;
+    const LOGO_SUCCESS_PREFIX = 'logo_success_v3_';
+    const LOGO_FAILED_URL_KEY = 'logo_failed_url_v3';
+    const LOGO_BLOCKED_DOMAIN_KEY = 'logo_blocked_domain_v3';
 
-    // 图片缓存与懒加载（优化版）
-    const cacheImage = (url, data) => {
+    const inflightLogoLoads = new Map();
+    const runtimeLogoResolveCache = new Map();
+    const failedUrlCache = new Map();
+    const blockedDomainCache = new Map();
+    const domainFailStats = new Map();
+
+    function normalizeUrl(rawUrl) {
+        if (!rawUrl) return '';
         try {
-            localStorage.setItem(url, data);
+            return new URL(rawUrl.trim(), window.location.href).href;
         } catch (e) {
-            // localStorage 空间不足时忽略
+            return '';
         }
-    };
-    const getCachedImage = (url) => {
-        return localStorage.getItem(url);
-    };
-    const loadImage = (img) => {
-        const src = img.dataset.src;
-        if (!src) return;
-        const cachedImage = getCachedImage(src);
-        if (cachedImage) {
-            img.src = cachedImage;
-            img.removeAttribute('data-src');
-        } else {
-            img.src = src;
-            img.onload = () => {
-                // 不再限制图片格式，所有图片都缓存
-                try {
-                    cacheImage(src, img.src);
-                } catch (e) {
-                    // localStorage 空间不足时忽略
-                }
-                img.removeAttribute('data-src');
-            };
-            img.addEventListener('error', function() {
-                // 回退时也尝试缓存 fallback 图片
-                multiFallbackWithCache(this);
-            });
-        }
-    };
+    }
 
-    // 回退机制优化：回退图片也尝试缓存
-    function multiFallbackWithCache(img) {
-        let fallbacks = img.dataset.fallback ? img.dataset.fallback.split('||').map(s => s.trim()) : [];
-        const yandexIdx = fallbacks.findIndex(url => url.includes('favicon.yandex.net'));
-        const googleIdx = fallbacks.findIndex(url => url.includes('www.google.com/s2/favicons'));
-        let ordered = [];
-        if (yandexIdx !== -1) {
-            ordered.push(fallbacks[yandexIdx]);
-            fallbacks.splice(yandexIdx, 1);
+    function getDomain(rawUrl) {
+        const normalized = normalizeUrl(rawUrl);
+        if (!normalized) return '';
+        try {
+            return new URL(normalized).hostname.toLowerCase();
+        } catch (e) {
+            return '';
         }
-        if (googleIdx !== -1) {
-            const newGoogleIdx = fallbacks.findIndex(url => url.includes('www.google.com/s2/favicons'));
-            if (newGoogleIdx !== -1) {
-                ordered.push(fallbacks[newGoogleIdx]);
-                fallbacks.splice(newGoogleIdx, 1);
+    }
+
+    function readStorageJSON(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function writeStorageJSON(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+        } catch (e) {}
+    }
+
+    function hydrateExpireMap(key, targetMap) {
+        const now = Date.now();
+        const data = readStorageJSON(key);
+        Object.entries(data).forEach(([k, expiresAt]) => {
+            if (Number(expiresAt) > now) {
+                targetMap.set(k, Number(expiresAt));
+            }
+        });
+    }
+
+    function persistExpireMap(key, sourceMap) {
+        const now = Date.now();
+        const data = {};
+        sourceMap.forEach((expiresAt, value) => {
+            if (expiresAt > now) {
+                data[value] = expiresAt;
+            }
+        });
+        writeStorageJSON(key, data);
+    }
+
+    function pruneExpireMap(expireMap) {
+        const now = Date.now();
+        expireMap.forEach((expiresAt, value) => {
+            if (expiresAt <= now) {
+                expireMap.delete(value);
+            }
+        });
+    }
+
+    hydrateExpireMap(LOGO_FAILED_URL_KEY, failedUrlCache);
+    hydrateExpireMap(LOGO_BLOCKED_DOMAIN_KEY, blockedDomainCache);
+    pruneExpireMap(failedUrlCache);
+    pruneExpireMap(blockedDomainCache);
+    persistExpireMap(LOGO_FAILED_URL_KEY, failedUrlCache);
+    persistExpireMap(LOGO_BLOCKED_DOMAIN_KEY, blockedDomainCache);
+
+    function getSuccessCacheKey(url) {
+        return `${LOGO_SUCCESS_PREFIX}${encodeURIComponent(url)}`;
+    }
+
+    function writeSuccessCache(requestUrl, resolvedUrl) {
+        const normalizedRequest = normalizeUrl(requestUrl);
+        const normalizedResolved = normalizeUrl(resolvedUrl);
+        if (!normalizedRequest || !normalizedResolved) return;
+        runtimeLogoResolveCache.set(normalizedRequest, normalizedResolved);
+        try {
+            localStorage.setItem(
+                getSuccessCacheKey(normalizedRequest),
+                JSON.stringify({
+                    resolvedUrl: normalizedResolved,
+                    expiresAt: Date.now() + LOGO_SUCCESS_TTL
+                })
+            );
+        } catch (e) {}
+    }
+
+    function readSuccessCache(requestUrl) {
+        const normalizedRequest = normalizeUrl(requestUrl);
+        if (!normalizedRequest) return '';
+        if (runtimeLogoResolveCache.has(normalizedRequest)) {
+            return runtimeLogoResolveCache.get(normalizedRequest);
+        }
+        try {
+            const raw = localStorage.getItem(getSuccessCacheKey(normalizedRequest));
+            if (!raw) return '';
+            const parsed = JSON.parse(raw);
+            if (!parsed || !parsed.resolvedUrl || Number(parsed.expiresAt) <= Date.now()) {
+                localStorage.removeItem(getSuccessCacheKey(normalizedRequest));
+                return '';
+            }
+            const normalizedResolved = normalizeUrl(parsed.resolvedUrl);
+            if (!normalizedResolved) return '';
+            runtimeLogoResolveCache.set(normalizedRequest, normalizedResolved);
+            return normalizedResolved;
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function isUrlFailed(url) {
+        pruneExpireMap(failedUrlCache);
+        const normalized = normalizeUrl(url);
+        if (!normalized) return true;
+        return failedUrlCache.has(normalized);
+    }
+
+    function isDomainBlocked(url) {
+        pruneExpireMap(blockedDomainCache);
+        const domain = getDomain(url);
+        if (!domain) return false;
+        return blockedDomainCache.has(domain);
+    }
+
+    function markFailure(url) {
+        const normalized = normalizeUrl(url);
+        if (!normalized) return;
+        failedUrlCache.set(normalized, Date.now() + LOGO_FAILED_URL_TTL);
+        persistExpireMap(LOGO_FAILED_URL_KEY, failedUrlCache);
+
+        const domain = getDomain(normalized);
+        if (!domain) return;
+        const now = Date.now();
+        const current = domainFailStats.get(domain);
+        if (!current || now - current.windowStart > LOGO_DOMAIN_FAIL_WINDOW) {
+            domainFailStats.set(domain, { count: 1, windowStart: now });
+            return;
+        }
+        current.count += 1;
+        if (current.count >= LOGO_DOMAIN_FAIL_THRESHOLD) {
+            blockedDomainCache.set(domain, now + LOGO_DOMAIN_BLOCK_TTL);
+            persistExpireMap(LOGO_BLOCKED_DOMAIN_KEY, blockedDomainCache);
+            domainFailStats.delete(domain);
+        } else {
+            domainFailStats.set(domain, current);
+        }
+    }
+
+    function clearFailure(url) {
+        const normalized = normalizeUrl(url);
+        if (!normalized) return;
+        if (failedUrlCache.delete(normalized)) {
+            persistExpireMap(LOGO_FAILED_URL_KEY, failedUrlCache);
+        }
+        const domain = getDomain(normalized);
+        if (!domain) return;
+        let changed = false;
+        if (domainFailStats.has(domain)) {
+            domainFailStats.delete(domain);
+        }
+        if (blockedDomainCache.has(domain)) {
+            blockedDomainCache.delete(domain);
+            changed = true;
+        }
+        if (changed) {
+            persistExpireMap(LOGO_BLOCKED_DOMAIN_KEY, blockedDomainCache);
+        }
+    }
+
+    function buildCandidateList(img) {
+        const primary = normalizeUrl(img.dataset.src || '');
+        let fallbacks = img.dataset.fallback ? img.dataset.fallback.split('||').map(s => normalizeUrl(s.trim())).filter(Boolean) : [];
+        const yandex = [];
+        const google = [];
+        const others = [];
+        fallbacks.forEach(item => {
+            if (item.includes('favicon.yandex.net')) {
+                yandex.push(item);
+            } else if (item.includes('www.google.com/s2/favicons')) {
+                google.push(item);
+            } else {
+                others.push(item);
+            }
+        });
+        fallbacks = yandex.concat(google, others);
+        const merged = [];
+        const seen = new Set();
+        const cachedPrimary = readSuccessCache(primary);
+        [cachedPrimary, primary, ...fallbacks].forEach(item => {
+            const normalized = normalizeUrl(item);
+            if (!normalized || seen.has(normalized)) return;
+            seen.add(normalized);
+            merged.push(normalized);
+        });
+        return merged;
+    }
+
+    function probeImage(url) {
+        const normalized = normalizeUrl(url);
+        if (!normalized) return Promise.reject(new Error('invalid_url'));
+        if (inflightLogoLoads.has(normalized)) {
+            return inflightLogoLoads.get(normalized);
+        }
+        const requestPromise = new Promise((resolve, reject) => {
+            const temp = new Image();
+            temp.decoding = 'async';
+            temp.onload = () => {
+                if (isTransparentImage(temp)) {
+                    reject(new Error('transparent'));
+                    return;
+                }
+                resolve(normalized);
+            };
+            temp.onerror = () => reject(new Error('load_failed'));
+            temp.src = normalized;
+        });
+        const wrapped = requestPromise.finally(() => {
+            inflightLogoLoads.delete(normalized);
+        });
+        inflightLogoLoads.set(normalized, wrapped);
+        return wrapped;
+    }
+
+    async function resolveLogoUrl(img) {
+        const src = normalizeUrl(img.dataset.src || '');
+        const candidates = buildCandidateList(img);
+        for (const candidate of candidates) {
+            if (isUrlFailed(candidate) || isDomainBlocked(candidate)) {
+                continue;
+            }
+            const candidateResolved = readSuccessCache(candidate);
+            const target = normalizeUrl(candidateResolved || candidate);
+            if (!target || isUrlFailed(target) || isDomainBlocked(target)) {
+                continue;
+            }
+            try {
+                const okUrl = await probeImage(target);
+                writeSuccessCache(candidate, okUrl);
+                if (src) {
+                    writeSuccessCache(src, okUrl);
+                }
+                clearFailure(candidate);
+                clearFailure(okUrl);
+                return okUrl;
+            } catch (e) {
+                markFailure(target);
             }
         }
-        fallbacks = ordered.concat(fallbacks);
-    
-        let currentIndex = 0;
-        const tryNext = () => {
-            if (currentIndex < fallbacks.length) {
-                const fallbackSrc = fallbacks[currentIndex++].trim();
-                img.onerror = tryNext;
-                img.onload = () => {
-                    try {
-                        cacheImage(fallbackSrc, img.src);
-                    } catch (e) {}
-                    img.removeAttribute('data-src');
-                    if (isTransparentImage(img)) {
-                        tryNext();
-                    }
-                };
-                img.src = fallbackSrc;
+        return '';
+    }
+
+    function ensureDefaultLogoForImage(img) {
+        const defaultLogo = img.dataset.default || window.DEFAULT_LOGO;
+        if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+            img.src = defaultLogo;
+        }
+    }
+
+    function loadImage(img) {
+        if (img._loaded || img._loading) return;
+        ensureDefaultLogoForImage(img);
+        const src = normalizeUrl(img.dataset.src || '');
+        if (!src) {
+            img._loaded = true;
+            return;
+        }
+        const cachedResolved = readSuccessCache(src);
+        if (cachedResolved && !isUrlFailed(cachedResolved) && !isDomainBlocked(cachedResolved)) {
+            img.src = cachedResolved;
+            img._loaded = true;
+            img.removeAttribute('data-src');
+            return;
+        }
+        img._loading = true;
+        resolveLogoUrl(img).then((resolved) => {
+            if (resolved) {
+                img.src = resolved;
             } else {
-                img.onerror = function() {
-                    img.onerror = null;
-                    img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAn8B9kQn2wAAAABJRU5ErkJggg==";
-                };
                 img.src = window.DEFAULT_LOGO;
                 img.classList.add('img-placeholder');
             }
-        };
-        tryNext();
+            img._loaded = true;
+            img.removeAttribute('data-src');
+        }).finally(() => {
+            img._loading = false;
+        });
     }
 
-    // IntersectionObserver 懒加载
-    const lazyLoadImages = () => {
-        const lazyImages = document.querySelectorAll('.lazy[data-src]');
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        loadImage(entry.target);
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { rootMargin: '100px' });
-            lazyImages.forEach(img => observer.observe(img));
-        } else {
-            // 不支持 IntersectionObserver 时降级为原有方式
-            lazyImages.forEach(img => {
-                if (img.getBoundingClientRect().top < window.innerHeight + 100 && img.dataset.src) {
-                    loadImage(img);
-                }
-            });
+    const lazyObserver = ('IntersectionObserver' in window) ? new window.IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            ensureDefaultLogoForImage(entry.target);
+            loadImage(entry.target);
+            obs.unobserve(entry.target);
+        });
+    }, { rootMargin: '180px 0px' }) : null;
+
+    function observeLazyImage(img) {
+        if (img.classList.contains('_observed')) return;
+        ensureDefaultLogoForImage(img);
+        if (lazyObserver) {
+            lazyObserver.observe(img);
+            img.classList.add('_observed');
+            return;
         }
+        img.classList.add('_observed');
+    }
+
+    function scanVisibleLazyImages() {
+        const trigger = window.innerHeight + 180;
+        document.querySelectorAll('.lazy[data-src]').forEach(img => {
+            if (img._loaded) return;
+            if (img.getBoundingClientRect().top < trigger) {
+                loadImage(img);
+            }
+        });
+    }
+
+    let lazyScanScheduled = false;
+    function scheduleLazyScan() {
+        if (lazyObserver) return;
+        if (lazyScanScheduled) return;
+        lazyScanScheduled = true;
+        window.requestAnimationFrame(() => {
+            lazyScanScheduled = false;
+            scanVisibleLazyImages();
+        });
+    }
+
+    const lazyLoadImages = () => {
+        const lazyImages = document.querySelectorAll('.lazy[data-src]:not(._observed)');
+        lazyImages.forEach(observeLazyImage);
+        scheduleLazyScan();
     };
 
     // 展开所有页面块
