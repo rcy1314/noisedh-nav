@@ -125,14 +125,14 @@
                                   </div>
                                   {{ end }}
                               </div>
-                              <a class="carousel-control-prev" href="#ad-carousel" role="button" data-slide="prev">
+                              <button class="carousel-control-prev" type="button" data-target="#ad-carousel" data-slide="prev" aria-label="Previous">
                                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                   <span class="sr-only">Previous</span>
-                              </a>
-                              <a class="carousel-control-next" href="#ad-carousel" role="button" data-slide="next">
+                              </button>
+                              <button class="carousel-control-next" type="button" data-target="#ad-carousel" data-slide="next" aria-label="Next">
                                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                   <span class="sr-only">Next</span>
-                              </a>
+                              </button>
                               <br>
                           </div>
                       </div>
@@ -192,24 +192,41 @@
         </div>
         {{ end }}
 
-        <!-- 公告 -->
-        {{ if and .Site.Params.header.enableAnnouncements .Site.Params.header.announcements }}
+        {{ $headerParams := .Site.Params.header }}
+        {{ $enableAnnouncements := .Site.Params.enableAnnouncements }}
+        {{ $announcements := .Site.Params.announcements }}
+        {{ if and $headerParams (isset $headerParams "enableannouncements") }}
+            {{ $enableAnnouncements = index $headerParams "enableannouncements" }}
+        {{ end }}
+        {{ if and $headerParams (isset $headerParams "announcements") }}
+            {{ $announcements = index $headerParams "announcements" }}
+        {{ end }}
+        {{ if and $enableAnnouncements $announcements }}
         <div class="wp zzbuluoled" style="margin-top:0;">
             <div style="background: linear-gradient(rgba(46, 52, 72, 0.5), rgba(46, 52, 72, 0.1)); text-align: center; height: 45px; border-radius: 10px; box-shadow: inset 0 0 10px rgba(10, 10, 10, 0.5); display: flex; align-items: center; justify-content: center;">
-                <div id="zzbuluoled_sx" style="width:auto; overflow:hidden; height: 45px; text-align:left; display: flex; align-items: center; line-height: 45px;">
-                    <marquee direction="left" scrollamount="5">
-                        <strong>
-                        {{ range .Site.Params.header.announcements }}
+                <div id="zzbuluoled_sx" class="announcement-marquee">
+                    <div class="announcement-track">
+                        {{ range $announcements }}
                             {{ if .url }}
-                                <a href="{{ .url }}" target="_blank">
-                                    <span style="font-family: 'Tahoma'; font-weight:600; color: {{ .color }}; font-size: 20px;">{{ .text }}</span>
+                                <a href="{{ .url }}" target="_blank" class="announcement-item">
+                                    <span style="font-family:'Tahoma';font-weight:600;color:{{ .color }};font-size:20px;">{{ .text }}</span>
                                 </a>
                             {{ else }}
-                                <span style="font-family: 'Tahoma'; font-weight:600; color: {{ .color }}; font-size: 20px;">{{ .text }}</span>
+                                <span class="announcement-item" style="font-family:'Tahoma';font-weight:600;color:{{ .color }};font-size:20px;">{{ .text }}</span>
                             {{ end }}
                         {{ end }}
-                        </strong>
-                    </marquee>
+                    </div>
+                    <div class="announcement-track" aria-hidden="true">
+                        {{ range $announcements }}
+                            {{ if .url }}
+                                <a href="{{ .url }}" target="_blank" class="announcement-item">
+                                    <span style="font-family:'Tahoma';font-weight:600;color:{{ .color }};font-size:20px;">{{ .text }}</span>
+                                </a>
+                            {{ else }}
+                                <span class="announcement-item" style="font-family:'Tahoma';font-weight:600;color:{{ .color }};font-size:20px;">{{ .text }}</span>
+                            {{ end }}
+                        {{ end }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -227,6 +244,44 @@
   height: 0;
   padding-top: 56.25%; /* 16:9 aspect ratio */
   position: relative;
+}
+
+.announcement-marquee {
+  width: 100%;
+  overflow: hidden;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  line-height: 45px;
+  white-space: nowrap;
+}
+
+.announcement-track {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: max-content;
+  animation: announcement-scroll 45s linear infinite;
+}
+
+.announcement-item {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 2.5rem;
+  text-decoration: none;
+}
+
+.announcement-item:hover {
+  opacity: 0.9;
+}
+
+@keyframes announcement-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
 }
 
 .embed-container iframe {
