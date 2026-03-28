@@ -1,28 +1,90 @@
-## Noisedh-Nav
+# Noisedh-Nav
 
-## 一个hugo导航，可以通过简单配置配合不同的组件效果打造专属的导航网站
+## 一个可前后端分离带扩展一键收藏的hugo框架导航，可以通过简单配置配合不同的组件效果打造专属的导航网站
 
-![预览](https://s2.loli.net/2025/05/05/BQaNdGi8u1CDjJM.png)
+| ![预览](https://s2.loli.net/2025/05/05/BQaNdGi8u1CDjJM.png)  | ![823shots_so](https://cdn.jsdelivr.net/gh/rcy1314/tuchuang@main/uPic/823shots_so.png) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![553shots_so](https://cdn.jsdelivr.net/gh/rcy1314/tuchuang@main/uPic/553shots_so.png) | ![369shots_so](https://cdn.jsdelivr.net/gh/rcy1314/tuchuang@main/uPic/369shots_so.png) |
 
 ## 特征
 
-全新的loading载入效果，带有自定义文本果冻动画
+- 个性化多组件自定义配置，站点头部组件可手动更换及调整
+- 全新的loading载入效果，带有自定义文本果冻动画
+- 友好的seo及meta配置，修改config.toml即可
+- 带有二级分类横向标签的展示及更多网址的展示折叠
+- 全新带有AI一键分析推荐分类的扩展，随时随地收藏你的网址
+- 强大的后端API，多种部署方式，支持Docker一键部署
 
-支持更多自定义头部导航页的内置组件
+## 文档目录
 
-友好的seo及meta配置
-
-支持外部API及扩展的结合使用
-
-带有二级分类横向标签的展示
-
-更多组件...
+- 浏览器扩展（收录/搜索/AI）：[USAGE.md](./extension/Nav-manage-extension/USAGE.md)
+- 后端 API（Docker/参数/API）：[DEPLOYMENT.md](./extension/yaml-server/DEPLOYMENT.md)
+- 扩展与后端总览：[extension/README.md](./extension/README.md)
+- Docker 整站部署（Hugo 主题网站）：[DOCKER_HUGO.md](./DOCKER_HUGO.md)
 
 ------
 
 ![截图1](https://s2.loli.net/2025/07/21/8HwXBNfmVshqWzb.png)
 
 ![截图2](https://s2.loli.net/2025/07/21/o5ahZ1STbWg7HGd.png)
+
+## 快速开始（前后端分离 / 仅后端）
+
+本仓库包含 Hugo 站点（主题）+ 后端 API + 浏览器扩展。常见部署方式：
+
+### 仅部署后端（已有 Hugo 站点源码目录）
+
+```bash
+docker run -d \
+  --name nav-manage \
+  -p 8990:8990 \
+  -e PORT=8990 \
+  -e BASE_DIR=/app/hugo \
+  -e API_TOKEN=change_me_to_a_strong_token \
+  -e ENABLE_HUGO=false \
+  -e REMOTE_UPDATE_WEBHOOK= \
+  -v /path/to/your/hugo-site:/app/hugo \
+  --restart=always \
+  noise233/nav-manage:latest
+```
+
+要让“收录后自动更新站点”，二选一：
+
+- `ENABLE_HUGO=true`：在容器内直接执行 `hugo`（需要挂载完整 Hugo 源码目录）
+- `ENABLE_HUGO=false` + `REMOTE_UPDATE_WEBHOOK=<你的更新入口>`：写入完成后触发远程构建/发布
+
+后端常用环境变量（完整列表见 DEPLOYMENT.md）：
+
+- `PORT`：服务端口（默认 8990）
+- `BASE_DIR`：Hugo 站点根目录（包含 `data/`、`content/`、`themes/`、`config.toml`）
+- `API_TOKEN`：鉴权 Token（扩展 `serverToken` 必须一致）
+- `ENABLE_HUGO`：是否在后端直接执行 `hugo`
+- `REMOTE_UPDATE_WEBHOOK`：触发远程构建/发布的 webhook（可选）
+- `INVALID_404_THRESHOLD`：失效链接连续 404 删除阈值（默认 3）
+- `INVALID_CHECK_TIMEOUT_MS`：失效检测请求超时（默认 8000）
+- `INVALID_LINKS_MD`：失效归档输出文件（默认 `${BASE_DIR}/content/invalidlinks.md`）
+- `INVALID_LINKS_COUNTS`：404 计数持久化文件（默认 `extension/yaml-server/invalidlink_counts.json`）
+
+### 前后端分离（推荐）
+
+- Hugo 站点：静态发布在 Nginx / CDN / GitHub Pages
+- 后端 API：部署在云服务器，仅负责写入 `data/*.yml` 与触发更新
+- 浏览器扩展：配置 `serverUrl` + `serverToken`（必须等于后端 `API_TOKEN`）
+
+扩展常用配置项（在扩展“设置”页）：
+
+- 云服务器：`serverUrl`、`serverToken`、开启“云端写入”
+- GitHub：`githubUser/githubRepo/githubBranch/githubPath/githubToken`、开启“GitHub 写入”
+- AI：`aiProvider/aiModelName/aiApiKey/aiEndpoint`、可选开启“AI 摘要自动转中文”
+
+更完整的步骤与参数说明请查看上面的文档链接。
+
+### Docker 整站部署（Hugo 主题网站）
+
+如果你希望直接把 Hugo 主题站点完整跑起来（含 Nginx 静态服务），或同时联动 `yaml-server`，请使用整站教程：
+
+- [DOCKER_HUGO_THEME_DEPLOY.md](file:///Library/Github/noisedh/DOCKER_HUGO_THEME_DEPLOY.md)
+- 覆盖场景：仅 Hugo+Nginx、Hugo+Nginx+yaml-server、生产安全建议与排错
 
 它是在WebStack-Hugo二次开发下的软编码改造实现，可以纯静态化部署，使用前请查看如下说明：
 
@@ -64,6 +126,12 @@ hugo server --help
 
 ```sh
 hugo
+```
+
+Docker 方式构建（无需本机安装 Hugo）：
+
+```bash
+docker run --rm -v "$PWD":/src -w /src klakegg/hugo:0.128.2-ext hugo --minify
 ```
 
 ## 更新
@@ -302,16 +370,6 @@ content文件夹为页面文档夹，默认样式文件为`themes/noisedh-nav/la
 
 可在186行加入可跳转的网址白名单和黑名单
 
-## 后端API
-
-配置请访问：https://github.com/rcy1314/nav-manage
-
-浏览器扩展插件：
-
-Gooogle chrome：[点击安装](https://chrome.google.com/webstore/detail/ajoeaonfioiahhhhccafflalopoolbop)
-
-Microsoft Edge：[点击安装](https://microsoftedge.microsoft.com/addons/detail/pogpiicgclbpchehmdgdeianhgpnjanl)
-
 ## 自定义魔改
 
 主题文件夹：layouts为所有模版文件夹，_default为hugo渲染的md文章页样式模版，partials为主题样式模版
@@ -322,7 +380,7 @@ partials主模版：component_header为头部组件模版，content_footer为网
 
 ### 说说页面
 
-配置：https://github.com/rcy1314/echo-noise
+部署：https://github.com/rcy1314/echo-noise
 
 ### 热榜组件
 
@@ -342,7 +400,7 @@ partials主模版：component_header为头部组件模版，content_footer为网
 { key = "custom", icon = "fa-code", label = "自定义", html = "<div style=\"color:white; text-align:center;\">这里是自定义HTML内容</div>" },
 ```
 
-### rss聚合阅读组件
+### rss聚合阅读组件源
 
 仓库地址：https://github.com/rcy1314/rss-server-ag
 
@@ -356,14 +414,4 @@ docker run -d \
   -e RSS_URLS="https://example.com/rss1.xml,https://example.com/rss2.xml" \
   -e ADMIN_API_KEY=your_admin_key \
   noise233/rss-server-ag
-```
-
-部署成功后请在主题文件夹noisedh-nav下static文件夹的rssfollow.html中填入你的路由地址
-
-281行处
-
-```
-const response = await fetch('https://example.com/rss', {
-                    cache: 'force-cache'
-                });
 ```
