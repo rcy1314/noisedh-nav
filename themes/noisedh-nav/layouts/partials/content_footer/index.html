@@ -14,7 +14,7 @@
             </a>
             {{ with $.Site.Params.footer.toggleMenu }}
                 {{ range . }}
-                    <a href="{{ .url }}" class="btn rounded-circle kefu m-1" {{ if .target }}target="{{ .target }}"{{ end }} data-toggle="tooltip" data-placement="left" title="{{ .title }}">
+                    <a href="{{ if and (isset . "url") (ne .url "") }}{{ .url }}{{ else if and (isset . "key") (eq .key "exportBookmarks") }}{{ $.Site.Params.header.exportBookmarksUrl }}{{ else }}javascript:void(0);{{ end }}" class="btn rounded-circle kefu m-1" {{ if .target }}target="{{ .target }}"{{ end }} data-toggle="tooltip" data-placement="left" title="{{ .title }}">
                         <i class="{{ .icon }}"></i>
                     </a>
                 {{ end }}

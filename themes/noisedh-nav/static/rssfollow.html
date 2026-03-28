@@ -368,8 +368,12 @@
                 const cardsContainer = document.getElementById('rss-cards');
                 const loadMoreBtn = document.getElementById('load-more');
 
-                // 直接从外部服务器获取RSS
-                const response = await fetch('https://rssserversub.fly.dev/rss', {
+                const rssApiUrl =
+                    (window.parent && window.parent.CONFIG && window.parent.CONFIG.rssApiUrl)
+                        ? window.parent.CONFIG.rssApiUrl
+                        : 'https://rssserversub.fly.dev/rss';
+
+                const response = await fetch(rssApiUrl, {
                     cache: 'no-cache'
                 });
                 

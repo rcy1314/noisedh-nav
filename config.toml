@@ -80,7 +80,7 @@ relativeURLs = true
   toggleMenu = [
   { url = "https://www.noisework.cn/lianxi/weixin.png", icon = "far fa-comment-dots", title = "联系我", target = "_blank" },
   { url = "./invalidlinks/", icon = "fa fa-question-circle", title = "失效检测记录", target = "_blank" },
-  { url = "https://example.com/api/export-bookmarks", icon = "fa fa-download", title = "导出为书签文件", target = "_blank" }
+  { key = "exportBookmarks", icon = "fa fa-download", title = "导出为书签文件", target = "_blank" }
 ]
 # 头部tab导航配置
 [params.header]
@@ -103,6 +103,10 @@ rssmergeUrl = "rssfollow.html"
 talkUrl = "./talk/note.html"
 timeUrl = "https://www.noisework.cn/widgets/clock2/index.html"
 gameUrl = "https://www.noisework.cn/e/fcgame/index.html"
+
+rssApiUrl = "https://rssserversub.fly.dev/rss"
+
+exportBookmarksUrl = "https://extension.noisework.cn/api/export-bookmarks"
 
 
 # 头部收录通知路由recentSitesApi、网址统计路由statisticsApi、后端服务地址serverUrl、数据文件路径filePath
