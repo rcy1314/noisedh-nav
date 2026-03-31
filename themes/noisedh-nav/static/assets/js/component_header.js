@@ -69,7 +69,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 近期收录弹窗
     fetchAndShowLatestNotification();
-    setInterval(fetchAndShowLatestNotification, 8000);
+    setInterval(function () {
+        if (document.visibilityState === 'visible') {
+            fetchAndShowLatestNotification();
+        }
+    }, 60000);
 });
 
 // --- 最近收录网站相关 ---
@@ -144,7 +148,13 @@ function displaySites(data) {
 function startScrolling(element) {
     let scrollHeight = element.scrollHeight;
     let scrollTop = 0;
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return;
     function scroll() {
+        if (document.visibilityState !== 'visible') {
+            requestAnimationFrame(scroll);
+            return;
+        }
         scrollTop += 0.3;
         if (scrollTop >= scrollHeight) {
             scrollTop = 0;
@@ -273,7 +283,7 @@ async function fetchAndShowLatestNotification() {
             bellIcon.onclick = function() {
                 bellIcon.classList.remove('active');
                 localStorage.removeItem('hasNewNotification');
-            }
+            };
         }
     } catch (error) {
         console.error('获取通知失败:', error);

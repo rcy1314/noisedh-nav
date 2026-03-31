@@ -766,23 +766,21 @@ body {
       serverUrl: "{{ .Site.Params.header.serverUrl }}",
       filePath: "{{ .Site.Params.header.filePath }}",
       rssApiUrl: "{{ .Site.Params.header.rssApiUrl }}",
-      hotApiEndpoints: "{{ .Site.Params.hotApi.endpoints }}"
+      hotApiEndpoints: {{ .Site.Params.hotApi.endpoints | default (slice "https://hot.noisework.cn" "https://hot.noisedh.link") | jsonify | safeJS }}
     }
 </script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-      // 监听APlayer加载完成
+      let attempts = 0;
+      const maxAttempts = 30;
       var checkAPlayer = setInterval(function() {
           var ap = document.querySelector('.aplayer');
-          if(ap) {
+          if(ap || attempts >= maxAttempts) {
               document.getElementById('aplayer-loading').style.display = 'none';
               clearInterval(checkAPlayer);
           }
+          attempts += 1;
       }, 200);
   });
   </script>
-<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/component_header.js' id='component_header-js'></script>
-<link rel="stylesheet" href="https://www.noisework.cn/css/APlayer.min.css">
-<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
-<script src="https://www.noisework.cn/js/APlayer.min.js"></script>
-<script src="https://www.noisework.cn/js/Meting.min.js"></script>
+<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/component_header.js' id='component_header-js'></script>

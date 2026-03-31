@@ -1147,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function preloadListImages(list) {
         const images = Array.from(list.querySelectorAll('img.lazy'));
         if (!images.length) return;
-        const eagerLimit = 20;
+        const eagerLimit = 6;
         images.slice(0, eagerLimit).forEach((img) => {
             if (!img._loaded) {
                 loadImage(img);
@@ -1162,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.requestIdleCallback(flush, { timeout: 700 });
             return;
         }
-        window.setTimeout(flush, 50);
+        window.setTimeout(flush, 180);
     }
 
     function ensureDefaultLogo() {
@@ -1238,12 +1238,11 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', scheduleViewportLazyLoad, {passive:true});
     window.addEventListener('resize', scheduleViewportLazyLoad);
 
-    // 切换时预加载当前可见卡片图片
-    document.querySelectorAll('.row.card-list').forEach(list => {
-        if (list.style.display !== 'none') {
-            preloadListImages(list);
-        }
-    });
+    // 仅预加载首个可见列表，避免一次性加载过多图片
+    const firstVisibleList = Array.from(document.querySelectorAll('.row.card-list')).find(list => list.style.display !== 'none');
+    if (firstVisibleList) {
+        preloadListImages(firstVisibleList);
+    }
     initPerformanceSampling();
     initScrollSampling();
 

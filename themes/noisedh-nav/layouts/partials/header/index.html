@@ -41,16 +41,16 @@
     <link rel='stylesheet' id='iowen-css' href='{{ $.Site.Params.siteurl }}/assets/css/styles.css' type='text/css' media='all'>
     <link rel='stylesheet' id='loading-css' href='{{ $.Site.Params.siteurl }}/assets/css/loading.css' type='text/css' media='all'>
     <link rel='stylesheet' id='custom-css' href='{{ $.Site.Params.siteurl }}/assets/css/custom-style.css' type='text/css' media='all'>
-    <link rel='stylesheet' id='APlayer.min-css' href='https://cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css.map' type='text/css' media='all'>
+    <link rel='stylesheet' id='APlayer.min-css' href='{{ $.Site.Params.siteurl }}/assets/css/APlayer.min.css' type='text/css' media='all'>
     <link rel="stylesheet" id="fortawesome-css" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/all.min.css" type="text/css">
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js' id='jquery-js'></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
     <!-- 添加Service Worker -->
     <script>
         // 延迟注册Service Worker
         if ('serviceWorker' in navigator) {
-            setTimeout(function() {
+            const registerServiceWorker = function() {
                 navigator.serviceWorker.register('service-worker.js', {
                     scope: '/',
                     updateViaCache: 'none'
@@ -62,11 +62,16 @@
                         window.location.reload(true);
                     }
                 });
-            }, 2000);
+            };
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(registerServiceWorker, { timeout: 5000 });
+            } else {
+                setTimeout(registerServiceWorker, 2000);
+            }
         }
     </script>
      <link rel="manifest" href="manifest.json">
      <!-- 引入热榜 -->
      <link rel="stylesheet" href="{{ $.Site.Params.siteurl }}/assets/css/hot.css">
-     <script src="{{ $.Site.Params.siteurl }}/assets/js/hot.js"></script>
+     <script defer src="{{ $.Site.Params.siteurl }}/assets/js/hot.js"></script>
 </head>

@@ -17,7 +17,10 @@ const apiEndpoints = {
 
 // 使用 fetch API 从不同的API端点请求数据
 function fetchData(target) {
-  const updateTimeElement = document.getElementById(target).querySelector('.update-time');
+  const targetElement = document.getElementById(target);
+  if (!targetElement) return;
+  const updateTimeElement = targetElement.querySelector('.update-time');
+  if (!updateTimeElement) return;
   updateTimeElement.textContent = '数据更新时间: 加载中...';
 
   const endpointPath = apiEndpoints[target];
@@ -99,12 +102,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const targets = Object.keys(apiEndpoints);
   targets.forEach(target => {
     loadFromLocalStorage(target);
-    // 初始加载数据
-    fetchData(target);
+  });
+  const scheduleFetch = function (target, delay) {
+    window.setTimeout(function () {
+      if (document.visibilityState !== 'visible') return;
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(function () {
+          fetchData(target);
+        }, { timeout: 1200 });
+        return;
+      }
+      fetchData(target);
+    }, delay);
+  };
+  targets.forEach((target, index) => {
+    scheduleFetch(target, index * 450);
   });
 });
 
-// 每小时自动刷新页面
+// 每小时自动刷新热榜数据
 setInterval(() => {
-  location.reload();
-}, 3600000); // 3600000 毫秒 = 1 小时
+  if (document.visibilityState !== 'visible') return;
+  Object.keys(apiEndpoints).forEach(target => {
+    fetchData(target);
+  });
+}, 3600000);
