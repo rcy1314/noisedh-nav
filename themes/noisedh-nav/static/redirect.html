@@ -18,15 +18,23 @@
             --main-card-border: #e3e8f7;
             --main-card-background: #fff;
             --main-font-color: #363636;
-            --main-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            --main-shadow: 0 16px 40px rgba(34, 55, 104, 0.12);
+            --main-accent: #4c7dff;
+            --main-safe: #00bf73;
+            --main-danger: #eb3a4a;
+            --main-warn: #2a78b5;
         }
         @media (prefers-color-scheme: dark) {
             :root {
-                --main-site-background: #18171d;
-                --main-card-border: #3d3d3f;
-                --main-card-background: #1b1c20;
+                --main-site-background: #15161d;
+                --main-card-border: #2f3445;
+                --main-card-background: rgba(27, 31, 43, 0.86);
                 --main-font-color: #f7f7fa;
-                --main-shadow: 0 8px 24px rgba(0,0,0,0.2);
+                --main-shadow: 0 16px 40px rgba(0, 0, 0, 0.32);
+                --main-accent: #80a0ff;
+                --main-safe: #26d58d;
+                --main-danger: #ff6a76;
+                --main-warn: #78b9ff;
             }
         }
         a {
@@ -45,21 +53,95 @@
             height: 100vh;
             overflow: hidden;
             transition: color 0.3s, background-color 0.3s;
+            position: relative;
+        }
+        .bg-wave {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.28;
+            animation: floatWave 16s linear infinite;
+        }
+        .bg-wave.one {
+            width: 420px;
+            height: 420px;
+            left: -120px;
+            top: -120px;
+            background: radial-gradient(circle at 30% 30%, #88a5ff, transparent 68%);
+        }
+        .bg-wave.two {
+            width: 380px;
+            height: 380px;
+            right: -140px;
+            top: 15%;
+            background: radial-gradient(circle at 60% 50%, #89efd0, transparent 68%);
+            animation-duration: 20s;
+            animation-direction: reverse;
+        }
+        .bg-wave.three {
+            width: 300px;
+            height: 300px;
+            right: 18%;
+            bottom: -80px;
+            background: radial-gradient(circle at 50% 50%, #a48cff, transparent 70%);
+            animation-duration: 24s;
+        }
+        .particle-layer {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(123, 149, 255, 0.45);
+            animation: particleMove linear infinite;
+        }
+        .particle:nth-child(2n) {
+            width: 4px;
+            height: 4px;
+            background: rgba(113, 206, 172, 0.38);
+        }
+        .particle:nth-child(3n) {
+            width: 8px;
+            height: 8px;
+            background: rgba(173, 147, 255, 0.32);
+        }
+        .shell {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: min(92vw, 900px);
         }
         header {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            animation: fadeInUp 0.8s ease;
+        }
+        header .logo {
+            width: 156px;
+            height: 156px;
+            margin-bottom: 18px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at 30% 30%, rgba(133, 162, 255, 0.24), rgba(133, 162, 255, 0.04) 72%);
+            border: 1px solid rgba(125, 152, 252, 0.26);
+            box-shadow: inset 0 0 32px rgba(113, 142, 255, 0.2);
+            animation: logoPulse 3.2s ease-in-out infinite;
         }
         header .logo img {
-            width: 140px;
-            height: 140px;
-            margin-bottom: 24px;
-            transition: transform 0.3s ease;
-        }
-        header .logo img:hover {
-            transform: scale(1.05);
+            width: 112px;
+            height: 112px;
+            filter: drop-shadow(0 8px 18px rgba(76, 125, 255, 0.3));
+            animation: logoFloat 2.8s ease-in-out infinite;
         }
         header .title {
             display: flex;
@@ -72,30 +154,30 @@
             letter-spacing: 1px;
         }
         header .title .site-tip {
-            font-size: 20px;
-            margin-top: 10px;
-            opacity: 0.7;
+            font-size: 17px;
+            margin-top: 8px;
+            opacity: 0.72;
+            letter-spacing: 2px;
         }
         main {
-            margin: 20px 20px 60px;
-            border-radius: 20px;
-            padding: 35px;
+            margin: 20px 20px 64px;
+            border-radius: 24px;
+            padding: 34px 34px 30px;
             max-width: 768px;
             min-width: 380px;
             background-color: var(--main-card-background);
             border: 1px solid var(--main-card-border);
             box-shadow: var(--main-shadow);
-            transition: transform 0.3s ease;
-        }
-        main:hover {
-            transform: translateY(-2px);
+            backdrop-filter: blur(8px);
+            animation: fadeInUp 0.95s ease;
         }
         main .tip {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            opacity: 0.5;
+            display: block;
+            text-align: center;
+            margin-bottom: 14px;
+            opacity: 0.72;
             font-size: 15px;
+            letter-spacing: 0.6px;
         }
         main #url {
             display: block;
@@ -104,9 +186,11 @@
             width: 100%;
             text-align: center;
             border: 1px solid var(--main-card-border);
-            background-color: var(--main-site-background);
+            background-color: rgba(120, 141, 207, 0.08);
             font-size: 14px;
             word-break: break-all;
+            line-height: 1.6;
+            min-height: 52px;
         }
         main #site-info {
             display: inline-flex;
@@ -114,35 +198,71 @@
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            margin-top: 24px;
-            font-size: 16px;
+            margin-top: 22px;
+            font-size: 15px;
+            border-radius: 10px;
+            padding: 11px 14px;
+            border: 1px solid transparent;
+            background: rgba(120, 141, 207, 0.1);
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
         }
         main #jump-content.warn {
-            color: #286d9d;
+            color: var(--main-warn);
+        }
+        main #jump-content.warn #site-info {
+            border-color: rgba(42, 120, 181, 0.36);
+            background: rgba(42, 120, 181, 0.12);
         }
         main #jump-content.safe {
-            color: #00d26a;
+            color: var(--main-safe);
+        }
+        main #jump-content.safe #site-info {
+            border-color: rgba(0, 191, 115, 0.34);
+            background: rgba(0, 191, 115, 0.12);
         }
         main #jump-content.danger {
-            color: #f8312f;
+            color: var(--main-danger);
+        }
+        main #jump-content.danger #site-info {
+            border-color: rgba(235, 58, 74, 0.35);
+            background: rgba(235, 58, 74, 0.12);
         }
         main #jump-button {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 46px;
-            width: 180px;
-            margin: 35px auto 0;
+            height: 50px;
+            width: 212px;
+            margin: 26px auto 0;
             border-radius: 12px;
-            color: var(--main-font-color);
-            background-color: var(--main-card-border);
-            transition: all 0.3s ease;
+            color: #ffffff;
+            background: linear-gradient(135deg, #577fff, #6f96ff 54%, #82a7ff);
+            box-shadow: 0 10px 18px rgba(76, 125, 255, 0.35);
+            border: 1px solid rgba(146, 172, 255, 0.5);
+            transition: transform 0.25s, opacity 0.25s;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: 1px;
+            animation: breathe 2.1s ease-in-out infinite;
         }
-        main #jump-button:hover {
-            background-color: var(--main-site-background);
-            transform: translateY(-2px);
+        main #jump-button.disabled {
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.55;
+            animation: none;
+            background: linear-gradient(135deg, #7a808f, #989dad);
+            box-shadow: none;
+            border-color: rgba(180, 184, 197, 0.45);
+        }
+        main #jump-button.jumping {
+            animation: progressFlash 0.9s linear infinite;
+        }
+        .line-decor {
+            margin-top: 16px;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(118, 145, 235, 0.45), transparent);
+            opacity: 0.7;
         }
         footer {
             width: 100%;
@@ -150,8 +270,10 @@
             position: absolute;
             bottom: 0;
             margin: 20px;
-            opacity: 0.6;
+            opacity: 0.72;
             font-size: 14px;
+            z-index: 2;
+            animation: fadeIn 1.1s ease;
         }
         footer .icp::before {
             content: "|";
@@ -159,26 +281,138 @@
             margin-left: 4px;
             opacity: 0.2;
         }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 0.72;
+            }
+        }
+        @keyframes logoPulse {
+            0%, 100% {
+                box-shadow: inset 0 0 32px rgba(113, 142, 255, 0.2), 0 0 0 rgba(117, 145, 255, 0.1);
+            }
+            50% {
+                box-shadow: inset 0 0 42px rgba(113, 142, 255, 0.34), 0 0 34px rgba(117, 145, 255, 0.26);
+            }
+        }
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.03);
+            }
+        }
+        @keyframes progressFlash {
+            0%, 100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.14);
+            }
+        }
+        @keyframes floatWave {
+            0% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            50% {
+                transform: translate3d(18px, -18px, 0) scale(1.05);
+            }
+            100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+        }
+        @keyframes particleMove {
+            from {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-120vh);
+                opacity: 0;
+            }
+        }
+        @media (max-width: 768px) {
+            .shell {
+                width: 94vw;
+            }
+            header .logo {
+                width: 132px;
+                height: 132px;
+            }
+            header .logo img {
+                width: 96px;
+                height: 96px;
+            }
+            header .title .site-name {
+                font-size: 28px;
+            }
+            header .title .site-tip {
+                font-size: 16px;
+            }
+            main {
+                min-width: auto;
+                width: 100%;
+                padding: 26px 20px 24px;
+            }
+            main #jump-button {
+                width: 100%;
+                max-width: 240px;
+            }
+            footer {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="assets/images/favicon5.png" alt="" />
-        </div>
-        <div class="title">
-            <span class="site-name">NOISE导航</span>
-            <span class="site-tip">安全中心</span>
-        </div>
-    </header>
-    <main>
-        <span class="tip">您即将离开NOISE导航，前往</span>
-        <span id="url"></span>
-        <div id="jump-content" class="warn">
-            <span id="site-info">⚠️ 该网址安全性未知，请注意您的帐号和财产安全</span>
-            <div id="jump-button">继续前往</div>
-        </div>
-    </main>
+    <div class="bg-wave one"></div>
+    <div class="bg-wave two"></div>
+    <div class="bg-wave three"></div>
+    <div class="particle-layer" id="particle-layer"></div>
+    <div class="shell">
+        <header>
+            <div class="logo">
+                <img src="assets/images/favicon5.png" alt="NOISE导航 Logo" />
+            </div>
+            <div class="title">
+                <span class="site-name">NOISE导航</span>
+                <span class="site-tip">安全中心</span>
+            </div>
+        </header>
+        <main>
+            <span class="tip">即将离开 NOISE导航，正在前往以下站点</span>
+            <span id="url"></span>
+            <div id="jump-content" class="warn">
+                <span id="site-info">⚠️ 该网址安全性未知，请注意您的帐号和财产安全</span>
+                <div id="jump-button">继续前往</div>
+            </div>
+            <div class="line-decor"></div>
+        </main>
+    </div>
     <footer>
         <a class="power" href="index.html">
             ©
@@ -199,6 +433,7 @@
         const urlTip = document.getElementById("site-info");
         const jumpContent = document.getElementById("jump-content");
         const jumpButton = document.getElementById("jump-button");
+        const particleLayer = document.getElementById("particle-layer");
 
         // 网址白名单
         const whitelist = [
@@ -217,6 +452,7 @@
             "*.xb72303xbt.xxqnot.top:12766/keleios/?channelCode=xdk28",
             "*.xmz2pvqpfq7hnjvymtnk44bfq.615431.com",
             "*.jd.com",
+            "*.11166.memb6.com",
             "*.xx1979.com",
         ];
 
@@ -224,17 +460,39 @@
         const tipText = {
             safe: "✅ 该网址为信任网址，即将跳转",
             danger: "⛔ 该网址处于黑名单",
-            warn: "⏳请注意您的帐号和财产安全"
+            warn: "⏳请注意您的帐号和财产安全",
+        };
+
+        // 容错解码，避免 URI malformed 直接中断
+        const safeDecodeUrl = (value) => {
+            try {
+                return decodeURIComponent(value);
+            } catch (error) {
+                return value;
+            }
+        };
+
+        // 统一规范跳转地址，仅允许 http/https
+        const normalizeJumpUrl = (rawUrl) => {
+            const decoded = safeDecodeUrl((rawUrl || "").trim());
+            const completed = /^https?:\/\//i.test(decoded) ? decoded : `https://${decoded}`;
+            const parsed = new URL(completed);
+            if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+                throw new Error("Unsupported protocol");
+            }
+            return parsed;
         };
 
         // 自动跳转逻辑
         const autoJump = () => {
+            jumpButton.classList.add("jumping");
             let count = 3;
             const updateContent = () => {
                 jumpButton.innerHTML = `${count} 秒后自动跳转`;
                 count--;
                 if (count < 0) {
                     clearInterval(interval);
+                    jumpButton.classList.remove("jumping");
                     jumpButton.innerHTML = "正在跳转";
                     window.location.replace(jumpLink);
                 }
@@ -253,12 +511,13 @@
                 if (!encodedUrl) {
                     throw new Error("No URL parameter provided");
                 }
-                // 解码 URL
-                jumpLink = decodeURIComponent(encodedUrl);
-                urlDom.innerHTML = jumpLink;
+                // 解析和规范 URL
+                const parsedUrl = normalizeJumpUrl(encodedUrl);
+                jumpLink = parsedUrl.href;
+                urlDom.textContent = jumpLink;
 
                 // 获取网址的主机名
-                const urlHostname = new URL(jumpLink).hostname;
+                const urlHostname = parsedUrl.hostname;
 
                 // 判断网址是否在黑名单中
                 for (let i = 0; i < blacklist.length; i++) {
@@ -267,9 +526,7 @@
                         // 显示提示信息
                         urlTip.innerHTML = tipText.danger;
                         jumpButton.innerHTML = "禁止跳转";
-                        jumpButton.style.cursor = "not-allowed";
-                        jumpButton.style.pointerEvents = "none";
-                        jumpButton.style.opacity = "0.4";
+                        jumpButton.classList.add("disabled");
                         jumpContent.className = "danger";
                         return;
                     }
@@ -297,14 +554,32 @@
 
                     jumpButton.addEventListener("click", () => {
                         clearInterval(interval);
+                        jumpButton.classList.remove("jumping");
                         jumpButton.innerHTML = "正在跳转";
                         window.location.replace(jumpLink);
                     });
-                    autoJump();  // 如果不是黑名单中的网址，自动跳转
+                    autoJump(); // 如果不是黑名单中的网址，自动跳转
                 }
             } catch (error) {
                 console.error(error);
-                urlDom.innerHTML = "获取跳转链接失败";
+                urlDom.textContent = "获取跳转链接失败";
+                urlTip.innerHTML = "⚠ 参数异常，请返回上一页重新访问";
+                jumpButton.innerHTML = "无法跳转";
+                jumpButton.classList.add("disabled");
+            }
+        };
+
+        // 动态粒子背景
+        const createParticles = () => {
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                const dot = document.createElement("span");
+                dot.className = "particle";
+                dot.style.left = `${Math.random() * 100}%`;
+                dot.style.bottom = `${-Math.random() * 90}px`;
+                dot.style.animationDuration = `${10 + Math.random() * 12}s`;
+                dot.style.animationDelay = `${Math.random() * 6}s`;
+                particleLayer.appendChild(dot);
             }
         };
 
@@ -323,6 +598,7 @@
 
         // 页面加载完成后执行
         window.addEventListener("DOMContentLoaded", () => {
+            createParticles();
             getJumpUrl();
         });
     </script>
