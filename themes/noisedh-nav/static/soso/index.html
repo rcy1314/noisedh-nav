@@ -4,25 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="Noise导航" content="width=device-width, initial-scale=1.0">
-    <title>Noise导航</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOISE导航</title>
     <link rel="icon" href="favicon.ico">
-    <!-- jQuery -->
-    <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="preconnect" href="https://lf9-cdn-tos.bytecdntp.com" crossorigin>
+    <link rel="preconnect" href="https://lf26-cdn-tos.bytecdntp.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdn.staticfile.org" crossorigin>
     <!-- 引入样式 -->
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" type="text/css" href="./css/font.css">
     <link rel="stylesheet" type="text/css" href="./css/loading.css">
     <link rel="stylesheet" type="text/css" href="./css/mobile.css">
-    <link rel="stylesheet" type="text/css" href="./css/firefox.css">
     <link rel="stylesheet" type="text/css" href="./css/animation.css">
      <!-- 引入 播放器 -->
      <link rel="stylesheet" href="./css/APlayer.min.css">
     <!-- Izitoast -->
-    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/izitoast/1.4.0/css/iziToast.min.css">
-    <script type="text/javascript"
-        src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/izitoast/1.4.0/js/iziToast.min.js">
-    </script>
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/izitoast/1.4.0/css/iziToast.min.css" onerror="this.onerror=null;this.href='https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css';">
     <!-- IE Out -->
     <script>
         if ( /*@cc_on!@*/ false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href =
@@ -43,14 +41,14 @@
                 <div class="inner three"></div>
             </div>
             <div class="loading-word">
-                <p class="loading-title">Noise导航</p>
-                <span id="loading-text">加载中，请耐心等待</span>
+                <p class="loading-title">NOISE导航</p>
+                <span id="loading-text">正在极速加载...</span>
             </div>
         </div>
     </div>
     <!-- 背景图片 -->
     <div class="bg-all">
-        <img id="bg" onerror="this.classList.add('error');"></img>
+        <img id="bg" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='./img/background1.webp';"></img>
         <div class="cover"></div>
     </div>
     <!-- 主体内容 -->
@@ -63,6 +61,7 @@
                         <span id="time_text">00<span id="point">:</span>00</span>
                         <span id="day">0&nbsp;月&nbsp;00&nbsp;日&nbsp;周一</span>
                     </div>
+                    <a class="brand-badge" id="brand-home" href="https://www.noisedh.cn">NOISE导航</a>
                     <div class="weather">
                         <span id="wea_text">N/A</span>&nbsp;<span id="tem2">N/A</span>°C&nbsp;~&nbsp;<span
                             id="tem1">N/A</span>°C
@@ -256,6 +255,7 @@
                         <div class="tab-items actives">搜索引擎</div>
                         <div class="tab-items" id="set-quick-menu">快捷方式</div>
                         <div class="tab-items">背景图片</div>
+                        <div class="tab-items">项目设置</div>
                         <div class="tab-items">数据备份</div>
                     </div>
                     <div class="contents productss">
@@ -481,6 +481,49 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- 项目设置 -->
+                        <div class="mainConts">
+                            <div class="set_blocks">
+                                <div class="set_tip">
+                                    <span class="set_text">可按需关闭非必要功能以提升页面响应速度</span>
+                                </div>
+                                <div class="set_blocks_content">
+                                    <div class="from_container">
+                                        <div class="froms">
+                                            <div class="from_row">
+                                                <div class="from_row_content">
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_welcome" class="set-project-option" data-setting="show_welcome">
+                                                        <label class="form-radio-label" for="project_show_welcome">显示欢迎提示</label>
+                                                    </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_weather" class="set-project-option" data-setting="show_weather">
+                                                        <label class="form-radio-label" for="project_show_weather">显示天气信息</label>
+                                                    </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_auto_focus" class="set-project-option" data-setting="auto_focus">
+                                                        <label class="form-radio-label" for="project_auto_focus">桌面端自动聚焦搜索框</label>
+                                                    </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_aplayer" class="set-project-option" data-setting="show_aplayer">
+                                                        <label class="form-radio-label" for="project_show_aplayer">显示音乐播放器</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from_row" style="margin-top: 15px;">
+                                                <div class="from_row_content" style="flex-direction: column; align-items: flex-start;">
+                                                    <div style="font-size: 14px; margin-bottom: 8px; opacity: 0.9;">网易云音乐歌单 ID</div>
+                                                    <input type="text" class="set-project-option" data-setting="music_playlist_id" placeholder="请输入歌单 ID" autocomplete="off" style="width: 100%; height: 38px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); padding: 0 12px; background: rgba(255, 255, 255, 0.1); color: #fff; outline: none; transition: 0.3s;" onfocus="this.style.border='1px solid var(--main-background-active-color)';" onblur="this.style.border='1px solid rgba(255,255,255,0.3)';" title="默认：2141128031">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="from_items button" style="margin-top: 20px;">
+                                        <div class="but-ordinary" id="project_settings_save">保存项目设置</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- 数据备份设置 -->
                         <div class="mainConts">
                             <div class="set_blocks">
@@ -495,7 +538,7 @@
                                     <input type="file" id="my_data_file" name="file" style="display: none">
                                 </div>
                                 <div class="set_version">
-                                    <span class="set_version-text">Noise导航</span>
+                                    <a class="set_version-text" id="set-home-link" href="https://www.noisedh.cn">NOISE导航</a>
                                  
                                 </div>
                             </div>
@@ -509,7 +552,7 @@
             <div class="power"> &nbsp;&copy;&nbsp;2020
                 <script>
                     document.write(' - ' + (new Date()).getFullYear())
-                </script>&nbsp;<a href="https://www.noisedh.cn">Noise导航</a>
+                </script>&nbsp;<a href="https://www.noisedh.cn">NOISE导航</a>
                 
             </div>
         </div>
@@ -519,22 +562,43 @@
     <noscript>
         <div class="noscript fixed-top">请开启 JavaScript</div>
     </noscript>
+    <script>
+        // 不依赖任何第三方库的兜底：避免卡在加载层
+        setTimeout(function () {
+            var loadingBox = document.getElementById('loading-box');
+            var bg = document.getElementById('bg');
+            var section = document.getElementById('section');
+            var cover = document.querySelector('.cover');
+            if (loadingBox && !loadingBox.classList.contains('loaded')) {
+                loadingBox.classList.add('loaded');
+            }
+            if (bg) {
+                bg.style.transform = 'scale(1)';
+                bg.style.filter = 'blur(0px)';
+            }
+            if (section) {
+                section.style.opacity = '1';
+            }
+            if (cover) {
+                cover.style.opacity = '1';
+            }
+        }, 2200);
+    </script>
     <!-- JS -->
-    <script type="text/javascript" src="./js/main.js"></script>
-    <script type="text/javascript" src="./js/set.js"></script>
-    <script type="text/javascript" src="./js/js.cookie.js"></script>
+    <script src="../assets/js/jquery.min.js"></script>
+    <script defer src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/izitoast/1.4.0/js/iziToast.min.js" onerror="this.onerror=null;this.src='https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js';"></script>
+    <script defer type="text/javascript" src="./js/js.cookie.js"></script>
+    <script defer type="text/javascript" src="./js/set.js"></script>
+    <script defer type="text/javascript" src="./js/main.js"></script>
 <!-- aplayer -->
- <div id="aplayer" class="aplayer" data-order="random" data-id="128460001" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false" data-volume="0.8"></div>
-<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/meting@1.2.0/dist/Meting.min.js"></script>
+<div id="aplayer-wrap">
+    <meting-js server="netease" type="playlist" id="2141128031" order="random" fixed="true" autoplay="false" volume="0.8"></meting-js>
+</div>
 <!-- end_aplayer -->
-<script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+<script defer src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
 <script defer src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/kaygb/kaygb@master/layer/layer.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/kaygb/kaygb@master/js/v3.js"></script>
-
-</section>
+<script defer src="https://cdn.jsdelivr.net/gh/kaygb/kaygb@master/layer/layer.js"></script>
+<script defer src="https://cdn.jsdelivr.net/gh/kaygb/kaygb@master/js/v3.js"></script>
 </body>
 
 </html>

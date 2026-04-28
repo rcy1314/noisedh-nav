@@ -147,23 +147,79 @@ var quick_list_preinstall = {
     }
 };
 
+// 项目设置
+var project_settings_preinstall = {
+    show_weather: "1",
+    show_welcome: "1",
+    auto_focus: "0",
+    show_aplayer: "1",
+    music_playlist_id: "2141128031",
+};
+
+function canUseLocalStorage() {
+    try {
+        var testKey = "__soso_test__";
+        localStorage.setItem(testKey, "1");
+        localStorage.removeItem(testKey);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+function readStore(key) {
+    if (canUseLocalStorage()) {
+        var localValue = localStorage.getItem(key);
+        if (localValue !== null && localValue !== undefined) {
+            return localValue;
+        }
+    }
+    return Cookies.get(key);
+}
+
+function writeStore(key, value) {
+    var raw = typeof value === "string" ? value : JSON.stringify(value);
+    if (canUseLocalStorage()) {
+        localStorage.setItem(key, raw);
+    }
+    Cookies.set(key, raw, {
+        expires: 36500,
+        sameSite: "Lax"
+    });
+}
+
+function getStoreObject(key, fallback) {
+    var localValue = readStore(key);
+    if (!localValue || localValue === "{}") {
+        writeStore(key, fallback);
+        return JSON.parse(JSON.stringify(fallback));
+    }
+    try {
+        return JSON.parse(localValue);
+    } catch (error) {
+        writeStore(key, fallback);
+        return JSON.parse(JSON.stringify(fallback));
+    }
+}
+
+function getStoreValue(key, fallback) {
+    var localValue = readStore(key);
+    if (localValue === undefined || localValue === null || localValue === "") {
+        writeStore(key, String(fallback));
+        return String(fallback);
+    }
+    return String(localValue);
+}
+
 // 获取搜索引擎列表
 function getSeList() {
-    var se_list_local = Cookies.get('se_list');
-    if (se_list_local !== "{}" && se_list_local) {
-        return JSON.parse(se_list_local);
-    } else {
-        setSeList(se_list_preinstall);
-        return se_list_preinstall;
-    }
+    return getStoreObject('se_list', se_list_preinstall);
 }
 
 // 设置搜索引擎列表
 function setSeList(se_list) {
     if (se_list) {
-        Cookies.set('se_list', se_list, {
-            expires: 36500
-        });
+        writeStore('se_list', se_list);
         return true;
     }
     return false;
@@ -171,36 +227,126 @@ function setSeList(se_list) {
 
 // 获得默认搜索引擎
 function getSeDefault() {
-    var se_default = Cookies.get('se_default');
-    return se_default ? se_default : "1";
+    return getStoreValue('se_default', "1");
 }
 
 //背景图片
 var bg_img_preinstall = {
-    "type": "2", // 1:使用主题默认的背景图片 2:关闭背景图片 3:使用自定义的背景图片
+    "type": "1", // 1:使用主题默认的背景图片 2:必应每日 3:随机风景 4:随机二次元 5:自定义图片
     "path": "", //自定义图片
 };
 
 // 获取背景图片
 function getBgImg() {
-    var bg_img_local = Cookies.get('bg_img');
-    if (bg_img_local && bg_img_local !== "{}") {
-        return JSON.parse(bg_img_local);
-    } else {
-        setBgImg(bg_img_preinstall);
-        return bg_img_preinstall;
-    }
+    return getStoreObject('bg_img', bg_img_preinstall);
 }
 
 // 设置背景图片
 function setBgImg(bg_img) {
     if (bg_img) {
-        Cookies.set('bg_img', bg_img, {
-            expires: 36500
-        });
+        writeStore('bg_img', bg_img);
         return true;
     }
     return false;
+}
+
+function getProjectSettings() {
+    var settings = getStoreObject('project_settings', project_settings_preinstall);
+    if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
+        settings = JSON.parse(JSON.stringify(project_settings_preinstall));
+        setProjectSettings(settings);
+        return settings;
+    }
+    // 确保所有预设键都存在，如果不存在则使用默认值
+    var changed = false;
+    for (var key in project_settings_preinstall) {
+        if (settings[key] === undefined || settings[key] === null) {
+            settings[key] = project_settings_preinstall[key];
+            changed = true;
+        }
+    }
+    var boolKeys = ["show_weather", "show_welcome", "auto_focus", "show_aplayer"];
+    for (var i = 0; i < boolKeys.length; i++) {
+        var boolKey = boolKeys[i];
+        var boolValue = String(settings[boolKey]);
+        if (boolValue !== "0" && boolValue !== "1") {
+            settings[boolKey] = project_settings_preinstall[boolKey];
+            changed = true;
+        }
+    }
+    var playlistId = String(settings.music_playlist_id || "").trim();
+    if (!/^\d+$/.test(playlistId)) {
+        settings.music_playlist_id = project_settings_preinstall.music_playlist_id;
+        changed = true;
+    }
+    if (changed) {
+        setProjectSettings(settings);
+    }
+    return settings;
+}
+
+function setProjectSettings(projectSettings) {
+    if (projectSettings) {
+        writeStore('project_settings', projectSettings);
+        return true;
+    }
+    return false;
+}
+
+function isSettingEnabled(value) {
+    return value === "1" || value === 1 || value === true || value === "true";
+}
+
+function applyProjectSettings() {
+    var projectSettings = getProjectSettings();
+    var hideWeather = !isSettingEnabled(projectSettings.show_weather);
+    $(".weather").toggle(!hideWeather);
+    if (isSettingEnabled(projectSettings.auto_focus) && window.innerWidth > 768) {
+        setTimeout(function () {
+            $(".wd").focus();
+            focusWd();
+        }, 200);
+    }
+    var $aplayer = $("#aplayer-wrap");
+    if ($aplayer.length) {
+        var shouldShowAplayer = isSettingEnabled(projectSettings.show_aplayer);
+        $aplayer.toggle(shouldShowAplayer);
+        if (shouldShowAplayer) {
+            var playlistId = String(projectSettings.music_playlist_id || "").trim();
+            if (!/^\d+$/.test(playlistId)) {
+                playlistId = "2141128031";
+                projectSettings.music_playlist_id = playlistId;
+                setProjectSettings(projectSettings);
+                $(".set-project-option[data-setting='music_playlist_id']").val(playlistId);
+            }
+            var $meting = $aplayer.find("meting-js");
+            var currentId = String($meting.attr("id") || $aplayer.attr("data-playlist-id") || "").trim();
+            
+            if (currentId !== playlistId) {
+                // ID 发生了变化，需要重新加载播放器
+                if (typeof window.loadAPlayerAssets === "function") {
+                    window.loadAPlayerAssets(true);
+                }
+            } else if (typeof window.loadAPlayerAssets === "function") {
+                window.loadAPlayerAssets();
+            }
+        }
+    }
+    return projectSettings;
+}
+
+function setProjectSettingsInit() {
+    var projectSettings = getProjectSettings();
+    $(".set-project-option").each(function () {
+        var settingKey = $(this).attr("data-setting");
+        if (settingKey && projectSettings[settingKey] !== undefined) {
+            if ($(this).is(":checkbox")) {
+                $(this).prop("checked", isSettingEnabled(projectSettings[settingKey]));
+            } else {
+                $(this).val(projectSettings[settingKey]);
+            }
+        }
+    });
 }
 
 // 设置-壁纸
@@ -353,21 +499,13 @@ function setSeInit() {
 
 // 获取快捷方式列表
 function getQuickList() {
-    var quick_list_local = Cookies.get('quick_list');
-    if (quick_list_local !== "{}" && quick_list_local) {
-        return JSON.parse(quick_list_local);
-    } else {
-        setQuickList(quick_list_preinstall);
-        return quick_list_preinstall;
-    }
+    return getStoreObject('quick_list', quick_list_preinstall);
 }
 
 // 设置快捷方式列表
 function setQuickList(quick_list) {
     if (quick_list) {
-        Cookies.set('quick_list', quick_list, {
-            expires: 36500
-        });
+        writeStore('quick_list', quick_list);
         return true;
     }
     return false;
@@ -474,7 +612,7 @@ function openBox() {
     //背景模糊
     $('#bg').css({
         "transform": 'scale(1.08)',
-        "filter": "blur(10px)",
+        "filter": "blur(4px)",
         "transition": "ease 0.3s",
     });
 }
@@ -523,6 +661,10 @@ function hideQuick() {
 
 
 $(document).ready(function () {
+
+    // 项目设置初始化
+    applyProjectSettings();
+    setProjectSettingsInit();
 
     // 搜索框数据加载
     searchData();
@@ -676,8 +818,9 @@ $(document).ready(function () {
         }
     });
 
-    // 快捷方式添加按钮点击
-    $("#set-quick").click(function () {
+    // 快捷方式添加按钮点击（动态元素，使用事件委托）
+    $(document).on("click", "#set-quick", function (event) {
+        event.preventDefault();
         openSet();
 
         // 设置内容加载
@@ -689,17 +832,24 @@ $(document).ready(function () {
         $(".set_quick_list_add").trigger('click');
     });
 
+    // NOISE导航主页按钮：回到主页状态
+    $(document).on("click", "#brand-home, #set-home-link", function (event) {
+        event.preventDefault();
+        closeSet();
+        closeBox();
+        blurWd();
+        window.location.href = "./";
+    });
+
     // 修改默认搜索引擎
     $(".se_list_table").on("click", ".set_se_default", function () {
         var name = $(this).val();
-        Cookies.set('se_default', name, {
-            expires: 36500
-        });
         iziToast.show({
             timeout: 8000,
             message: '是否设置为默认搜索引擎？',
             buttons: [
                 ['<button>确认</button>', function (instance, toast) {
+                    writeStore('se_default', name);
                     setSeInit();
                     instance.hide({
                         transitionOut: 'flipOutX',
@@ -873,9 +1023,7 @@ $(document).ready(function () {
             buttons: [
                 ['<button>确认</button>', function (instance, toast) {
                     setSeList(se_list_preinstall);
-                    Cookies.set('se_default', 1, {
-                        expires: 36500
-                    });
+                    writeStore('se_default', "1");
                     setSeInit();
                     instance.hide({
                         transitionOut: 'flipOutX',
@@ -927,7 +1075,7 @@ $(document).ready(function () {
         if (quick_list[key]) {
             iziToast.show({
                 timeout: 8000,
-                message: '快捷方式 " + key + " 已有数据，是否覆盖？',
+                message: '快捷方式 ' + key + ' 已有数据，是否覆盖？',
                 buttons: [
                     ['<button>确认</button>', function (instance, toast) {
                         quick_list[key] = {
@@ -1132,10 +1280,45 @@ $(document).ready(function () {
         }
     });
 
+    // 项目设置保存
+    $("#project_settings_save").click(function () {
+        var currentSettings = getProjectSettings();
+        $(".set-project-option").each(function () {
+            var settingKey = $(this).attr("data-setting");
+            if (settingKey) {
+                if ($(this).is(":checkbox")) {
+                    currentSettings[settingKey] = $(this).is(":checked") ? "1" : "0";
+                } else {
+                    var settingValue = String($(this).val() || "").trim();
+                    if (settingKey === "music_playlist_id" && !/^\d+$/.test(settingValue)) {
+                        settingValue = "2141128031";
+                        $(this).val(settingValue);
+                    }
+                    currentSettings[settingKey] = settingValue;
+                }
+            }
+        });
+        setProjectSettings(currentSettings);
+        applyProjectSettings();
+        iziToast.show({
+            timeout: 2000,
+            message: '项目设置已保存'
+        });
+    });
+
     // 我的数据导出
     $("#my_data_out").click(function () {
-        var cookies = Cookies.get();
-        var json = JSON.stringify(cookies);
+        var backupData = {
+            cookies: Cookies.get(),
+            localStorage: {}
+        };
+        if (canUseLocalStorage()) {
+            for (var i = 0; i < localStorage.length; i++) {
+                var storageKey = localStorage.key(i);
+                backupData.localStorage[storageKey] = localStorage.getItem(storageKey);
+            }
+        }
+        var json = JSON.stringify(backupData);
         download("Snavigation-back-up-" + $.now() + ".json", json);
         iziToast.show({
             timeout: 2000,
@@ -1185,10 +1368,14 @@ $(document).ready(function () {
                 message: '当前数据将会被覆盖！是否继续导入？',
                 buttons: [
                     ['<button>确认</button>', function (instance, toast) {
-                        for (var key in mydata) {
-                            Cookies.set(key, mydata[key], {
-                                expires: 36500
-                            });
+                        var cookieData = mydata.cookies ? mydata.cookies : mydata;
+                        for (var key in cookieData) {
+                            writeStore(key, cookieData[key]);
+                        }
+                        if (mydata.localStorage && canUseLocalStorage()) {
+                            for (var localKey in mydata.localStorage) {
+                                localStorage.setItem(localKey, mydata.localStorage[localKey]);
+                            }
                         }
                         instance.hide({
                             transitionOut: 'flipOutX',

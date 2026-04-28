@@ -1,18 +1,37 @@
 @charset "utf-8";
 
+#loading-box {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    width: 100%;
+    height: 100%;
+    background: rgb(12 12 12 / 92%);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.35s ease;
+    animation: loading-fallback-hide 0.001s linear 2.8s forwards;
+}
+
+#loading-box.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 #loading-box .loading-left-bg,
 #loading-box .loading-right-bg {
     position: fixed;
     z-index: 999998;
-    width: 50%;
+    width: 100%;
     height: 100%;
-    background-color: rgb(81 81 81 / 80%);
-    transition: all 0.7s cubic-bezier(0.42, 0, 0, 1.01);
-    backdrop-filter: blur(10px);
+    background: rgb(12 12 12 / 88%);
+    transition: opacity 0.35s ease;
 }
 
 #loading-box .loading-right-bg {
-    right: 0;
+    display: none;
 }
 
 #loading-box>.spinner-box {
@@ -29,13 +48,14 @@
     position: absolute;
     color: #ffffff;
     font-size: 0.95rem;
-    transform: translateY(64px);
+    transform: translateY(56px);
     text-align: center;
 }
 
 p.loading-title {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     margin: 20px 10px 4px 10px;
+    letter-spacing: 1px;
 }
 
 #loading-box .spinner-box .configure-core {
@@ -45,11 +65,7 @@ p.loading-title {
 }
 
 div.loaded div.loading-left-bg {
-    transform: translate(-100%, 0);
-}
-
-div.loaded div.loading-right-bg {
-    transform: translate(100%, 0);
+    opacity: 0;
 }
 
 div.loaded div.spinner-box {
@@ -58,21 +74,19 @@ div.loaded div.spinner-box {
 
 .loader {
     position: absolute;
-    top: calc(50% - 32px);
-    left: calc(50% - 32px);
-    width: 64px;
-    height: 64px;
+    top: calc(50% - 28px);
+    left: calc(50% - 28px);
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
-    perspective: 800px;
-    transition: all 0.7s cubic-bezier(0.42, 0, 0, 1.01);
+    border: 3px solid rgb(255 255 255 / 35%);
+    border-top-color: #ffffff;
+    animation: loading-spin 0.85s linear infinite;
+    transition: opacity 0.35s ease;
 }
 
 .inner {
-    position: absolute;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    display: none;
 }
 
 .inner.one {
@@ -123,5 +137,22 @@ div.loaded div.spinner-box {
 
     100% {
         transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+    }
+}
+
+@keyframes loading-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes loading-fallback-hide {
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
     }
 }

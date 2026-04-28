@@ -51,7 +51,7 @@ section {
     height: 100%;
     min-height: 600px;
     opacity: 0;
-    transition: ease 1.5s;
+    transition: ease 0.45s;
 }
 
 .noclickn {
@@ -71,7 +71,7 @@ section {
 
 #bg {
     transform: scale(1.10);
-    filter: blur(10px);
+    filter: blur(3px);
     position: fixed;
     left: 0;
     top: 0;
@@ -148,7 +148,7 @@ img.error {
 /*背景模糊*/
 .onsearch #bg {
     transform: scale(1.08) !important;
-    filter: blur(10px) !important;
+    filter: blur(4px) !important;
     transition: ease 0.3s !important;
 }
 
@@ -235,6 +235,18 @@ img.error {
     text-shadow: var(--main-text-shadow);
 }
 
+.brand-badge {
+    margin: 8px 0;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    font-weight: 600;
+    background: linear-gradient(90deg, rgb(255 255 255 / 30%), rgb(255 255 255 / 15%));
+    text-shadow: var(--main-text-shadow);
+    cursor: pointer;
+}
+
 /*搜索框*/
 .search,
 .wd,
@@ -283,8 +295,24 @@ img.error {
     line-height: 100%;
     text-indent: 4px;
     font-size: 1.25rem;
-    color: var(--main-text-form-color);
+    color: var(--main-text-color);
+    caret-color: var(--main-text-color);
     /* background-color: transparent; */
+}
+
+.onsearch .con .sou form .wd {
+    color: var(--main-text-form-color);
+    caret-color: var(--main-text-form-color);
+}
+
+#aplayer-wrap .aplayer.aplayer-fixed {
+    right: 16px !important;
+    bottom: 16px !important;
+    z-index: 2147482000 !important;
+}
+
+#aplayer-wrap .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+    left: 0 !important;
 }
 
 .sou form .se,
@@ -796,6 +824,7 @@ input::-webkit-inner-spin-button {
 }
 
 input[type="number"] {
+    appearance: textfield;
     -moz-appearance: textfield;
 }
 
