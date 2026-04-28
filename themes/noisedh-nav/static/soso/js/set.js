@@ -838,7 +838,7 @@ $(document).ready(function () {
         closeSet();
         closeBox();
         blurWd();
-        window.location.href = "./";
+        window.location.href = "../index.html";
     });
 
     // 修改默认搜索引擎
