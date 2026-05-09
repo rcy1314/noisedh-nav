@@ -15,7 +15,7 @@
 ```bash
 mkdir -p /srv/noisedh
 cd /srv/noisedh
-git clone https://github.com/rcy1314/noisedh.git .
+git clone https://github.com/rcy1314/noisedh-nav.git .
 ```
 
 建议检查 `config.toml`：
