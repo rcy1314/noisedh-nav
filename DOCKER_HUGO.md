@@ -15,7 +15,7 @@
 ```bash
 mkdir -p /srv/noisedh
 cd /srv/noisedh
-git clone https://github.com/rcy1314/noisedh-nav.git .
+git clone https://github.com/rcy1314/noisedh.git .
 ```
 
 建议检查 `config.toml`：
@@ -88,12 +88,17 @@ services:
       - PORT=8990
       - BASE_DIR=/app/hugo
       - API_TOKEN=change_me_to_a_strong_token
+      - MCP_TOKEN=change_me_to_a_mcp_token
+      - MCP_REQUIRE_TOKEN=true
+      - MCP_RATE_LIMIT_MAX=120
+      - MCP_RATE_LIMIT_WINDOW_MS=60000
       - ENABLE_HUGO=true
       - REMOTE_UPDATE_WEBHOOK=
       - INVALID_404_THRESHOLD=3
       - INVALID_CHECK_TIMEOUT_MS=8000
       - INVALID_LINKS_MD=/app/hugo/content/invalidlinks.md
       - INVALID_LINKS_COUNTS=/app/server/invalidlink_counts.json
+      - MCP_HTTP=true
     volumes:
       - ./:/app/hugo
       - ./extension/yaml-server/notifications.json:/app/server/notifications.json
@@ -167,6 +172,61 @@ API 健康检查：
 ```bash
 curl http://127.0.0.1:8990/data
 ```
+
+## MCP（可选）
+
+如果你希望把站内收录数据接入 AI 客户端做自然语言搜索（支持可点击翻页/筛选），可在上面的 `yaml-server` 服务中启用 HTTP MCP：
+
+- `MCP_HTTP=true`
+
+AI 客户端接入（URL 方式）：
+
+```json
+{
+  "mcpServers": {
+    "NOISE导航": {
+      "url": "http://你的服务器IP:8990/mcp",
+      "headers": {
+        "Authorization": "Bearer <Token>"
+      }
+    }
+  }
+}
+```
+
+鉴权说明（/mcp）：
+
+- 默认需要鉴权：`Authorization: Bearer <Token>`
+- `Token` 的取值优先级：`MCP_TOKEN`（若设置）→ 否则复用 `API_TOKEN`
+- 若希望公开给所有人使用：设置 `MCP_REQUIRE_TOKEN=false`
+
+访问频率限制（/mcp，按 IP 计数）：
+
+- `MCP_RATE_LIMIT_MAX`：窗口内最大请求数（默认 120）
+- `MCP_RATE_LIMIT_WINDOW_MS`：窗口毫秒数（默认 60000）
+- `MCP_RATE_LIMIT_DISABLED=true`：关闭限制
+
+使用示例（自然语言 / 格式化）：
+
+- 自然语言： “在 NOISE导航 里搜索：设计 图标，翻到第 3 页”
+- 自然语言： “帮我找可以 AI 生成图片的网站”
+- 自然语言： “在 NOISE导航 里搜一下 AI 绘图工具”
+- 自然语言： “找一些支持文生图的站点”
+- 自然语言： “搜索能生成图片的 AI 网站，优先国外热门产品”
+- 自然语言： “帮我找 AI 图片生成工具，第 2 页”
+- 自然语言： “在 NOISE导航 里搜一下：云盘资源库（可以命中描述）”
+- 格式化： “搜索：关键词=设计 图标，页码=3，每页=20”
+- 带筛选： “搜索：关键词=图标，一级分类=设计，二级分类=UI”
+- 结构化： “搜索：关键词=图标，格式=json”（需要完整字段时用）
+
+字段映射（数据文件真实字段；其中 taxonomy/term 可作为筛选参数）：
+
+- `一级分类` → `taxonomy`
+- `二级分类` → `term`
+- `地址` → `url`
+- `描述` → `description`
+
+更多 MCP 说明见：`extension/yaml-server/DEPLOYMENT.md`
 
 ## 与其他文档的关系
 

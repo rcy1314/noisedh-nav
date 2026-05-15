@@ -11,7 +11,7 @@
 - 个性化多组件自定义配置，站点头部组件可手动更换及调整
 - 全新的loading载入效果，带有自定义文本果冻动画
 - 友好的seo及meta配置，修改config.toml即可
-- 带有二级分类横向标签的展示及更多网址的展示折叠
+- 带有二级分类横向页签的展示及更多网址的展示折叠
 - 全新带有AI一键分析推荐分类的扩展，随时随地收藏你的网址
 - 强大的后端API，多种部署方式，支持Docker一键部署
 
@@ -21,6 +21,8 @@
 - 后端 API（Docker/参数/API）：[DEPLOYMENT.md](./extension/yaml-server/DEPLOYMENT.md)
 - 扩展与后端总览：[extension/README.md](./extension/README.md)
 - Docker 整站部署（Hugo 主题网站）：[DOCKER_HUGO.md](./DOCKER_HUGO.md)
+- 扩展在线安装：[点击访问](https://microsoftedge.microsoft.com/addons/detail/nav-manage/pogpiicgclbpchehmdgdeianhgpnjanl)
+- 独立扩展+后端开源仓库：[点击访问](https://github.com/rcy1314/nav-manage)
 
 ------
 
@@ -48,6 +50,105 @@ docker run -d \
   noise233/nav-manage:latest
 ```
 
+如果你还希望同时启用 MCP（供 AI 客户端接入，自然语言站内搜索/可点击翻页），可以这样启动：
+
+```bash
+docker run -d \
+  --name nav-manage \
+  -p 8990:8990 \
+  -e PORT=8990 \
+  -e BASE_DIR=/app/hugo \
+  -e API_TOKEN=change_me_to_a_strong_token \
+  -e MCP_TOKEN=change_me_to_a_mcp_token \
+  -e MCP_REQUIRE_TOKEN=true \
+  -e MCP_RATE_LIMIT_MAX=120 \
+  -e MCP_RATE_LIMIT_WINDOW_MS=60000 \
+  -e ENABLE_HUGO=false \
+  -e MCP_HTTP=true \
+  -v /path/to/your/hugo-site:/app/hugo \
+  --restart=always \
+  noise233/nav-manage:latest
+```
+
+AI 客户端接入（URL 方式，最少配置）：
+
+```json
+{
+  "mcpServers": {
+    "NOISE导航": {
+      "url": "https://<你的域名或IP>:8990/mcp",
+      "headers": {
+        "Authorization": "Bearer <Token>"
+      }
+    }
+  }
+}
+```
+
+鉴权说明（/mcp）：
+
+- 默认需要鉴权：`Authorization: Bearer <Token>`
+- `Token` 的取值优先级：`MCP_TOKEN`（若设置）→ 否则复用 `API_TOKEN`
+- 若希望公开给所有人使用：设置 `MCP_REQUIRE_TOKEN=false`（不再需要 Authorization）
+
+传输说明（/mcp）：
+
+- HTTP 端点统一为 `/mcp`
+- 支持标准 MCP HTTP 的 `GET` / `POST` / `DELETE`
+- 服务端会根据客户端请求头返回单次 JSON 响应或 `text/event-stream`
+- 初始化后，服务端可能返回 `Mcp-Session-Id`，客户端后续请求应继续携带
+
+访问频率限制（/mcp，按 IP 计数）：
+
+- `MCP_RATE_LIMIT_MAX`：窗口内最大请求数（默认 120）
+- `MCP_RATE_LIMIT_WINDOW_MS`：窗口毫秒数（默认 60000）
+- `MCP_RATE_LIMIT_DISABLED=true`：关闭限制
+
+公开模式示例（不需要 Token，但保留访问频率限制）：
+
+```bash
+docker run -d \
+  --name nav-manage \
+  -p 8990:8990 \
+  -e PORT=8990 \
+  -e BASE_DIR=/app/hugo \
+  -e ENABLE_HUGO=false \
+  -e MCP_HTTP=true \
+  -e MCP_REQUIRE_TOKEN=false \
+  -e MCP_RATE_LIMIT_MAX=120 \
+  -e MCP_RATE_LIMIT_WINDOW_MS=60000 \
+  -v /path/to/your/hugo-site:/app/hugo \
+  --restart=always \
+  noise233/nav-manage:latest
+```
+
+使用示例（自然语言 / 格式化）：
+
+- 自然语言： “在 NOISE导航 里搜一下 AI 工具，翻到第 2 页”
+- 自然语言： “帮我找可以 AI 生成图片的网站”
+- 自然语言： “在 NOISE导航 里搜一下 AI 绘图工具”
+- 自然语言： “找一些支持文生图的站点”
+- 自然语言： “搜索能生成图片的 AI 网站，优先国外热门产品”
+- 自然语言： “帮我找 AI 图片生成工具，第 2 页”
+- 自然语言： “在 NOISE导航 里搜一下：云盘资源库（可以命中描述）”
+- 格式化： “搜索：关键词=AI，页码=2，每页=20”
+- 带筛选： “搜索：关键词=AI，一级分类=设计，二级分类=图标”
+- 结构化： “搜索：关键词=AI，格式=json”（需要完整字段时用）
+
+字段映射（数据文件真实字段；其中 taxonomy/term 可作为筛选参数）：
+
+- `一级分类` → `taxonomy`
+- `二级分类` → `term`
+- `地址` → `url`
+- `描述` → `description`
+
+### 后端 API 一键部署到 Railway
+
+- 仓库已内置 Railway 配置文件 [railway.json](file:///Library/Github/noisedh/railway.json)
+- 在 Railway 选择 `Deploy from GitHub repo` 并选择本仓库即可自动按 Dockerfile 部署后端 API
+- 至少配置变量：`API_TOKEN`、`BASE_DIR`（建议 `/app/hugo`）、`ENABLE_HUGO=false`
+- 部署后可用 `https://<你的域名>/api/health` 验证服务存活
+
 要让“收录后自动更新站点”，二选一：
 
 - `ENABLE_HUGO=true`：在容器内直接执行 `hugo`（需要挂载完整 Hugo 源码目录）
@@ -57,13 +158,17 @@ docker run -d \
 
 - `PORT`：服务端口（默认 8990）
 - `BASE_DIR`：Hugo 站点根目录（包含 `data/`、`content/`、`themes/`、`config.toml`）
-- `API_TOKEN`：鉴权 Token（扩展 `serverToken` 必须一致）
+- `API_TOKEN`：鉴权 Token（扩展 `serverToken` 必须一致；未设置时写入类接口不可用）
 - `ENABLE_HUGO`：是否在后端直接执行 `hugo`
 - `REMOTE_UPDATE_WEBHOOK`：触发远程构建/发布的 webhook（可选）
 - `INVALID_404_THRESHOLD`：失效链接连续 404 删除阈值（默认 3）
 - `INVALID_CHECK_TIMEOUT_MS`：失效检测请求超时（默认 8000）
 - `INVALID_LINKS_MD`：失效归档输出文件（默认 `${BASE_DIR}/content/invalidlinks.md`）
 - `INVALID_LINKS_COUNTS`：404 计数持久化文件（默认 `extension/yaml-server/invalidlink_counts.json`）
+- `MCP_HTTP=true`：开启 MCP 的 HTTP 接入（统一使用 `/mcp` 端点；完整见 DEPLOYMENT.md）
+- `MCP_REQUIRE_TOKEN=true|false`：`/mcp` 是否必须携带鉴权 Token（默认 true）
+- `MCP_TOKEN`：`/mcp` 的鉴权 Token（可选；不填则复用 `API_TOKEN`）
+- `MCP_RATE_LIMIT_MAX` / `MCP_RATE_LIMIT_WINDOW_MS`：`/mcp` 访问频率限制（按 IP 计数）
 
 ### 前后端分离（推荐）
 

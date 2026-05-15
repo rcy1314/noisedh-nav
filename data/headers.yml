@@ -18,13 +18,17 @@
   icon: fa fa-github
   link: "https://github.com/rcy1314/noisedh-nav"
   
-- item: 扩展使用
+- item: MCP/Skill
   icon: fa fa-coffee
-  link: "https://github.com/rcy1314/nav-manage"
+  link: "./mcp/"
   
 - item: 订阅收录更新
   icon: fa fa-rss-square
   link: "https://www.noisedh.cn/rss.xml"
+
+- item: 失效链接记录
+  icon: fa fa-calendar-times-o
+  link: "./invalidlinks/"
 
 - item: 更多
   icon: fa fa-map-signs
@@ -46,7 +50,3 @@
       url: "https://noisedh.link"
     - name: 📑旧版
       url: "./jiuban/"
-    - name: 🚗博客版
-      url: "https://h5qqf-xqaaa-aaaag-aazea-cai.ic0.app"
-    - name: 🗒维格表
-      url: "https://spcqwserdvymm.com.vika.cn/share/shryNwH3HRgvzMTaZVAGx/fodkuzz5eaw0w"
