@@ -487,6 +487,19 @@
         let currentIndex = 0;
         const itemsPerLoad = 20;
         let isAppending = false;
+        let loadMoreHandler = null;
+        let currentFetchController = null;
+
+        function buildNoCacheUrl(rawUrl) {
+            try {
+                const url = new URL(rawUrl, window.location.href);
+                url.searchParams.set('_t', Date.now().toString());
+                return url.toString();
+            } catch (e) {
+                const sep = rawUrl.indexOf('?') >= 0 ? '&' : '?';
+                return rawUrl + sep + '_t=' + Date.now();
+            }
+        }
 
         function renderItems(startIndex, count) {
             const fragment = document.createDocumentFragment();
@@ -567,20 +580,35 @@
             return '';
         }
 
-        async function fetchRSS() {
+        async function fetchRSS(options) {
+            const opts = options || {};
+            const forceRefresh = !!opts.forceRefresh;
             try {
                 const cardsContainer = document.getElementById('rss-cards');
                 const loadMoreBtn = document.getElementById('load-more');
                 const query = new URLSearchParams(window.location.search);
+                if (!cardsContainer || !loadMoreBtn) return;
 
                 const rssApiUrl =
                     query.get('rssApiUrl') ||
                     getSafeParentConfigValue('rssApiUrl') ||
                     'https://rssserversub.fly.dev/rss';
 
-                const response = await fetch(rssApiUrl, {
-                    cache: 'no-cache'
+                if (currentFetchController) {
+                    try { currentFetchController.abort(); } catch (e) {}
+                }
+                const controller = new AbortController();
+                currentFetchController = controller;
+                const timeoutId = setTimeout(function () {
+                    try { controller.abort(); } catch (e) {}
+                }, 8000);
+
+                const requestUrl = forceRefresh ? buildNoCacheUrl(rssApiUrl) : rssApiUrl;
+                const response = await fetch(requestUrl, {
+                    cache: 'no-store',
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP错误! 状态: ${response.status}`);
@@ -605,10 +633,17 @@
                 });
                 currentIndex = itemsPerLoad;
 
-                // 显示加载更多按钮
+                loadMoreBtn.textContent = '加载更多内容';
+                loadMoreBtn.classList.remove('disabled');
+                loadMoreBtn.disabled = false;
+                if (loadMoreHandler) {
+                    loadMoreBtn.removeEventListener('click', loadMoreHandler);
+                    loadMoreHandler = null;
+                }
+
                 if (allItems.length > itemsPerLoad) {
                     loadMoreBtn.style.display = 'block';
-                    loadMoreBtn.addEventListener('click', () => {
+                    loadMoreHandler = function () {
                         if (isAppending) return;
                         isAppending = true;
                         const start = currentIndex;
@@ -621,7 +656,10 @@
                                 loadMoreBtn.disabled = true;
                             }
                         });
-                    });
+                    };
+                    loadMoreBtn.addEventListener('click', loadMoreHandler);
+                } else {
+                    loadMoreBtn.style.display = 'none';
                 }
 
             } catch (error) {
@@ -666,24 +704,13 @@
             scheduleFetchRSS();
         }
 
-        // 刷新按钮功能 - 强制刷新并清除缓存
-        document.getElementById('refresh-button').addEventListener('click', function() {
-            // 添加旋转动画
-            this.classList.add('refreshing');
-            
-            // 延迟一下让动画可见，然后强制刷新页面并清除缓存
-            setTimeout(() => {
-                // 强制刷新并清除缓存的方法
-                if (window.location.search) {
-                    // 如果URL已经有查询参数，添加或更新时间戳参数
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('_t', Date.now());
-                    window.location.href = url.toString();
-                } else {
-                    // 如果URL没有查询参数，添加时间戳参数
-                    window.location.href = window.location.href + '?_t=' + Date.now();
-                }
-            }, 300);
+        document.getElementById('refresh-button').addEventListener('click', function () {
+            const button = this;
+            if (button.classList.contains('refreshing')) return;
+            button.classList.add('refreshing');
+            fetchRSS({ forceRefresh: true }).finally(function () {
+                button.classList.remove('refreshing');
+            });
         });
     </script>
 </body>

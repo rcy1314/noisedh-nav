@@ -77,6 +77,17 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // --- 最近收录网站相关 ---
+function buildNoCacheUrl(rawUrl) {
+    try {
+        var url = new URL(rawUrl, window.location.href);
+        url.searchParams.set('_t', Date.now().toString());
+        return url.toString();
+    } catch (e) {
+        var sep = rawUrl.indexOf('?') >= 0 ? '&' : '?';
+        return rawUrl + sep + '_t=' + Date.now();
+    }
+}
+
 async function fetchRecentSites() {
     const siteListElement = document.getElementById('site-list');
     const titleElement = document.getElementById('recent-sites-title');
@@ -85,22 +96,23 @@ async function fetchRecentSites() {
 
     const cachedData = localStorage.getItem('recentSites');
     const cachedTime = localStorage.getItem('recentSitesTimestamp');
+    let hasRenderedCache = false;
     if (cachedData && cachedTime) {
-        const currentTime = Date.now();
-        const timeDiff = currentTime - cachedTime;
-        if (timeDiff < 3600000) {
+        try {
             displaySites(JSON.parse(cachedData));
-            return;
+            hasRenderedCache = true;
+        } catch (e) {
+            hasRenderedCache = false;
         }
     }
 
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
-        // 修改为软编码 recentSitesApi
         const recentSitesApi = window.CONFIG && window.CONFIG.recentSitesApi ? window.CONFIG.recentSitesApi : 'https://extension.noisework.cn/api/notifications';
-        const response = await fetch(recentSitesApi, {
-            signal: controller.signal
+        const response = await fetch(buildNoCacheUrl(recentSitesApi), {
+            signal: controller.signal,
+            cache: 'no-store'
         });
         clearTimeout(timeoutId);
 
@@ -109,12 +121,17 @@ async function fetchRecentSites() {
         }
 
         const data = await response.json();
-        localStorage.setItem('recentSites', JSON.stringify(data));
+        const nextCache = JSON.stringify(data);
+        if (!cachedData || cachedData !== nextCache) {
+            displaySites(data);
+        }
+        localStorage.setItem('recentSites', nextCache);
         localStorage.setItem('recentSitesTimestamp', Date.now());
-        displaySites(data);
     } catch (error) {
-        if (titleElement) titleElement.style.display = 'none';
-        if (recentSitesElement) recentSitesElement.style.display = 'none';
+        if (!hasRenderedCache) {
+            if (titleElement) titleElement.style.display = 'none';
+            if (recentSitesElement) recentSitesElement.style.display = 'none';
+        }
     }
 }
 
@@ -244,7 +261,7 @@ try {
 async function fetchAndShowLatestNotification() {
     try {
         const recentSitesApi = window.CONFIG && window.CONFIG.recentSitesApi ? window.CONFIG.recentSitesApi : 'https://extension.noisework.cn/api/notifications';
-        const response = await fetch(recentSitesApi);
+        const response = await fetch(buildNoCacheUrl(recentSitesApi), { cache: 'no-store' });
         const notifications = await response.json();
 
         const bellIcon = document.getElementById('noisenotification-icon');
@@ -252,7 +269,9 @@ async function fetchAndShowLatestNotification() {
 
         if (Array.isArray(notifications) && notifications.length > 0) {
             const latestNotification = notifications.reduce((latest, current) => {
-                return new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest;
+                const currentTime = new Date(current.timestamp || current.date || 0);
+                const latestTime = new Date(latest.timestamp || latest.date || 0);
+                return currentTime > latestTime ? current : latest;
             });
 
             const notificationContent = `🎉站点收录更新通知：<strong>${latestNotification.title}</strong><br><a href="${latestNotification.url}" target="_blank" style="color:#ff9800;text-decoration:underline;">${latestNotification.description}</a>`;
