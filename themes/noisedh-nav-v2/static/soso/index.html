@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOISE导航</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="preconnect" href="https://lf9-cdn-tos.bytecdntp.com" crossorigin>
+    <link rel="preconnect" href="https://lf26-cdn-tos.bytecdntp.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdn.staticfile.org" crossorigin>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <link rel="stylesheet" type="text/css" href="./css/font.css">
+    <link rel="stylesheet" type="text/css" href="./css/loading.css">
+    <link rel="stylesheet" type="text/css" href="./css/mobile.css">
+    <link rel="stylesheet" type="text/css" href="./css/animation.css">
+     <!-- 引入 播放器 -->
+     <link rel="stylesheet" href="./css/APlayer.min.css">
+    <!-- Izitoast -->
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/izitoast/1.4.0/css/iziToast.min.css" onerror="this.onerror=null;this.href='https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css';">
+    <style>
+        :root {
+            --body-background-color: #0b0b12;
+            --main-text-color: #14131a;
+            --main-text-form-color: #14131a;
+            --main-text-form-hover-color: rgba(255, 255, 255, 0.96);
+            --main-background-color: rgba(255, 255, 255, 0.86);
+            --main-background-hover-color: rgba(255, 255, 255, 0.94);
+            --main-background-active-color: rgba(255, 255, 255, 0.98);
+            --main-button-color: rgba(255, 255, 255, 0.92);
+            --main-button-hover-color: rgba(255, 255, 255, 0.98);
+            --main-button-active-color: rgba(255, 255, 255, 1);
+            --main-input-color: rgba(255, 255, 255, 0.95);
+            --main-input-text-placeholder-color: rgba(20, 19, 26, 0.5);
+            --main-text-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+            --main-search-shadow: 0 14px 0 rgba(10, 10, 18, 0.28);
+            --main-search-hover-shadow: 0 18px 0 rgba(10, 10, 18, 0.34);
+            --border-bottom-color-hover: rgba(20, 19, 26, 0.35);
+            --border-bottom-color-active: rgba(20, 19, 26, 0.9);
+            --sticker-outline: rgba(20, 19, 26, 0.92);
+            --sticker-outline-soft: rgba(20, 19, 26, 0.35);
+            --sticker-glow: rgba(255, 255, 255, 0.32);
+        }
+
+        body {
+            background:
+                radial-gradient(18px 18px at 18px 18px, rgba(255, 255, 255, 0.09) 0 2px, transparent 3px) 0 0 / 24px 24px,
+                radial-gradient(22px 22px at 14px 10px, rgba(255, 255, 255, 0.06) 0 2px, transparent 3px) 0 0 / 28px 28px,
+                var(--body-background-color);
+        }
+
+        .cover {
+            background-image:
+                radial-gradient(rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.38) 90%),
+                radial-gradient(rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.22) 130%);
+        }
+
+        .tool-all {
+            position: relative;
+            width: clamp(320px, calc(100% - 120px), 560px);
+            box-sizing: border-box;
+            padding: 14px 14px 12px;
+            border-radius: 18px;
+            border: 2px solid var(--sticker-outline);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78));
+            box-shadow: 0 12px 0 rgba(10, 10, 18, 0.22);
+            backdrop-filter: blur(8px);
+        }
+
+        .tool-all::before {
+            content: "";
+            position: absolute;
+            inset: -10px -10px auto auto;
+            width: 72px;
+            height: 26px;
+            transform: rotate(8deg);
+            background: linear-gradient(90deg, rgba(255, 214, 102, 0.92), rgba(255, 107, 164, 0.92));
+            border: 2px solid var(--sticker-outline);
+            border-radius: 999px;
+            box-shadow: 0 8px 0 rgba(10, 10, 18, 0.18);
+            filter: saturate(1.05);
+            opacity: 0.92;
+            pointer-events: none;
+        }
+
+        #time_text,
+        #day,
+        .weather,
+        .brand-badge,
+        .power,
+        .set_version-text,
+        .set_version-text2 {
+            color: var(--main-text-color) !important;
+            text-shadow: none !important;
+        }
+
+        .brand-badge {
+            border: 2px solid var(--sticker-outline);
+            background: linear-gradient(90deg, rgba(164, 255, 239, 0.92), rgba(194, 168, 255, 0.92));
+            box-shadow: 0 10px 0 rgba(10, 10, 18, 0.22);
+        }
+
+        .all-search {
+            border-radius: 22px;
+            border: 2px solid var(--sticker-outline);
+            position: relative;
+            background:
+                radial-gradient(160px 64px at 15% 15%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 62%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.86));
+            box-shadow: 0 14px 0 rgba(10, 10, 18, 0.28);
+            overflow: visible;
+        }
+
+        .all-search::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: 20px;
+            border: 0;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.22);
+            pointer-events: none;
+            filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+        }
+
+        .sou form .se,
+        .sou form .s {
+            border-radius: 14px;
+        }
+
+        #icon-se,
+        #icon-sou {
+            color: rgba(20, 19, 26, 0.92) !important;
+        }
+
+        .sou form .se:hover,
+        .sou-button:hover {
+            background: rgba(255, 255, 255, 0.75) !important;
+        }
+
+        #keywords {
+            border: 2px solid var(--sticker-outline);
+            box-shadow: 0 12px 0 rgba(10, 10, 18, 0.22);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .keyword:hover,
+        .keyword.choose {
+            background:
+                linear-gradient(90deg, rgba(255, 214, 102, 0.52), rgba(255, 107, 164, 0.32)) !important;
+        }
+
+        .mark,
+        .set {
+            border: 2px solid var(--sticker-outline);
+            border-radius: 18px;
+            box-shadow: 0 14px 0 rgba(10, 10, 18, 0.18);
+            background:
+                radial-gradient(220px 120px at 10% 0%, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0) 62%),
+                rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(10px);
+        }
+
+        .mark .tab,
+        .set .tabs {
+            padding: 8px 8px 0;
+        }
+
+        .mark .tab .tab-item,
+        .set .tabs .tab-items {
+            border-radius: 14px 14px 12px 12px;
+            margin: 0 6px;
+            border: 2px solid transparent;
+        }
+
+        .mark .tab .tab-item:hover,
+        .set .tabs .tab-items:hover {
+            border-color: var(--sticker-outline-soft);
+        }
+
+        .mark .tab .tab-item.active,
+        .set .tabs .tab-items.actives {
+            background: linear-gradient(90deg, rgba(164, 255, 239, 0.78), rgba(194, 168, 255, 0.78));
+            border-color: var(--sticker-outline);
+        }
+
+        .quick,
+        .quicks {
+            border: 2px solid var(--sticker-outline);
+            border-radius: 16px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.84));
+            box-shadow: 0 10px 0 rgba(10, 10, 18, 0.16);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick::before,
+        .quicks::before {
+            content: "";
+            position: absolute;
+            left: -18%;
+            top: -45%;
+            width: 60%;
+            height: 110%;
+            transform: rotate(-18deg);
+            background: linear-gradient(90deg, rgba(255, 214, 102, 0.55), rgba(255, 107, 164, 0.35));
+            filter: saturate(1.1);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .quick[data-s="github"]::before,
+        .quicks[data-s="github"]::before {
+            background: linear-gradient(90deg, rgba(194, 168, 255, 0.6), rgba(93, 230, 255, 0.3));
+        }
+
+        .quick[data-s="steam"]::before,
+        .quicks[data-s="steam"]::before {
+            background: linear-gradient(90deg, rgba(93, 230, 255, 0.55), rgba(164, 255, 239, 0.35));
+        }
+
+        .quick[data-s="bilibili"]::before,
+        .quicks[data-s="bilibili"]::before {
+            background: linear-gradient(90deg, rgba(255, 107, 164, 0.55), rgba(255, 214, 102, 0.32));
+        }
+
+        #menu {
+            border: 2px solid var(--sticker-outline);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78));
+            box-shadow: 0 12px 0 rgba(10, 10, 18, 0.22);
+            position: fixed;
+            top: 8px;
+            right: 8px;
+            z-index: 2147483100;
+            isolation: isolate;
+            pointer-events: auto;
+            transform: translateZ(0);
+        }
+
+        #icon-menu {
+            color: rgba(20, 19, 26, 0.92) !important;
+        }
+
+        .quick_list_div,
+        .se_list_div,
+        .quick_list_div_num,
+        .se_list_num,
+        .but-ordinary,
+        .set_se_list_add,
+        .set_se_list_preinstall,
+        .set_quick_list_add,
+        .set_quick_list_preinstall,
+        .se_add_save,
+        .se_add_cancel,
+        .quick_add_cancel,
+        .quick_add_save,
+        .wallpaper_save {
+            border: 2px solid var(--sticker-outline);
+            background: rgba(255, 255, 255, 0.9) !important;
+            box-shadow: 0 10px 0 rgba(10, 10, 18, 0.16);
+        }
+
+        .set_blocks_content button {
+            border: 2px solid var(--sticker-outline);
+            background: rgba(255, 255, 255, 0.94);
+        }
+
+        .sticker-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.95;
+        }
+
+        .sticker-float {
+            position: absolute;
+            border-radius: 18px;
+            border: 2px solid var(--sticker-outline);
+            box-shadow: 0 14px 0 rgba(10, 10, 18, 0.16);
+            background: linear-gradient(120deg, rgba(255, 214, 102, 0.92), rgba(255, 107, 164, 0.92));
+            filter: saturate(1.05);
+        }
+
+        .sf-1 {
+            width: 74px;
+            height: 38px;
+            left: 14px;
+            top: 16px;
+            transform: rotate(-8deg);
+        }
+
+        .sf-2 {
+            width: 96px;
+            height: 44px;
+            right: 18px;
+            top: 78px;
+            transform: rotate(10deg);
+            background: linear-gradient(120deg, rgba(93, 230, 255, 0.9), rgba(194, 168, 255, 0.9));
+        }
+
+        .sf-3 {
+            width: 84px;
+            height: 40px;
+            left: 18px;
+            bottom: 86px;
+            transform: rotate(7deg);
+            background: linear-gradient(120deg, rgba(164, 255, 239, 0.9), rgba(255, 214, 102, 0.9));
+        }
+
+        .sf-4 {
+            width: 110px;
+            height: 52px;
+            right: 20px;
+            bottom: 120px;
+            transform: rotate(-6deg);
+            background: linear-gradient(120deg, rgba(255, 107, 164, 0.9), rgba(93, 230, 255, 0.88));
+        }
+
+        .sf-5 {
+            width: 56px;
+            height: 56px;
+            left: 22px;
+            top: 120px;
+            transform: rotate(14deg);
+            border-radius: 999px;
+            background: linear-gradient(120deg, rgba(194, 168, 255, 0.92), rgba(255, 214, 102, 0.92));
+        }
+
+        .sf-6 {
+            width: 78px;
+            height: 36px;
+            right: 24px;
+            top: 16px;
+            transform: rotate(-10deg);
+            background: linear-gradient(120deg, rgba(164, 255, 239, 0.92), rgba(93, 230, 255, 0.9));
+        }
+
+        .sf-2,
+        .sf-6 {
+            display: none;
+        }
+
+        .sticker-star {
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            border: 2px solid var(--sticker-outline);
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.6));
+            box-shadow: 0 12px 0 rgba(10, 10, 18, 0.14);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 92%, 50% 71%, 21% 92%, 32% 57%, 2% 35%, 39% 35%);
+            filter: saturate(1.02);
+            opacity: 0.92;
+        }
+
+        .ss-1 {
+            left: 14px;
+            top: 54%;
+            transform: rotate(-8deg);
+        }
+
+        .ss-2 {
+            right: 18px;
+            top: 52%;
+            transform: rotate(10deg);
+        }
+
+        .sticker-doodle {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 999px;
+            border: 2px dashed rgba(255, 255, 255, 0.28);
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+            filter: drop-shadow(0 10px 0 rgba(10, 10, 18, 0.14));
+            opacity: 0.7;
+        }
+
+        .sd-1 {
+            left: -54px;
+            top: 44%;
+            transform: rotate(10deg);
+        }
+
+        .sd-2 {
+            right: -64px;
+            top: 36%;
+            transform: rotate(-12deg);
+        }
+
+        @media (max-width: 768px) {
+            .sticker-layer {
+                opacity: 0.72;
+            }
+
+            .sf-2,
+            .sf-4,
+            .sf-6,
+            .sd-2 {
+                display: none;
+            }
+        }
+    </style>
+    <!-- IE Out -->
+    <script>
+        if ( /*@cc_on!@*/ false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href =
+            "https://www.noisedh.cn/?referrer=" + encodeURIComponent(window.location
+            .href);
+    </script>
+</head>
+
+<body>
+    <div class="sticker-layer" aria-hidden="true">
+        <span class="sticker-float sf-1"></span>
+        <span class="sticker-float sf-2"></span>
+        <span class="sticker-float sf-3"></span>
+        <span class="sticker-float sf-4"></span>
+        <span class="sticker-float sf-5"></span>
+        <span class="sticker-float sf-6"></span>
+        <span class="sticker-star ss-1"></span>
+        <span class="sticker-star ss-2"></span>
+        <span class="sticker-doodle sd-1"></span>
+        <span class="sticker-doodle sd-2"></span>
+    </div>
+    <!--加载动画-->
+    <div id="loading-box">
+        <div class="loading-left-bg"></div>
+        <div class="loading-right-bg"></div>
+        <div class="spinner-box">
+            <div class="loader">
+                <div class="inner one"></div>
+                <div class="inner two"></div>
+                <div class="inner three"></div>
+            </div>
+            <div class="loading-word">
+                <p class="loading-title">NOISE导航</p>
+                <span id="loading-text">正在极速加载...</span>
+            </div>
+        </div>
+    </div>
+    <!-- 背景图片 -->
+    <div class="bg-all">
+        <img id="bg" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='./img/background1.webp';"></img>
+        <div class="cover"></div>
+    </div>
+    <!-- 主体内容 -->
+    <section id="section" class="section">
+        <div id="content">
+            <div class="con">
+                <!-- 时间天气 -->
+                <div class="tool-all">
+                    <div class="time">
+                        <span id="time_text">00<span id="point">:</span>00</span>
+                        <span id="day">0&nbsp;月&nbsp;00&nbsp;日&nbsp;周一</span>
+                    </div>
+                    <a class="brand-badge" id="brand-home" href="https://www.noisedh.cn">NOISE导航</a>
+                    <div class="weather">
+                        <span id="wea_text">N/A</span>&nbsp;<span id="tem2">N/A</span>°C&nbsp;~&nbsp;<span
+                            id="tem1">N/A</span>°C
+                    </div>
+                </div>
+                <!-- 搜索框 -->
+                <div class="sou">
+                    <form class="search" action="https://www.baidu.com/s" target="_Blank">
+                        <div class="all-search">
+                            <div class="se" title="点击切换搜索引擎">
+                                <i id="icon-se" class="iconfont icon-baidu"></i>
+                            </div>
+                            <input class="wd" type="text" name="wd" placeholder="想要搜点什么" autocomplete="off">
+                            <div class="sou-button">
+                                <div class="s" id="s-button">
+                                    <i id="icon-sou" class="iconfont icon-sousuo"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="submit" id="search-submit" style="display: none;">
+                    </form>
+                    <div id="keywords" style="display: none;"></div>
+                    <div class="search-engine" style="display: none;">
+                        <div class="search-engine-list">
+                            <div class="se-li">
+                                <a class="se-li-text" data-url="https://www.baidu.com/s" data-name="wd"
+                                    data-icon="iconfont icon-baidu">
+                                    <i id="icon-sou-list" class="iconfont icon-sousuo"></i>
+                                    <span>百度</span>
+                                </a>
+                            </div>
+                            <div class="se-li" data-url="https://cn.bing.com/search" data-name="q"
+                                data-icon="iconfont icon-bing">
+                                <a class="se-li-text">
+                                    <i id="icon-sou-list" class="iconfont icon-bing"></i>
+                                    <span>必应</span>
+                                </a>
+                            </div>
+                            <div class="se-li" data-url="https://www.google.com/search" data-name="q"
+                                data-icon="iconfont icon-google">
+                                <a class="se-li-text">
+                                    <i id="icon-sou-list" class="iconfont icon-google"></i>
+                                    <span>谷歌</span>
+                                </a>
+                            </div>
+                            <div class="se-li" data-url="https://www.sogou.com/web" data-name="query"
+                                data-icon="iconfont icon-bing">
+                                <a class="se-li-text">
+                                    <i id="icon-sou-list" class="iconfont icon-sougousousuo"></i>
+                                    <span>搜狗</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 书签页 -->
+                <div class="mark" style="display: none;">
+                    <div class="tab">
+                        <div class="tab-item active">常用</div>
+                        <div class="tab-item">工具</div>
+                        <div class="tab-item">开发</div>
+                        <div class="tab-item">娱乐</div>
+                        <div class="tab-item">学习</div>
+                        <div class="tab-item">设计</div>
+                    </div>
+                    <div class="content products">
+                        <!-- 常用 -->
+                        <div class="mainCont selected">
+                            <div class="quick-all">
+                                <div class="quick" data-s="bilibili" title="哔哩哔哩 (゜-゜)つロ 干杯~">
+                                    <a href="https://www.bilibili.com/" target="_blank">
+                                        哔哩哔哩
+                                    </a>
+                                </div>
+                                <div class="quick" data-s="github" title="GitHub">
+                                    <a href="https://github.com/" target="_blank">
+                                        GitHub
+                                    </a>
+                                </div>
+                                <div class="quick" data-s="v2ex" title="V2EX">
+                                    <a href="https://www.v2ex.com/" target="_blank">
+                                        V2EX
+                                    </a>
+                                </div>
+                                <div class="quick" data-s="steam" title="Steam">
+                                    <a href="https://store.steampowered.com/" target="_blank">
+                                        Steam
+                                    </a>
+                                </div>
+                                <div class="quick" data-s="scp" title="控制，收容，保护">
+                                    <a href="http://scp-wiki-cn.wikidot.com/" target="_blank">
+                                        scp基金会2
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 工具 -->
+                        <div class="mainCont">
+                            <div class="quick-alls">
+                                <div class="quicks" data-s="bilibili" title="哔哩哔哩 (゜-゜)つロ 干杯~">
+                                    <a href="https://www.bilibili.com/" target="_blank">
+                                        哔哩哔哩
+                                    </a>
+                                </div>
+                                <div class="quicks" data-s="github" title="GitHub">
+                                    <a href="https://github.com/" target="_blank">
+                                        GitHub
+                                    </a>
+                                </div>
+                                <div class="quicks" data-s="v2ex" title="V2EX">
+                                    <a href="https://www.v2ex.com/" target="_blank">
+                                        V2EX
+                                    </a>
+                                </div>
+                                <div class="quicks" data-s="steam" title="Steam">
+                                    <a href="https://store.steampowered.com/" target="_blank">
+                                        Steam
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 开发 -->
+                        <div class="mainCont">
+                            <div class="quick-alls">
+                                <div class="quicks" data-s="bilibili" title="哔哩哔哩 (゜-゜)つロ 干杯~">
+                                    <a href="https://www.bilibili.com/" target="_blank">
+                                        哔哩哔哩
+                                    </a>
+                                </div>
+                                <div class="quicks" data-s="github" title="GitHub">
+                                    <a href="https://github.com/" target="_blank">
+                                        GitHub
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 娱乐 -->
+                        <div class="mainCont">
+                            <div class="quick-alls">
+                                <div class="quicks" data-s="bilibili" title="哔哩哔哩 (゜-゜)つロ 干杯~">
+                                    <a href="https://www.bilibili.com/" target="_blank">
+                                        哔哩哔哩
+                                    </a>
+                                </div>
+                                <div class="quicks" data-s="github" title="GitHub">
+                                    <a href="https://github.com/" target="_blank">
+                                        GitHub
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 学习 -->
+                        <div class="mainCont">
+                            <div class="quick-alls">
+                                <div class="quicks" data-s="bilibili" title="哔哩哔哩 (゜-゜)つロ 干杯~">
+                                    <a href="https://www.bilibili.com/" target="_blank">
+                                        哔哩哔哩
+                                    </a>
+                                </div>
+                                <div class="quicks" data-s="github" title="GitHub">
+                                    <a href="https://github.com/" target="_blank">
+                                        GitHub
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 设计 -->
+                        <div class="mainCont">
+                            <div class="quick-alls">
+                                <div class="quicks" data-s="bilibili" title="哔哩哔哩 (゜-゜)つロ 干杯~">
+                                    <a href="https://www.bilibili.com/" target="_blank">
+                                        哔哩哔哩
+                                    </a>
+                                </div>
+                                <div class="quicks" data-s="github" title="GitHub">
+                                    <a href="https://github.com/" target="_blank">
+                                        GitHub
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 设置图标 -->
+                <div id="menu">
+                    <i id="icon-menu" class="iconfont icon-shezhi"></i>
+                </div>
+                <!-- 设置页 -->
+                <div class="set" style="display: none;">
+                    <div class="tabs">
+                        <div class="tab-items actives">搜索引擎</div>
+                        <div class="tab-items" id="set-quick-menu">快捷方式</div>
+                        <div class="tab-items">背景图片</div>
+                        <div class="tab-items">项目设置</div>
+                        <div class="tab-items">数据备份</div>
+                    </div>
+                    <div class="contents productss">
+                        <!-- 搜索引擎设置 -->
+                        <div class="mainConts selected">
+                            <div class="set_blocks">
+                                <div class="set_blocks_content">
+                                    <div class="se_list">
+                                        <div class="se_list_table">
+                                            <div class="se_list_div">
+                                                <div class="se_list_num">
+                                                    <i class="iconfont icon-home"></i>
+                                                </div>
+                                                <div class="se_list_name">百度</div>
+                                                <div class="se_list_button">
+                                                    <button class="set_se_default" value="baidu"
+                                                        style="border-radius: 8px 0px 0px 8px;">
+                                                        <span class="iconfont icon-home"></span>
+                                                    </button>
+                                                    <button class="edit_se" value="baidu">
+                                                        <span class="iconfont icon-xiugai"></span>
+                                                    </button>
+                                                    <button class="delete_se" value="baidu"
+                                                        style="border-radius: 0px 8px 8px 0px;">
+                                                        <span class="iconfont icon-delete"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="se_list_div">
+                                                <div class="se_list_num">2</div>
+                                                <div class="se_list_name">谷歌</div>
+                                                <div class="se_list_button">
+                                                    <button class="set_se_default" value="google"><span
+                                                            class="iconfont icon-home"></span></button>
+                                                    <button class="edit_se" value="google"><span
+                                                            class="iconfont icon-xiugai"></span></button>
+                                                    <button class="delete_se" value="google"><span
+                                                            class="iconfont icon-delete"></span></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="se_add_preinstall">
+                                        <div class="set_se_list_add">
+                                            <span class="set_quick_text">新增</span>
+                                        </div>
+                                        <div class="set_se_list_preinstall">
+                                            <span class="set_quick_text">重置</span>
+                                        </div>
+                                    </div>
+                                    <div class="add_content se_add_content" style="display:none;">
+                                        <div class="froms">
+                                            <div class="from_items">
+                                                <div class="from_text">顺序</div>
+                                                <input type="hidden" name="key_inhere">
+                                                <input type="number" name="key" placeholder="请填入小于 20 的正整数"
+                                                    autocomplete="off"
+                                                    oninput="if(value>20)value=20;if(value<0)value=0">
+                                            </div>
+                                            <div class="from_items">
+                                                <div class="from_text">名称</div>
+                                                <input type="text" name="title" placeholder="搜索引擎名称" autocomplete="off">
+                                            </div>
+                                            <div class="from_items">
+                                                <div class="from_text">网址</div>
+                                                <input type="url" name="url" placeholder="以 https 或 http 开头的 URL"
+                                                    autocomplete="off">
+                                            </div>
+                                            <div class="from_items">
+                                                <div class="from_text">字段名</div>
+                                                <input type="text" name="name" placeholder="URL 中 ? 后面的字段"
+                                                    autocomplete="off">
+                                            </div>
+                                            <div class="from_items" style="display: none;">
+                                                <input type="text" name="icon" placeholder="iconfont icon-Earth"
+                                                    value="iconfont icon-Earth" disabled="disabled">
+                                            </div>
+                                        </div>
+                                        <div class="from_items button">
+                                            <div class="se_add_save">保存</div>
+                                            <div class="se_add_cancel">取消</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 快捷方式设置 -->
+                        <div class="mainConts">
+                            <div class="set_blocks">
+                                <div class="set_blocks_content">
+                                    <div class="quick_list">
+                                        <div class="quick_list_table">
+                                            <div class="quick_list_div">
+                                                <div class="quick_list_div_num">1</div>
+                                                <div class="quick_list_div_name">哔哩哔哩</div>
+                                                <div class="quick_list_div_button">
+                                                    <div class="edit_quick" value="1">
+                                                        <span class="iconfont iconbook-edit"></span>
+                                                    </div>
+                                                    <div class="delete_quick" value="1">
+                                                        <span class="iconfont icondelete"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="quick_list_div">
+                                                <div class="quick_list_div_num">2</div>
+                                                <div class="quick_list_div_name">知乎</div>
+                                                <div class="quick_list_div_button">
+                                                    <button class="edit_quick" value="2"
+                                                        style="border-radius: 8px 0px 0px 8px;">
+                                                        <span class="iconfont iconbook-edit"></span>
+                                                    </button>
+                                                    <button class="delete_quick" value="2"
+                                                        style="border-radius: 0px 8px 8px 0px;">
+                                                        <span class="iconfont icondelete"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="se_add_preinstalls">
+                                        <div class="set_quick_list_add">
+                                            <span class="set_quick_text">新增</span>
+                                        </div>
+                                        <div class="set_quick_list_preinstall">
+                                            <span class="set_quick_text">重置</span>
+                                        </div>
+                                    </div>
+                                    <div class="add_content quick_add_content" style="display:none;">
+                                        <div class="froms">
+                                            <div class="from_items">
+                                                <div class="from_text">顺序</div>
+                                                <input type="hidden" name="key_inhere">
+                                                <input type="number" name="key" placeholder="请填入小于 100 的正整数"
+                                                    autocomplete="off"
+                                                    oninput="if(value>99)value=99;if(value<0)value=0">
+                                            </div>
+                                            <div class="from_items">
+                                                <div class="from_text">名称</div>
+                                                <input type="text" name="title" placeholder="网站名称" autocomplete="off">
+                                            </div>
+                                            <div class="from_items">
+                                                <div class="from_text">网址</div>
+                                                <input type="url" name="url" placeholder="以 https 或 http 开头的 URL"
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <div class="from_items button">
+                                            <div class="quick_add_save">保存</div>
+                                            <div class="quick_add_cancel">取消</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 背景图片设置 -->
+                        <div class="mainConts">
+                            <div class="set_blocks">
+                                <div class="set_tip">
+                                    <span class="set_text mobile">点击下方选项以切换壁纸，使用除默认壁纸以外的选项可能会导致页面载入缓慢</span>
+                                    <span class="set_text mobile">不建议使用以主色调为白色的壁纸，会导致本站部分元素无法辨认</span>
+                                    <span class="set_text" id="wallpaper_text">请点击选项以查看各项说明，高亮项为选中，选中后刷新页面以生效</span>
+                                </div>
+                                <div class="set_blocks_content">
+                                    <div class="from_container">
+                                        <div class="froms">
+                                            <div class="from_row">
+                                                <div class="from_row_content">
+                                                    <div id="wallpaper">
+                                                        <div class="form-radio">
+                                                            <input type="radio" id="radio1" class="set-wallpaper"
+                                                                name="wallpaper-type" value="1" style="display: none;">
+                                                            <label class="form-radio-label" for="radio1">
+                                                                默认壁纸
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-radio">
+                                                            <input type="radio" id="radio2" class="set-wallpaper"
+                                                                name="wallpaper-type" value="2" style="display: none;">
+                                                            <label class="form-radio-label" for="radio2">
+                                                                必应每日
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-radio">
+                                                            <input type="radio" id="radio3" class="set-wallpaper"
+                                                                name="wallpaper-type" value="3" style="display: none;">
+                                                            <label class="form-radio-label" for="radio3">
+                                                                随机风景
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-radio">
+                                                            <input type="radio" id="radio4" class="set-wallpaper"
+                                                                name="wallpaper-type" value="4" style="display: none;">
+                                                            <label class="form-radio-label" for="radio4">
+                                                                随机二次元
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-radio mobile">
+                                                            <input type="radio" id="radio5"
+                                                                class="set-wallpaper wallpaper-custom"
+                                                                name="wallpaper-type" value="5" style="display: none;">
+                                                            <label class="form-radio-label" for="radio5">
+                                                                自定义壁纸
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div id="wallpaper_url" style="display: none;">
+                                                <div class="from_row">
+                                                    <div class="from_items">
+                                                        <input type="text" name="wallpaper-url" id="wallpaper-url"
+                                                            placeholder="以 https 或 http 开头的 URL" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="from_items button" id="wallpaper-button" style="display: none;">
+                                        <div class="wallpaper_save">保存</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 项目设置 -->
+                        <div class="mainConts">
+                            <div class="set_blocks">
+                                <div class="set_tip">
+                                    <span class="set_text">可按需关闭非必要功能以提升页面响应速度</span>
+                                </div>
+                                <div class="set_blocks_content">
+                                    <div class="from_container">
+                                        <div class="froms">
+                                            <div class="from_row">
+                                                <div class="from_row_content">
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_welcome" class="set-project-option" data-setting="show_welcome">
+                                                        <label class="form-radio-label" for="project_show_welcome">显示欢迎提示</label>
+                                                    </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_weather" class="set-project-option" data-setting="show_weather">
+                                                        <label class="form-radio-label" for="project_show_weather">显示天气信息</label>
+                                                    </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_auto_focus" class="set-project-option" data-setting="auto_focus">
+                                                        <label class="form-radio-label" for="project_auto_focus">桌面端自动聚焦搜索框</label>
+                                                    </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_aplayer" class="set-project-option" data-setting="show_aplayer">
+                                                        <label class="form-radio-label" for="project_show_aplayer">显示音乐播放器</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from_row" style="margin-top: 15px;">
+                                                <div class="from_row_content" style="flex-direction: column; align-items: flex-start;">
+                                                    <div style="font-size: 14px; margin-bottom: 8px; opacity: 0.9;">网易云音乐歌单 ID</div>
+                                                    <input type="text" class="set-project-option" data-setting="music_playlist_id" placeholder="请输入歌单 ID" autocomplete="off" style="width: 100%; height: 38px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); padding: 0 12px; background: rgba(255, 255, 255, 0.1); color: #fff; outline: none; transition: 0.3s;" onfocus="this.style.border='1px solid var(--main-background-active-color)';" onblur="this.style.border='1px solid rgba(255,255,255,0.3)';" title="默认：2141128031">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="from_items button" style="margin-top: 20px;">
+                                        <div class="but-ordinary" id="project_settings_save">保存项目设置</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 数据备份设置 -->
+                        <div class="mainConts">
+                            <div class="set_blocks">
+                                <div class="set_tip">
+                                    <span class="set_text">点击导出会将本站文件导出至下载目录</span>
+                                    <span class="set_text">点击导入可选择已备份文件进行恢复</span>
+                                    
+                                </div>
+                                <div class="set_button">
+                                    <div class="but-ordinary" id="my_data_in">导入</div>
+                                    <div class="but-ordinary" id="my_data_out">导出</div>
+                                    <input type="file" id="my_data_file" name="file" style="display: none">
+                                </div>
+                                <div class="set_version">
+                                    <a class="set_version-text" id="set-home-link" href="https://www.noisedh.cn">NOISE导航</a>
+                                 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 版权信息 -->
+        <div class="foot">
+            <div class="power"> &nbsp;&copy;&nbsp;2020
+                <script>
+                    document.write(' - ' + (new Date()).getFullYear())
+                </script>&nbsp;<a href="https://www.noisedh.cn">NOISE导航</a>
+                
+            </div>
+        </div>
+    </section>
+    <!-- 主体内容结束 -->
+    <!-- noscript -->
+    <noscript>
+        <div class="noscript fixed-top">请开启 JavaScript</div>
+    </noscript>
+    <script>
+        // 不依赖任何第三方库的兜底：避免卡在加载层
+        setTimeout(function () {
+            var loadingBox = document.getElementById('loading-box');
+            var bg = document.getElementById('bg');
+            var section = document.getElementById('section');
+            var cover = document.querySelector('.cover');
+            if (loadingBox && !loadingBox.classList.contains('loaded')) {
+                loadingBox.classList.add('loaded');
+            }
+            if (bg) {
+                bg.style.transform = 'scale(1)';
+                bg.style.filter = 'blur(0px)';
+            }
+            if (section) {
+                section.style.opacity = '1';
+            }
+            if (cover) {
+                cover.style.opacity = '1';
+            }
+        }, 2200);
+    </script>
+    <!-- JS -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script defer src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/izitoast/1.4.0/js/iziToast.min.js" onerror="this.onerror=null;this.src='https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js';"></script>
+    <script defer type="text/javascript" src="./js/js.cookie.js"></script>
+    <script defer type="text/javascript" src="./js/set.js"></script>
+    <script defer type="text/javascript" src="./js/main.js"></script>
+<!-- aplayer -->
+<div id="aplayer-wrap">
+    <meting-js server="netease" type="playlist" id="2141128031" order="random" fixed="true" autoplay="false" volume="0.8"></meting-js>
+</div>
+<!-- end_aplayer -->
+<script defer src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+<script defer src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/gh/kaygb/kaygb@master/layer/layer.js"></script>
+<script defer src="https://cdn.jsdelivr.net/gh/kaygb/kaygb@master/js/v3.js"></script>
+</body>
+
+</html>

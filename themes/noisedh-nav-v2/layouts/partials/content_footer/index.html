@@ -1,0 +1,418 @@
+<footer class="main-footer footer-type-1 text-xs">
+    <div id="footer-tools" class="d-flex flex-column">
+        <a href="javascript:" id="go-to-up" class="btn rounded-circle go-up m-1" rel="go-top">
+            <i class="iconfont icon-to-up"></i>
+        </a>
+        <a href="tougao" class="btn rounded-circle kefu m-1" target="_blank" data-toggle="tooltip" data-placement="left" title="投稿">
+            <i class="fa fa-paper-plane"></i>
+        </a>
+        <!-- 右下角折叠菜单 -->
+        <div id="toggleSection" class="toggle-section">
+            <!-- 强制刷新按钮 -->
+            <a href="javascript:void(0);" id="forceReloadBtn" class="btn rounded-circle kefu m-1" data-toggle="tooltip" data-placement="left" title="强制刷新并重新缓存">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+            </a>
+            {{ with $.Site.Params.footer.toggleMenu }}
+                {{ range . }}
+                    <a href="{{ if and (isset . "url") (ne .url "") }}{{ .url }}{{ else if and (isset . "key") (eq .key "exportBookmarks") }}{{ $.Site.Params.header.exportBookmarksUrl }}{{ else }}javascript:void(0);{{ end }}" class="btn rounded-circle kefu m-1" {{ if .target }}target="{{ .target }}"{{ end }} data-toggle="tooltip" data-placement="left" title="{{ .title }}">
+                        <i class="{{ .icon }}"></i>
+                    </a>
+                {{ end }}
+            {{ end }}
+        </div>
+        <a href="javascript:void(0);" id="toggleButton" class="btn rounded-circle m-1" data-toggle="tooltip" data-placement="left" title="展开/折叠">
+            <i class="fa fa-plus-circle"></i>
+        </a>
+
+        {{ if $.Site.Params.nightMode }} 
+        <a href="javascript:" onclick="switchNightMode()" class="btn rounded-circle switch-dark-mode m-1" id="yejian-night"
+            data-toggle="tooltip" data-placement="left" title="夜间模式">
+            <i class="mode-ico iconfont icon-light"></i>
+        </a>
+        {{ else }}
+        <a href="javascript:" onclick="switchNightMode()" class="btn rounded-circle switch-dark-mode m-1" id="yejian-day"
+            data-toggle="tooltip" data-placement="left" title="日间模式">
+            <i class="mode-ico iconfont icon-night"></i>
+        </a>
+        {{ end }}
+    </div>
+
+    {{ if (default true $.Site.Params.footer.enableForceReloadTip) }}
+    <div id="forceReloadTip" class="force-reload-tip" style="display:none;">
+        <div class="force-reload-title">⚡页面刷新提示</div>
+        <div class="force-reload-desc">
+            如遇页面异常、内容未更新或缓存问题，可点击右下角折叠选项中 
+            <b><i class="fa fa-refresh" aria-hidden="true"></i> 强制刷新</b> 按钮，清除缓存并重新加载页面。
+        </div>
+        <div class="force-reload-actions">
+            <label class="force-reload-label custom-checkbox-label" style="margin-right:10px;">
+                <input type="checkbox" id="neverShowForceReloadTip" class="force-reload-checkbox custom-checkbox-input">
+                <span class="custom-checkbox"></span>
+                不再提示
+            </label>
+            <button id="closeForceReloadTip" class="force-reload-btn">我知道了</button>
+        </div>
+    </div>
+    {{ end }}
+
+    <style>
+        .gradient-text {
+            color: rgba(24, 32, 57, 0.82);
+            font-weight: 650;
+        }
+
+        @supports (-webkit-background-clip: text) {
+            .gradient-text {
+                background: linear-gradient(90deg, rgba(33, 79, 211, 0.95), rgba(241, 64, 75, 0.92), rgba(255, 183, 77, 0.92));
+                background-size: 220% 100%;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: footer-gradient 6s ease-in-out infinite;
+            }
+        }
+
+        body.io-black-mode .gradient-text {
+            color: rgba(238, 243, 255, 0.92);
+            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+        }
+
+        @supports (-webkit-background-clip: text) {
+            body.io-black-mode .gradient-text {
+                background: linear-gradient(90deg, rgba(255, 255, 255, 0.98), rgba(143, 184, 255, 0.96), rgba(255, 215, 111, 0.96));
+                background-size: 240% 100%;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: footer-gradient 6s ease-in-out infinite;
+            }
+        }
+
+        @keyframes footer-gradient {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .toggle-section {
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-section.show {
+            display: block;
+        }
+
+        #toggleButton .fa-plus-circle {
+            transition: transform 0.3s ease;
+        }
+
+        #toggleButton.active .fa-plus-circle {
+            transform: rotate(45deg);
+        }
+
+        /* 强制刷新提示弹窗样式优化，适配移动端 */
+        .force-reload-tip {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            bottom: 40px;
+            right: 80px;
+            padding: 12px 18px 16px 18px;
+            border-radius: 12px;
+            box-shadow: 0 14px 34px rgba(0,0,0,0.18);
+            font-size: 14px;
+            max-width: 320px;
+            min-width: 180px;
+            word-break: break-word;
+            line-height: 1.5;
+            transform: rotate(-1.2deg);
+            backdrop-filter: none;
+        }
+        .force-reload-tip:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 18px;
+            width: 74px;
+            height: 22px;
+            border-radius: 7px;
+            transform: rotate(-6deg);
+            pointer-events: none;
+        }
+        .force-reload-tip:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 22px 22px;
+            pointer-events: none;
+        }
+        .io-grey-mode .force-reload-tip {
+            background: #fffdf2;
+            color: #1f1f1f;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+        .io-grey-mode .force-reload-tip:before {
+            background: rgba(255,255,255,0.65);
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+        }
+        .io-grey-mode .force-reload-tip:after {
+            border-color: transparent transparent rgba(0,0,0,0.10) transparent;
+        }
+        .io-black-mode .force-reload-tip {
+            background: #1f1f1f;
+            color: rgba(255,255,255,0.92);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+        }
+        .io-black-mode .force-reload-tip:before {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+        }
+        .io-black-mode .force-reload-tip:after {
+            border-color: transparent transparent rgba(255,255,255,0.16) transparent;
+        }
+        .force-reload-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+        .force-reload-desc {
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .force-reload-actions {
+            margin-top: 6px;
+            text-align: right;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .force-reload-btn {
+            background: #ea660e;
+            color: #fff;
+            border: none;
+            padding: 2px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .io-grey-mode .force-reload-btn {
+            box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+        }
+        .io-black-mode .force-reload-btn {
+            box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+        }
+        .force-reload-label {
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-left: 0;
+            user-select: none;
+            position: relative;
+        }
+        /* 自定义美化复选框 */
+        .custom-checkbox-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+        .custom-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ea660e;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 6px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+        .io-grey-mode .custom-checkbox {
+            background: rgba(0,0,0,0.06);
+        }
+        .io-black-mode .custom-checkbox {
+            background: rgba(255,255,255,0.08);
+        }
+        .custom-checkbox-input:checked + .custom-checkbox {
+            background: #ea660e;
+            border-color: #ea660e;
+        }
+        .custom-checkbox-input:checked + .custom-checkbox:after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 0px;
+            width: 5px;
+            height: 10px;
+            border: solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .custom-checkbox-label {
+            position: relative;
+            padding-left: 0;
+        }
+        .force-reload-checkbox {
+            /* 隐藏原生样式 */
+            display: none;
+        }
+        @media (max-width: 480px) {
+            .force-reload-tip {
+                right: 12vw;   /* 移动端也适当往右，避免遮挡 */
+                left: unset;  /* 不要左边距 */
+                bottom: 4vw;  /* 更靠底部 */
+                padding: 10px 12px 14px 12px;
+                font-size: 12px;
+                min-width: unset;
+                max-width: 80vw;
+            }
+            .force-reload-title {
+                font-size: 13px;
+            }
+            .force-reload-desc {
+                font-size: 11px;
+                margin-bottom: 6px;
+            }
+            .force-reload-btn {
+                font-size: 12px;
+                padding: 2px 8px;
+            }
+            .force-reload-label {
+                font-size: 11px;
+            }
+            .custom-checkbox {
+                width: 14px;
+                height: 14px;
+                margin-right: 4px;
+            }
+        }
+    </style>
+
+    <script>
+        // 设置cookie
+        function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days*24*60*60*1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        }
+        // 获取cookie
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0;i < ca.length;i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        }
+        // 删除cookie
+        function eraseCookie(name) {   
+            document.cookie = name+'=; Max-Age=-99999999; path=/';  
+        }
+
+        // 强制刷新功能
+        function forceReloadAndClearCache() {
+            // 清除“不再提示”cookie
+            eraseCookie('neverShowForceReloadTip');
+            if ('caches' in window) {
+                // 清除所有缓存
+                caches.keys().then(function(names) {
+                    return Promise.all(names.map(function(name) {
+                        return caches.delete(name);
+                    }));
+                }).then(function() {
+                    // 清除 Service Worker
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                            for(let registration of registrations) {
+                                registration.unregister();
+                            }
+                        });
+                    }
+                    // 清除本地存储
+                    try {
+                        localStorage.clear();
+                        sessionStorage.clear();
+                    } catch(e){}
+                    // 强制刷新页面
+                    location.reload(true);
+                });
+            } else {
+                // 仅刷新
+                location.reload(true);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggleButton');
+            const toggleSection = document.getElementById('toggleSection');
+            const forceReloadBtn = document.getElementById('forceReloadBtn');
+            const forceReloadTip = document.getElementById('forceReloadTip');
+            const closeForceReloadTip = document.getElementById('closeForceReloadTip');
+            const neverShowForceReloadTip = document.getElementById('neverShowForceReloadTip');
+
+            // 折叠菜单初始化为折叠
+            toggleSection.classList.remove('show');
+            toggleButton.classList.remove('active');
+
+            if (forceReloadTip && closeForceReloadTip && neverShowForceReloadTip) {
+                let neverShow = getCookie('neverShowForceReloadTip');
+                if (!neverShow) {
+                    forceReloadTip.style.display = 'block';
+
+                    closeForceReloadTip.addEventListener('click', function() {
+                        if (neverShowForceReloadTip.checked) {
+                            setCookie('neverShowForceReloadTip', '1', 365);
+                            forceReloadTip.style.display = 'none';
+                        } else {
+                            forceReloadTip.style.display = 'none';
+                        }
+                    });
+
+                    neverShowForceReloadTip.checked = false;
+                } else {
+                    forceReloadTip.style.display = 'none';
+                }
+            }
+
+            // 强制刷新按钮事件
+            forceReloadBtn.addEventListener('click', function() {
+                if(confirm('确定要强制刷新并清除缓存吗？\n此操作将清除本地缓存并重新加载页面。')) {
+                    forceReloadAndClearCache();
+                }
+            });
+
+            // 折叠菜单切换
+            toggleButton.addEventListener('click', function() {
+                toggleSection.classList.toggle('show');
+                toggleButton.classList.toggle('active');
+            });
+        });
+    </script>
+       
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-text gradient-text">{{ replace $.Site.Params.footer.copyright "{year}" now.Year | markdownify }}</div>
+            {{ if $.Site.Params.footer.busuanzi }}
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <center class="gradient-text"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></center>
+            {{ end }}
+        </div>
+    </footer>
+</footer>
+  
+</div><!-- main-content end -->
+</div><!-- page-container end -->

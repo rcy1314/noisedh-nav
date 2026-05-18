@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <title>RSS Feed Display</title>
+    <script>
+        (function () {
+            function forceTransparent() {
+                try {
+                    document.documentElement.style.setProperty('background', 'transparent', 'important');
+                    document.documentElement.style.setProperty('background-color', 'transparent', 'important');
+                    if (document.body) {
+                        document.body.style.setProperty('background', 'transparent', 'important');
+                        document.body.style.setProperty('background-color', 'transparent', 'important');
+                    }
+                } catch (e) {
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function () {
+                    forceTransparent();
+                }, { once: true });
+            } else {
+                forceTransparent();
+            }
+        })();
+    </script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        body {
+            overflow-y: scroll;
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        html::-webkit-scrollbar {
+            width: 0;
+        }
+
+        a {
+            color: #FFA500;
+        }
+
+        :root {
+            --sticker-border: rgba(18, 21, 33, 0.82);
+            --sticker-shadow: 6px 6px 0 rgba(17, 20, 34, 0.14);
+            --sticker-tape: rgba(255, 245, 187, 0.82);
+            --sticker-text: #182039;
+            --sticker-text-muted: #4c5875;
+            --sticker-link: #375fe6;
+            --sticker-bg-1: linear-gradient(180deg, rgba(255, 247, 176, 0.96), rgba(255, 221, 130, 0.92));
+            --sticker-bg-2: linear-gradient(180deg, rgba(214, 233, 255, 0.96), rgba(170, 210, 255, 0.92));
+            --sticker-bg-3: linear-gradient(180deg, rgba(255, 236, 198, 0.94), rgba(255, 214, 170, 0.92));
+            --sticker-surface: rgba(255, 255, 255, 0.92);
+        }
+
+        body.theme-dark {
+            --sticker-border: rgba(255, 255, 255, 0.14);
+            --sticker-shadow: 6px 6px 0 rgba(2, 4, 12, 0.28);
+            --sticker-tape: rgba(143, 184, 255, 0.14);
+            --sticker-text: rgba(238, 243, 255, 0.92);
+            --sticker-text-muted: rgba(186, 198, 229, 0.92);
+            --sticker-link: #8fb8ff;
+            --sticker-bg-1: linear-gradient(180deg, rgba(33, 41, 68, 0.98), rgba(22, 28, 47, 0.96));
+            --sticker-bg-2: linear-gradient(180deg, rgba(28, 35, 62, 0.98), rgba(12, 16, 29, 0.96));
+            --sticker-bg-3: linear-gradient(180deg, rgba(34, 42, 68, 0.98), rgba(19, 24, 40, 0.96));
+            --sticker-surface: rgba(14, 18, 31, 0.66);
+        }
+
+        .container {
+            width: auto;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            padding: 10px;
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        #rss-cards {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        .rssmergecard {
+            position: relative;
+            border-radius: 14px 14px 14px 8px;
+            border: 2px solid var(--sticker-border);
+            box-shadow: var(--sticker-shadow);
+            transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+            width: 100%;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--sticker-bg-1);
+        }
+
+        .rssmergecard::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 20px;
+            width: 30px;
+            height: 10px;
+            border-radius: 7px;
+            background: var(--sticker-tape);
+            border: 1px solid rgba(18, 21, 33, 0.10);
+            box-shadow: 0 2px 4px rgba(103, 121, 165, 0.10);
+            transform: rotate(-5deg);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .rssmergecard:nth-child(3n+2) {
+            background: var(--sticker-bg-2);
+            transform: rotate(1deg);
+        }
+
+        .rssmergecard:nth-child(3n) {
+            background: var(--sticker-bg-3);
+            transform: rotate(-1deg);
+        }
+
+        .rssmergecard:nth-child(2n+1) {
+            transform: rotate(-0.6deg);
+        }
+
+        .rssmergecard:hover {
+            transform: translateY(-3px) rotate(0deg);
+            box-shadow: 0 10px 26px rgba(7, 10, 22, 0.18);
+        }
+
+        .rssmergecard-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .rssmergecard-title {
+            font-size: 14px;
+            margin: 0 0 15px 0;
+            color: var(--sticker-text);
+            text-decoration: none;
+            word-break: break-word;
+            position: relative;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .rssmergecard-title::before {
+            content: "点击可查看原文";
+            position: absolute;
+            top: -1.8em;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            color: var(--sticker-text);
+            opacity: 0;
+            transition: opacity 0.3s;
+            background: var(--sticker-surface);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(18, 21, 33, 0.10);
+        }
+
+        .rssmergecard-title:hover::before {
+            opacity: 1;
+        }
+
+        .rssmergecard-description {
+            margin: 0;
+            color: var(--sticker-text-muted);
+            word-break: break-word;
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.6;
+            padding-right: 8px;
+            max-height: 200px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(18, 21, 33, 0.22) transparent;
+        }
+
+        .rssmergecard-description::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .rssmergecard-description::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .rssmergecard-description::-webkit-scrollbar-thumb {
+            background-color: rgba(18, 21, 33, 0.22);
+            border-radius: 4px;
+        }
+
+        .rssmergecard-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(18, 21, 33, 0.22);
+        }
+
+        .rssmergecard-time {
+            font-size: 0.85em;
+            color: var(--sticker-text-muted);
+            margin: 0;
+        }
+
+        .rssmergecard-source {
+            font-size: 0.85em;
+            color: var(--sticker-text-muted);
+            margin: 0;
+        }
+
+        .rssmergecard-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 10px 0;
+            loading: lazy; /* 延迟加载图片 */
+        }
+
+        .load-more {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background: var(--sticker-bg-2);
+            color: var(--sticker-text);
+            border: 2px solid var(--sticker-border);
+            border-radius: 999px 999px 999px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: var(--sticker-shadow);
+        }
+
+        .load-more:hover {
+            transform: translateY(-2px);
+        }
+
+        .load-more.disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        /* 加载中的样式 */
+        .loading-text {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--sticker-surface);
+            color: var(--sticker-text);
+            border: 1px solid rgba(18, 21, 33, 0.10);
+            border-radius: 10px;
+            font-size: 16px;
+            box-shadow: 0 10px 22px rgba(7, 10, 22, 0.12);
+        }
+
+        /* 刷新按钮样式 - 无背景透明效果 */
+        .refresh-button {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--sticker-bg-3);
+            color: var(--sticker-text);
+            border: 2px solid var(--sticker-border);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+            box-shadow: var(--sticker-shadow);
+        }
+
+        /* 响应式设计 - 根据屏幕尺寸调整按钮大小 */
+        @media (max-width: 768px) {
+            .refresh-button {
+                width: 45px;
+                height: 45px;
+                font-size: 22px;
+                top: 8px;
+                background: transparent;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .refresh-button {
+                width: 55px;
+                height: 55px;
+                font-size: 28px;
+                background: transparent;
+            }
+        }
+
+        .refresh-button:hover {
+            color: var(--sticker-text);
+            transform: translateX(-50%) scale(1.1);
+            box-shadow: 0 12px 26px rgba(7, 10, 22, 0.18);
+        }
+
+        .refresh-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        /* 顶部悬停区域 - 只在页面顶部区域内悬停时显示按钮 */
+        .top-hover-area {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            z-index: 999;
+            cursor: pointer;
+        }
+
+        .top-hover-area:hover ~ .refresh-button {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 当鼠标直接悬停在刷新按钮上时也保持可见 */
+        .refresh-button:hover {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 刷新动画 */
+        .refresh-button.refreshing {
+            animation: rotate 1s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-hover-area"></div>
+    <button id="refresh-button" class="refresh-button" title="刷新RSS内容">
+  <i class="fa fa-refresh" aria-hidden="true"></i>
+</button>
+    <div class="container">
+        <div id="rss-cards" class="cards-container">
+            <p class="loading-text">加载中...</p>
+        </div>
+        <button id="load-more" class="load-more" style="display: none;">加载更多</button>
+    </div>
+    <script>
+        (function () {
+            function getIsDarkFromParent() {
+                try {
+                    if (window.parent && window.parent !== window) {
+                        const parentBody = window.parent.document && window.parent.document.body;
+                        return !!(parentBody && parentBody.classList && parentBody.classList.contains('io-black-mode'));
+                    }
+                } catch (e) {
+                }
+                return null;
+            }
+
+            function getIsDarkFallback() {
+                try {
+                    const night = localStorage.getItem('night');
+                    if (night === '1') return true;
+                    if (night === '0') return false;
+                    const m = document.cookie && document.cookie.match(/(?:^|;\s*)night=([^;]+)/);
+                    return m ? m[1] === '1' : false;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function syncThemeFromParent() {
+                document.body.classList.remove('theme-dark');
+            }
+            function bindParentThemeObserver() {
+                syncThemeFromParent();
+                try {
+                    if (!(window.parent && window.parent !== window)) return;
+                    const parentBody = window.parent.document && window.parent.document.body;
+                    if (!parentBody || !('MutationObserver' in window)) return;
+                    let lastIsDark = null;
+                    const observer = new MutationObserver(function () {
+                        const isDark = parentBody.classList.contains('io-black-mode');
+                        if (isDark === lastIsDark) return;
+                        lastIsDark = isDark;
+                        document.body.classList.toggle('theme-dark', !!isDark);
+                    });
+                    observer.observe(parentBody, { attributes: true, attributeFilter: ['class'] });
+                    window.addEventListener('pagehide', function () { observer.disconnect(); }, { once: true });
+                } catch (e) {
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bindParentThemeObserver, { once: true });
+            } else {
+                bindParentThemeObserver();
+            }
+            window.addEventListener('focus', syncThemeFromParent);
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') syncThemeFromParent();
+            });
+            window.addEventListener('storage', function (e) {
+                if (e && (e.key === 'night' || e.key === 'darkMode')) syncThemeFromParent();
+            });
+
+            window.addEventListener('message', function (e) {
+                try {
+                    if (!e || !e.data) return;
+                    if (e.origin && e.origin !== window.location.origin) return;
+                    const data = e.data;
+                    if (data && data.type === 'ndh:theme') {
+                        document.body.classList.remove('theme-dark');
+                        return;
+                    }
+                } catch (err) {
+                }
+            });
+        })();
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function parseCDATA(content) {
+            return content.startsWith("<![CDATA[") ? content.slice(9, -3) : content;
+        }
+
+        function removeSpecialChars(content) {
+            const replacements = {
+                '&lt;': '<',
+                '&gt;': '>',
+                '&amp;': '&', 
+                '&quot;': '"',
+                '&apos;': "'"
+            };
+            return content.replace(/&[^;]+;/g, m => replacements[m] || m);
+        }
+
+        function ensureExternalLinks(element) {
+            const links = element.getElementsByTagName('a');
+            Array.from(links).forEach(link => {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            });
+            return element;
+        }
+
+        let allItems = [];
+        let currentIndex = 0;
+        const itemsPerLoad = 20;
+        let isAppending = false;
+
+        function renderItems(startIndex, count) {
+            const fragment = document.createDocumentFragment();
+            const endIndex = Math.min(startIndex + count, allItems.length);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                const item = allItems[i];
+                const title = parseCDATA(item.getElementsByTagName('title')[0]?.textContent || '无标题');
+                const link = escapeHtml(item.getElementsByTagName('link')[0]?.textContent || '#');
+                const pubDate = item.getElementsByTagName('pubDate')[0]?.textContent || new Date().toISOString();
+                const source = item.getElementsByTagName('source')[0]?.textContent || '未知来源';
+
+                let description = '';
+                const contentEncoded = item.getElementsByTagName('content:encoded')[0]?.textContent;
+                const contentHtml = item.getElementsByTagName('content')[0]?.textContent;
+                const descriptionElement = item.getElementsByTagName('description')[0]?.textContent;
+
+                description = parseCDATA(contentEncoded || contentHtml || descriptionElement || '');
+                const cleanedDescription = removeSpecialChars(description);
+
+                const rssmergecard = document.createElement('div');
+                rssmergecard.className = 'rssmergecard';
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = cleanedDescription;
+                ensureExternalLinks(tempDiv);
+
+                rssmergecard.innerHTML = `
+                    <div class="rssmergecard-content">
+                        <a href="${link}" target="_blank" rel="noopener noreferrer" class="rssmergecard-title">${title}</a>
+                        <div class="rssmergecard-description">${tempDiv.innerHTML}</div>
+                        <div class="rssmergecard-meta">
+                            <p class="rssmergecard-time">${new Date(pubDate).toLocaleString()}</p>
+                            <p class="rssmergecard-source">来源: ${source}</p>
+                        </div>
+                    </div>
+                `;
+
+                fragment.appendChild(rssmergecard);
+            }
+
+            return fragment;
+        }
+
+        function appendItemsBatched(startIndex, count) {
+            const cardsContainer = document.getElementById('rss-cards');
+            if (!cardsContainer) return Promise.resolve();
+            const endIndex = Math.min(startIndex + count, allItems.length);
+            let cursor = startIndex;
+            return new Promise(resolve => {
+                function step() {
+                    if (cursor >= endIndex) {
+                        resolve();
+                        return;
+                    }
+                    const batchCount = Math.min(5, endIndex - cursor);
+                    cardsContainer.appendChild(renderItems(cursor, batchCount));
+                    cursor += batchCount;
+                    requestAnimationFrame(step);
+                }
+                step();
+            });
+        }
+
+        function getSafeParentConfigValue(key) {
+            try {
+                if (
+                    window.parent &&
+                    window.parent !== window &&
+                    window.parent.CONFIG &&
+                    Object.prototype.hasOwnProperty.call(window.parent.CONFIG, key)
+                ) {
+                    return window.parent.CONFIG[key];
+                }
+            } catch (error) {
+                return '';
+            }
+            return '';
+        }
+
+        async function fetchRSS() {
+            try {
+                const cardsContainer = document.getElementById('rss-cards');
+                const loadMoreBtn = document.getElementById('load-more');
+                const query = new URLSearchParams(window.location.search);
+
+                const rssApiUrl =
+                    query.get('rssApiUrl') ||
+                    getSafeParentConfigValue('rssApiUrl') ||
+                    'https://rssserversub.fly.dev/rss';
+
+                const response = await fetch(rssApiUrl, {
+                    cache: 'no-cache'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP错误! 状态: ${response.status}`);
+                }
+
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const items = xmlDoc.getElementsByTagName('item');
+                
+                if (items.length === 0) {
+                    cardsContainer.innerHTML = '<p>没有找到RSS内容。</p>';
+                    return;
+                }
+
+                allItems = Array.from(items);
+                cardsContainer.innerHTML = '';
+                
+                isAppending = true;
+                appendItemsBatched(0, itemsPerLoad).finally(function () {
+                    isAppending = false;
+                });
+                currentIndex = itemsPerLoad;
+
+                // 显示加载更多按钮
+                if (allItems.length > itemsPerLoad) {
+                    loadMoreBtn.style.display = 'block';
+                    loadMoreBtn.addEventListener('click', () => {
+                        if (isAppending) return;
+                        isAppending = true;
+                        const start = currentIndex;
+                        currentIndex += itemsPerLoad;
+                        appendItemsBatched(start, itemsPerLoad).finally(function () {
+                            isAppending = false;
+                            if (currentIndex >= allItems.length) {
+                                loadMoreBtn.textContent = '已加载所有内容';
+                                loadMoreBtn.classList.add('disabled');
+                                loadMoreBtn.disabled = true;
+                            }
+                        });
+                    });
+                }
+
+            } catch (error) {
+                console.error('获取RSS失败:', error);
+                let errorMessage = '加载内容失败';
+                
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = '网络连接失败，无法获取RSS内容';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = '跨域访问被阻止，请检查服务器配置';
+                }
+                
+                document.getElementById('rss-cards').innerHTML = `
+                    <div class="error-message" style="text-align: center; padding: 20px; color: #f44336;">
+                        <h3>❌ 内容加载失败</h3>
+                        <p>${errorMessage}</p>
+                        <p><small>错误详情: ${error.message}</small></p>
+                        <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            重新加载
+                        </button>
+                    </div>
+                `;
+            } finally {
+                // 移除加载中的提示
+                const loadingText = document.querySelector('.loading-text');
+                if (loadingText) {
+                    loadingText.remove();
+                }
+            }
+        }
+
+        function scheduleFetchRSS() {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(function () { fetchRSS(); }, { timeout: 1500 });
+            } else {
+                setTimeout(fetchRSS, 0);
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', scheduleFetchRSS, { once: true });
+        } else {
+            scheduleFetchRSS();
+        }
+
+        // 刷新按钮功能 - 强制刷新并清除缓存
+        document.getElementById('refresh-button').addEventListener('click', function() {
+            // 添加旋转动画
+            this.classList.add('refreshing');
+            
+            // 延迟一下让动画可见，然后强制刷新页面并清除缓存
+            setTimeout(() => {
+                // 强制刷新并清除缓存的方法
+                if (window.location.search) {
+                    // 如果URL已经有查询参数，添加或更新时间戳参数
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('_t', Date.now());
+                    window.location.href = url.toString();
+                } else {
+                    // 如果URL没有查询参数，添加时间戳参数
+                    window.location.href = window.location.href + '?_t=' + Date.now();
+                }
+            }, 300);
+        });
+    </script>
+</body>
+</html>

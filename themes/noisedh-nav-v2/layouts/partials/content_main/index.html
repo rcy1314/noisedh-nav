@@ -1,0 +1,1657 @@
+<!-- 弹窗提醒 -->
+<div id="welcome-popup" class="popup" style="display: none;">
+    <div class="popup-content">
+        <p class="large-text">👏欢迎访问本站！</p>
+        <p class="large-text">正在为您加载和缓存，初始化页面中...</p>
+        <p class="large-text">下次进入可加速访问，请耐心等待。</p>
+        <p class="large-text">此信息仅在无缓存时弹出，5秒后自动关闭！</p>
+    </div>
+</div>
+
+ <!-- 弹窗提醒结束 -->
+<div id="content" class="content-site customize-site">
+    <style>
+    #content.content-site.customize-site {
+        background: #ffffff;
+    }
+    body.io-black-mode #content.content-site.customize-site {
+        background: #18191c;
+    }
+    #content.content-site.customize-site {
+        padding-top: 10px;
+    }
+    .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.98);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    color: #182039;
+    text-align: center;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    border: 1px solid rgba(17, 21, 33, 0.12);
+    box-shadow: 0 14px 34px rgba(17, 21, 33, 0.14);
+}
+@media (max-width: 480px) {
+  .popup {
+    width: 98%;
+    max-width: 98vw;
+    padding: 8px;
+  }
+  .large-text {
+    font-size: 12px;
+    word-break: break-all;
+  }
+  .category-title {
+    font-size: 14px;
+  }
+  .page-nav, .pagination, .overflow-x-auto {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+}
+.popup-content {
+    max-width: 100%;
+}
+
+.large-text {
+    font-size: 20px;
+    color: #182039;
+    margin: 15px 0;
+    line-height: 1.5;
+    letter-spacing: 4px;
+}
+body.io-black-mode .popup {
+    background-color: rgba(27, 26, 26, 0.961);
+    color: rgba(231, 128, 38, 0.974);
+    border-color: rgba(255,255,255,.08);
+    box-shadow: 0 4px 10px rgba(26, 26, 26, 0.5);
+}
+body.io-black-mode .large-text {
+    color: #ea660e;
+}
+@media (max-width: 768px) {
+    .large-text {
+        font-size: 14px;
+    }
+}
+        .category-block {
+            position: relative;
+            margin-bottom: 18px;
+            padding: 12px 0 6px;
+            border: 2px dashed rgba(18, 21, 33, 0.24);
+            border-radius: 22px;
+            background: transparent;
+            box-shadow: 0 4px 0 rgba(17, 20, 34, 0.1);
+            overflow: visible;
+        }
+        .category-block::before {
+            content: "";
+            position: absolute;
+            top: -7px;
+            left: 22px;
+            width: 42px;
+            height: 12px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(255, 216, 109, 0.92), rgba(255, 167, 209, 0.86));
+            border: 1px solid rgba(18, 21, 33, 0.08);
+            transform: rotate(-9deg);
+            pointer-events: none;
+        }
+        .category-block:nth-of-type(3n+2)::before {
+            background: linear-gradient(90deg, rgba(153, 196, 255, 0.92), rgba(126, 167, 255, 0.86));
+        }
+        .category-block:nth-of-type(3n)::before {
+            background: linear-gradient(90deg, rgba(255, 216, 166, 0.92), rgba(255, 183, 132, 0.86));
+        }
+        .category-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 14px 14px;
+            padding: 8px 14px;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #182039;
+            background: linear-gradient(180deg, rgba(255, 245, 178, 0.96), rgba(255, 222, 141, 0.92));
+            border: 2px solid #121521;
+            border-radius: 999px 999px 999px 10px;
+            box-shadow: 0 6px 0 rgba(17, 20, 34, 0.14);
+            transform: rotate(-2deg);
+            position: relative;
+        }
+        .category-title i {
+             color: #375fe6;
+        }
+        .category-title::before,
+        .subcat-tab::before,
+        .card-list-toggle-btn::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 14px;
+            width: 22px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 245, 187, 0.82);
+            border: 1px solid rgba(17, 21, 33, 0.08);
+            transform: rotate(-8deg);
+            opacity: 0.95;
+            pointer-events: none;
+        }
+
+        .subcat-tabs {
+            display: inline-flex;
+            gap: 8px;
+            overflow-x: auto;
+            white-space: nowrap;
+            margin: 0 14px 18px;
+            padding: 8px;
+            width: calc(100% - 28px);
+            max-width: calc(100% - 28px);
+            align-items: center;
+            min-height: 48px;
+            border: 0;
+            border-top: 1px dashed rgba(18, 21, 33, 0.22);
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .subcat-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subcat-tab {
+            padding: 7px 14px;
+            border-radius: 999px 999px 999px 10px;
+            background: linear-gradient(180deg, rgba(255, 245, 178, 0.96), rgba(255, 222, 141, 0.92));
+            color: #182039;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid #121521;
+            outline: none !important;
+            margin-right: 0;
+            flex-shrink: 0;
+            transition: none;
+            position: relative;
+            font-size: 15px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: fit-content;
+            box-shadow: 0 6px 0 rgba(17, 20, 34, 0.14);
+            transform: rotate(1deg);
+        }
+        .subcat-tab:nth-child(2n) {
+            background: linear-gradient(180deg, rgba(214, 233, 255, 0.96), rgba(170, 210, 255, 0.92));
+            transform: rotate(-2deg);
+        }
+        .subcat-tab:nth-child(3n) {
+            background: linear-gradient(180deg, rgba(255, 236, 198, 0.94), rgba(255, 214, 170, 0.92));
+            transform: rotate(1.5deg);
+        }
+
+        .subcat-tab:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        .subcat-tab:hover {
+            color: #182039;
+            transform: none;
+        }
+
+        .subcat-tab.active {
+            background: linear-gradient(180deg, rgba(255, 233, 146, 0.98), rgba(255, 197, 119, 0.92));
+            color: #182039;
+            font-weight: 800;
+            border-color: #121521;
+            box-shadow: 0 4px 0 rgba(17, 20, 34, 0.14);
+            transform: none;
+        }
+
+        body.io-black-mode .category-block {
+             border-color: rgba(255, 255, 255, 0.12);
+             background: transparent;
+             box-shadow: 0 6px 0 rgba(2, 4, 12, 0.28);
+        }
+        body.io-black-mode .category-block::before {
+             display: none;
+        }
+        body.io-black-mode .subcat-tabs {
+             border-color: transparent;
+             border-top-color: var(--ndh-border-soft);
+             background: var(--ndh-bg);
+             box-shadow: none;
+        }
+        body.io-black-mode .category-title {
+             color: var(--ndh-text-strong);
+             background: linear-gradient(180deg, rgba(143, 184, 255, 0.18), rgba(143, 184, 255, 0.12));
+             border-color: var(--ndh-border-soft);
+             box-shadow: none;
+             transform: none;
+        }
+        body.io-black-mode .category-title i {
+             color: var(--ndh-accent);
+        }
+        body.io-black-mode .category-title::before {
+            background: rgba(143, 184, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        body.io-black-mode .subcat-tab {
+            background: var(--ndh-surface);
+            border-color: var(--ndh-border-soft);
+            color: var(--ndh-text);
+            box-shadow: none;
+        }
+        body.io-black-mode .subcat-tab:hover {
+             color: var(--ndh-text-strong);
+             background: rgba(143, 184, 255, 0.12);
+             border-color: rgba(143, 184, 255, 0.22);
+         }
+        body.io-black-mode .subcat-tab.active {
+            background: var(--ndh-accent);
+            color: #141929;
+            border-color: rgba(143, 184, 255, 0.32);
+        }
+
+        body.io-black-mode .subcat-tab::before {
+            background: rgba(143, 184, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        :root {
+            --tooltip-bg: rgba(255, 255, 255, 0.96);
+            --tooltip-fg: #222;
+            --tooltip-border: rgba(0, 0, 0, 0.08);
+        }
+        body.io-black-mode {
+            --tooltip-bg: rgba(18, 18, 20, 0.92);
+            --tooltip-fg: #fff;
+            --tooltip-border: rgba(255, 255, 255, 0.12);
+        }
+        a.card.no-c.mb-4 { position: relative; overflow: visible; }
+        a.card.no-c.mb-4[data-desc]::after { display: none; }
+        .instant-tooltip {
+            position: fixed;
+            background: var(--tooltip-bg);
+            color: var(--tooltip-fg);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: normal;
+            word-break: break-word;
+            text-align: left;
+            max-width: min(72vw, 640px);
+            max-height: 40vh;
+            overflow: auto;
+            border: 1px solid var(--tooltip-border);
+            z-index: 2147483647;
+            pointer-events: none;
+            display: none;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .card-list-collapsible .url-card.is-collapsed-item {
+            display: none;
+        }
+        .card-list-collapsible.is-expanded .url-card.is-collapsed-item {
+            display: block;
+        }
+        .card-list-toggle-wrap {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 0;
+            margin-bottom: 14px;
+            padding-left: 0;
+        }
+        .card-list-toggle-btn {
+            min-width: 136px;
+            height: 34px;
+            padding: 0 14px;
+            border: 2px solid #121521;
+            border-radius: 999px 999px 999px 10px;
+            background: linear-gradient(180deg, rgba(214, 233, 255, 0.96), rgba(170, 210, 255, 0.92));
+            color: #182039;
+            cursor: pointer;
+            transition: all .2s ease;
+            -webkit-tap-highlight-color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1;
+            box-shadow: 0 6px 0 rgba(17, 20, 34, 0.14);
+            position: relative;
+            transform: rotate(-2deg);
+        }
+        .card-list-toggle-btn:hover {
+            transform: none;
+        }
+        .card-list-toggle-btn .toggle-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #ffcf63 0%, #ffe59f 100%);
+            box-shadow: 0 0 0 3px rgba(255, 214, 114, .2);
+            animation: toggleDotPulse 1.4s ease-in-out infinite;
+            flex: none;
+        }
+        .card-list-toggle-btn .toggle-label {
+            letter-spacing: .2px;
+        }
+        .toggle-chevron {
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(45deg);
+            transition: transform .2s ease;
+            flex: none;
+            margin-left: 2px;
+        }
+        .card-list-toggle-btn[aria-expanded="true"] .toggle-chevron {
+            transform: rotate(-135deg);
+        }
+        @keyframes toggleDotPulse {
+            0%,100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: .85; }
+        }
+        .card-list-toggle-btn:hover {
+            border-color: #121521;
+            color: #182039;
+            box-shadow: 0 4px 0 rgba(17, 20, 34, 0.14);
+        }
+        .card-list-toggle-btn:focus,
+        .card-list-toggle-btn:focus-visible {
+            outline: none;
+            border-color: #121521;
+        }
+        body.io-black-mode .card-list-toggle-btn {
+            background: linear-gradient(180deg, rgba(33, 41, 68, 0.98), rgba(22, 28, 47, 0.96));
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #eef3ff;
+        }
+        body.io-black-mode .card-list-toggle-btn:hover {
+            border-color: rgba(255, 255, 255, 0.14);
+            color: #8fb8ff;
+            box-shadow: 0 6px 0 rgba(2, 4, 12, 0.24);
+        }
+        body.io-black-mode .card-list-toggle-btn .toggle-dot {
+            background: linear-gradient(135deg, #44547f 0%, #2b375d 100%);
+            box-shadow: 0 0 0 4px rgba(127,173,255,.18);
+        }
+        @media (max-width: 768px) {
+            .card-list-toggle-wrap {
+                margin-top: -2px;
+                margin-bottom: 10px;
+                padding-left: 0;
+            }
+            .card-list-toggle-btn {
+                min-width: 130px;
+                height: 34px;
+                font-size: 13px;
+            }
+        }
+        .url-card .url-body.default {
+            position: relative;
+        }
+        .url-card .url-body.default::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 20px;
+            width: 30px;
+            height: 10px;
+            border-radius: 7px;
+            background: rgba(255, 245, 187, 0.82);
+            border: 1px solid rgba(18, 21, 33, 0.06);
+            box-shadow: 0 2px 4px rgba(103, 121, 165, 0.1);
+            transform: rotate(-4deg);
+            z-index: 3;
+            pointer-events: none;
+        }
+        .url-card:nth-child(3n+2) .url-body.default::before {
+            background: rgba(210, 228, 255, 0.82);
+        }
+        .url-card:nth-child(3n) .url-body.default::before {
+            background: rgba(255, 227, 194, 0.82);
+        }
+        .url-card .card.no-c.mb-4 {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #121521;
+            border-radius: 14px 14px 14px 7px;
+            background: linear-gradient(180deg, rgba(255, 247, 176, 0.96), rgba(255, 221, 130, 0.92));
+            box-shadow: 0 6px 0 rgba(17, 20, 34, 0.14);
+        }
+        .url-card .card.no-c.mb-4 .card-body {
+            padding: 0.88rem 0.9rem 0.84rem;
+        }
+        .url-card:nth-child(3n+2) .card.no-c.mb-4 {
+            background: linear-gradient(180deg, rgba(214, 233, 255, 0.96), rgba(170, 210, 255, 0.92));
+        }
+        .url-card:nth-child(3n) .card.no-c.mb-4 {
+            background: linear-gradient(180deg, rgba(255, 236, 198, 0.94), rgba(255, 214, 170, 0.92));
+        }
+        .url-card .card.no-c.mb-4::after {
+            content: "";
+            position: absolute;
+            inset: auto 17px 12px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255, 170, 198, 0.48), rgba(111, 151, 255, 0.38));
+            opacity: 0.58;
+            pointer-events: none;
+        }
+        .url-card:nth-child(2n+1) .url-body.default {
+            transform: rotate(-1.1deg);
+        }
+        .url-card:nth-child(2n) .url-body.default {
+            transform: rotate(1deg);
+        }
+        .url-card:nth-child(2n+1) .url-body.default:hover {
+            transform: translateY(-3px) rotate(-0.6deg);
+        }
+        .url-card:nth-child(2n) .url-body.default:hover {
+            transform: translateY(-3px) rotate(0.55deg);
+        }
+        .url-card .url-info strong {
+            color: #182039;
+            font-size: 0.98rem;
+        }
+        .url-card .url-info .text-muted,
+        .url-card .url-info p.text-muted.text-xs,
+        .url-card .url-info p {
+            color: #4c5875 !important;
+            font-size: 12px;
+            line-height: 1.55;
+            opacity: 1 !important;
+        }
+        .url-card a.togo {
+            color: #40506f !important;
+            opacity: .52;
+        }
+        .url-card .url-body:hover a.togo {
+            opacity: .9;
+        }
+        body.io-black-mode .url-card .card.no-c.mb-4 {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(33, 41, 68, 0.98), rgba(22, 28, 47, 0.96));
+            box-shadow: 0 6px 0 rgba(2, 4, 12, 0.28);
+        }
+        body.io-black-mode .url-card .url-info strong {
+            color: #eef3ff;
+        }
+        body.io-black-mode .url-card .url-info .text-muted,
+        body.io-black-mode .url-card .url-info p.text-muted.text-xs,
+        body.io-black-mode .url-card .url-info p,
+        body.io-black-mode .url-card a.togo {
+            color: #bac6e5 !important;
+        }
+
+        .category-block .friendlink.card {
+            margin: 0 14px 14px;
+            border: 2px solid #121521;
+            border-radius: 16px 16px 16px 8px;
+            background: linear-gradient(180deg, rgba(245, 249, 255, 0.97), rgba(227, 236, 255, 0.93));
+            box-shadow: 0 6px 0 rgba(17, 20, 34, 0.14);
+        }
+
+        body.io-black-mode .category-block .friendlink.card {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(33, 41, 68, 0.98), rgba(22, 28, 47, 0.96));
+            box-shadow: 0 6px 0 rgba(2, 4, 12, 0.28);
+        }
+
+        .category-block .friendlink.card .card-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 14px;
+        }
+
+        .category-block .friendlink.card a {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px 999px 999px 10px;
+            border: 2px solid #121521;
+            background: linear-gradient(180deg, rgba(255, 245, 178, 0.96), rgba(255, 222, 141, 0.92));
+            color: #182039;
+            font-weight: 700;
+            text-decoration: none;
+            line-height: 1.2;
+        }
+
+        body.io-black-mode .category-block .friendlink.card a {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(28, 35, 62, 0.96), rgba(15, 20, 35, 0.94));
+            color: rgba(238, 243, 255, 0.92);
+        }
+    </style>
+    {{ $defaultLogo := $.Site.Params.defaultLogo }}
+    {{ $logosPath := $.Site.Params.logosPath }}
+    <link rel="preload" as="image" href="{{ $defaultLogo }}">
+
+    {{ range $i, $cat := .Site.Data.webstack }}
+        <div class="category-block mb-4" id="{{ if (and (isset $cat "list") (gt (len (default (slice) $cat.list)) 0)) }}{{ range first 1 $cat.list }}{{ md5 .term }}{{ end }}{{ else }}{{ md5 $cat.taxonomy }}{{ end }}">
+            <div class="category-title">
+                {{ if $cat.icon }}<i class="{{ $cat.icon }} icon-fw icon-lg"></i>{{ end }}
+                {{ $cat.taxonomy }}
+            </div>
+            {{ if and (isset $cat "list") (gt (len (default (slice) $cat.list)) 1) }}
+                <div class="subcat-tabs">
+                    {{ range $j, $sub := $cat.list }}
+                        <button class="subcat-tab{{ if eq $j 0 }} active{{ end }}" data-cat="cat{{ $i }}" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 $sub.term }}">{{ $sub.term }}</button>
+                    {{ end }}
+                </div>
+                {{ range $j, $sub := $cat.list }}
+                    <div class="row card-list" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 (print $cat.taxonomy $sub.term) }}" data-initial-hidden="{{ if ne $j 0 }}1{{ else }}0{{ end }}">
+                        {{ range $k, $link := $sub.links }}
+                        {{ $customLogo := cond (hasPrefix $link.logo "http") $link.logo (print $logosPath "/" $link.logo) }}
+                        {{ $domain := replaceRE "^https?://([^/]+).*" "$1" $link.url }}
+                        <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
+                            <div class="url-body default">
+                                <a href="{{ if $link.qrcode }}javascript:{{ else }}redirect.html?url={{ $link.url | safeURL }}{{ end }}"
+                                   target="{{ if $link.qrcode }}_self{{ else }}_blank{{ end }}"
+                                   class="card no-c mb-4"
+                                   data-desc="{{ $link.description }}">
+                                    <div class="card-body">
+                                        <div class="url-content d-flex align-items-center">
+                                            <div class="url-img mr-2 d-flex align-items-center justify-content-center">
+                                                <img class="lazy"
+                                                     src="{{ $defaultLogo }}"
+                                                     data-src="{{ $customLogo }}"
+                                                     data-default="{{ $defaultLogo }}"
+                                                     data-fallback="https://{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
+                                                     alt="{{ .title }}"
+                                                     width="40"
+                                                     height="40"
+                                                     decoding="async"
+                                                     fetchpriority="low"
+                                                     loading="lazy">
+                                            </div>
+                                            <div class="url-info flex-fill">
+                                                <div class="text-sm overflowClip_1">
+                                                    <strong>{{ $link.title }}</strong>
+                                                </div>
+                                                <p class="overflowClip_1 m-0 text-muted text-xs">{{ $link.description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="{{ $link.url | safeURL }}"
+                                   class="togo text-center text-muted is-views"
+                                   title="直达" rel="nofollow"
+                                   target="_blank">
+                                    <i class="iconfont icon-wailian"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </div>
+                {{ end }}
+            {{ else if and (isset $cat "list") (eq (len (default (slice) $cat.list)) 1) }}
+                {{ range $j, $sub := $cat.list }}
+                    <div class="row card-list">
+                        {{ range $sub.links }}
+                        {{ $customLogo := cond (hasPrefix .logo "http") .logo (print $logosPath "/" .logo) }}
+                        {{ $domain := replaceRE "^https?://([^/]+).*" "$1" .url }}
+                        <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
+                            <div class="url-body default">
+                                <a href="{{ if .qrcode }}javascript:{{ else }}redirect.html?url={{ .url | safeURL }}{{ end }}"
+                                   target="{{ if .qrcode }}_self{{ else }}_blank{{ end }}"
+                                   class="card no-c mb-4"
+                                   data-desc="{{ .description }}">
+                                    <div class="card-body">
+                                        <div class="url-content d-flex align-items-center">
+                                            <div class="url-img mr-2 d-flex align-items-center justify-content-center">
+                                                <img class="lazy"
+                                                     src="{{ $defaultLogo }}"
+                                                     data-src="{{ $customLogo }}"
+                                                     data-default="{{ $defaultLogo }}"
+                                                     data-fallback="https://{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} || https://favicon.im/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
+                                                     alt="{{ .title }}"
+                                                     width="40"
+                                                     height="40"
+                                                     decoding="async"
+                                                     fetchpriority="low"
+                                                     loading="lazy">
+                                            </div>
+                                            <div class="url-info flex-fill">
+                                                <div class="text-sm overflowClip_1">
+                                                    <strong>{{ .title }}</strong>
+                                                </div>
+                                                <p class="overflowClip_1 m-0 text-muted text-xs">{{ .description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="{{ .url | safeURL }}"
+                                   class="togo text-center text-muted is-views"
+                                   title="直达" rel="nofollow"
+                                   target="_blank">
+                                    <i class="iconfont icon-wailian"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </div>
+                {{ end }}
+            {{ else }}
+                <div class="row card-list">
+                    {{ range $cat.links }}
+                    {{ $customLogo := cond (hasPrefix .logo "http") .logo (print $logosPath "/" .logo) }}
+                    {{ $domain := replaceRE "^https?://([^/]+).*" "$1" .url }}
+                    <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
+                        <div class="url-body default">
+                            <a href="{{ if .qrcode }}javascript:{{ else }}redirect.html?url={{ .url | safeURL }}{{ end }}"
+                               target="{{ if .qrcode }}_self{{ else }}_blank{{ end }}"
+                               class="card no-c mb-4"
+                               data-desc="{{ .description }}">
+                                <div class="card-body">
+                                    <div class="url-content d-flex align-items-center">
+                                        <div class="url-img mr-2 d-flex align-items-center justify-content-center">
+                                            <img class="lazy"
+                                                 src="{{ $defaultLogo }}"
+                                                 data-src="{{ $customLogo }}"
+                                                 data-default="{{ $defaultLogo }}"
+                                                 data-fallback="https://{{ $domain }}/favicon.ico || https://favicon.yandex.net/favicon/{{ $domain }} ||  https://favicon.im/{{ $domain }} || https://www.google.com/s2/favicons?domain={{ $domain }}&size=64"
+                                                 alt="{{ .title }}"
+                                                 width="40"
+                                                 height="40"
+                                                 decoding="async"
+                                                 fetchpriority="low"
+                                                 loading="lazy">
+                                        </div>
+                                        <div class="url-info flex-fill">
+                                            <div class="text-sm overflowClip_1">
+                                                <strong>{{ .title }}</strong>
+                                            </div>
+                                            <p class="overflowClip_1 m-0 text-muted text-xs">{{ .description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="{{ .url | safeURL }}"
+                               class="togo text-center text-muted is-views"
+                               title="直达" rel="nofollow"
+                               target="_blank">
+                                <i class="iconfont icon-wailian"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {{ end }}
+                </div>
+            {{ end }}
+        </div>
+    {{ end }}
+
+    <div class="category-block mb-4" id="friendlink">
+        <div class="category-title">
+            <i class="iconfont icon-book-mark-line icon-fw icon-lg"></i>
+            友情链接
+        </div>
+        <div class="friendlink text-xs card">
+            <div class="card-body">
+                {{ range .Site.Data.friendlinks }}
+                <a href="redirect.html?url={{ .url | safeURL }}" title="{{ .description }}" target="_blank">{{ .title }}</a>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+// 优化：图片懒加载和切换时预加载，提升切换流畅度
+document.addEventListener('DOMContentLoaded', function() {
+    // 欢迎弹窗逻辑
+    var popup = document.getElementById('welcome-popup');
+    var hasSeenPopup = false;
+    try {
+        hasSeenPopup = localStorage.getItem('hasSeenPopup');
+    } catch (e) {
+        hasSeenPopup = false;
+    }
+    if (!hasSeenPopup && popup) {
+        popup.style.display = 'block';
+        setTimeout(function() {
+            popup.style.display = 'none';
+        }, 5400);
+        try {
+            localStorage.setItem('hasSeenPopup', 'true');
+        } catch (e) {}
+    }
+
+    document.querySelectorAll('.row.card-list[data-initial-hidden="1"]').forEach(function(list){
+        list.style.display = 'none';
+    });
+
+    const COLLAPSE_LIMIT = Number('{{ default 24 .Site.Params.cardListCollapseLimit }}') || 24;
+    let collapseSeq = 0;
+    function renderToggleButton(toggleBtn, expanded) {
+        const label = expanded ? '收起网址列表' : '查看更多网址';
+        toggleBtn.innerHTML = '<span class="toggle-dot" aria-hidden="true"></span><span class="toggle-label">' + label + '</span><span class="toggle-chevron" aria-hidden="true"></span>';
+        toggleBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    }
+    function setCardListExpanded(list, expanded) {
+        const collapseId = list.dataset.collapseId;
+        if (!collapseId) return;
+        const toggleWrap = document.querySelector('.card-list-toggle-wrap[data-collapse-id="' + collapseId + '"]');
+        if (!toggleWrap) return;
+        const toggleBtn = toggleWrap.querySelector('.card-list-toggle-btn');
+        list.classList.toggle('is-expanded', expanded);
+        if (toggleBtn) {
+            renderToggleButton(toggleBtn, expanded);
+        }
+    }
+    function syncCardListToggleVisibility(scope) {
+        const root = scope || document;
+        root.querySelectorAll('.row.card-list[data-collapse-id]').forEach(list => {
+            const collapseId = list.dataset.collapseId;
+            const toggleWrap = document.querySelector('.card-list-toggle-wrap[data-collapse-id="' + collapseId + '"]');
+            if (!toggleWrap) return;
+            toggleWrap.style.display = list.style.display === 'none' ? 'none' : '';
+        });
+    }
+    function initCardListCollapse() {
+        document.querySelectorAll('.row.card-list').forEach(list => {
+            if (list.dataset.collapseId) return;
+            const cards = Array.from(list.children).filter(item => item.classList && item.classList.contains('url-card'));
+            if (cards.length <= COLLAPSE_LIMIT) return;
+            collapseSeq += 1;
+            const collapseId = 'card-list-collapse-' + collapseSeq;
+            list.dataset.collapseId = collapseId;
+            list.classList.add('card-list-collapsible');
+            cards.forEach((card, idx) => {
+                if (idx >= COLLAPSE_LIMIT) {
+                    card.classList.add('is-collapsed-item');
+                }
+            });
+            const toggleWrap = document.createElement('div');
+            toggleWrap.className = 'card-list-toggle-wrap';
+            toggleWrap.dataset.collapseId = collapseId;
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.className = 'card-list-toggle-btn';
+            renderToggleButton(toggleBtn, false);
+            toggleBtn.addEventListener('click', function() {
+                const expanded = !list.classList.contains('is-expanded');
+                setCardListExpanded(list, expanded);
+            });
+            toggleWrap.appendChild(toggleBtn);
+            list.insertAdjacentElement('afterend', toggleWrap);
+            setCardListExpanded(list, false);
+        });
+        syncCardListToggleVisibility(document);
+    }
+    initCardListCollapse();
+
+    // 二级分类切换逻辑，切换时预加载当前卡片图片
+    document.querySelectorAll('.subcat-tabs').forEach(function(tabBar){
+        tabBar.querySelectorAll('.subcat-tab').forEach(function(tab){
+            tab.addEventListener('click', function(){
+                tabBar.querySelectorAll('.subcat-tab').forEach(t=>t.classList.remove('active'));
+                tab.classList.add('active');
+                const subcat = tab.getAttribute('data-subcat');
+                const parent = tab.closest('.category-block');
+                parent.querySelectorAll('.row.card-list[data-subcat]').forEach(list=>{
+                    if (list.getAttribute('data-subcat') === subcat) {
+                        list.style.display = '';
+                        preloadListImages(list);
+                    } else {
+                        list.style.display = 'none';
+                    }
+                });
+                syncCardListToggleVisibility(parent);
+            });
+        });
+    });
+
+    // hash切换二级分类
+    function showSubcatByHash() {
+        var hash = window.location.hash.replace('#', '');
+        if (!hash) return;
+        var btn = document.querySelector('.subcat-tab[id="' + hash + '"]');
+        if (btn) btn.click();
+        var block = document.getElementById(hash);
+        if (block) block.scrollIntoView({behavior: "smooth", block: "start"});
+    }
+    window.addEventListener('hashchange', showSubcatByHash);
+    showSubcatByHash();
+
+    // 处理侧边栏点击
+    window.handleSidebarClick = function(hash) {
+        document.querySelectorAll('.subcat-tab').forEach(tab => tab.classList.remove('active'));
+        const targetTab = document.querySelector(`.subcat-tab[id="${hash}"]`);
+        if (targetTab) {
+            targetTab.classList.add('active');
+            const subcat = targetTab.getAttribute('data-subcat');
+            const parent = targetTab.closest('.category-block');
+            parent.querySelectorAll('.row.card-list[data-subcat]').forEach(list => {
+                if (list.getAttribute('data-subcat') === subcat) {
+                    list.style.display = '';
+                    preloadListImages(list);
+                } else {
+                    list.style.display = 'none';
+                }
+            });
+            syncCardListToggleVisibility(parent);
+        }
+        const targetBlock = document.getElementById(hash);
+        if (targetBlock) {
+            targetBlock.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        return false;
+    };
+
+    // 锚点平滑滚动，考虑头部高度
+    document.body.addEventListener('click', function(event) {
+        let targetLink = event.target.closest('a[href^="#"]');
+        if (targetLink && targetLink.getAttribute('href').length > 1) {
+            const hash = targetLink.getAttribute('href');
+            const targetElement = document.getElementById(hash.substring(1));
+            if (targetElement) {
+                event.preventDefault();
+                const header = document.getElementById('header');
+                const headerHeight = header ? header.offsetHeight : 74;
+                document.documentElement.style.setProperty('--anchor-offset', `${headerHeight + 20}px`);
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        }
+    });
+
+    const LOGO_SUCCESS_TTL = 7 * 24 * 60 * 60 * 1000;
+    const LOGO_FAILED_URL_TTL = 5 * 60 * 1000;
+    const LOGO_DOMAIN_BLOCK_TTL = 15 * 60 * 1000;
+    const LOGO_DOMAIN_FAIL_THRESHOLD = 2;
+    const LOGO_DOMAIN_FAIL_WINDOW = 3 * 60 * 1000;
+    const LOGO_SUCCESS_PREFIX = 'logo_success_v3_';
+    const LOGO_FAILED_URL_KEY = 'logo_failed_url_v3';
+    const LOGO_BLOCKED_DOMAIN_KEY = 'logo_blocked_domain_v3';
+
+    const inflightLogoLoads = new Map();
+    const runtimeLogoResolveCache = new Map();
+    const failedUrlCache = new Map();
+    const blockedDomainCache = new Map();
+    const domainFailStats = new Map();
+    const PERF_SAMPLES_KEY = 'nav_perf_samples_v1';
+    const PERF_BASELINE_KEY = 'nav_perf_baseline_v1';
+    const perfMetrics = {
+        ttfb: 0,
+        dcl: 0,
+        load: 0,
+        fcp: 0,
+        lcp: 0,
+        firstScreen: 0,
+        scrollAvgFrame: 0,
+        scrollP95Frame: 0,
+        scrollMaxFrame: 0,
+        scrollLongFrameRate: 0
+    };
+    let perfFirstScreenReady = false;
+    let perfScrollReady = false;
+    let perfReportScheduled = false;
+
+    function normalizeUrl(rawUrl) {
+        if (!rawUrl) return '';
+        try {
+            return new URL(rawUrl.trim(), window.location.href).href;
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function roundMetric(value) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return 0;
+        return Math.round(n * 100) / 100;
+    }
+
+    function readStorageValue(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function writeStorageValue(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {}
+    }
+
+    function percentile(values, p) {
+        if (!Array.isArray(values) || values.length === 0) return 0;
+        const sorted = values.slice().sort((a, b) => a - b);
+        const idx = Math.min(sorted.length - 1, Math.max(0, Math.ceil((p / 100) * sorted.length) - 1));
+        return sorted[idx];
+    }
+
+    function updateFirstScreenMetric() {
+        perfMetrics.firstScreen = roundMetric(Math.max(perfMetrics.lcp || 0, perfMetrics.fcp || 0, perfMetrics.dcl || 0));
+        perfFirstScreenReady = perfMetrics.firstScreen > 0;
+    }
+
+    function buildPerfSnapshot() {
+        return {
+            ttfb: roundMetric(perfMetrics.ttfb),
+            dcl: roundMetric(perfMetrics.dcl),
+            load: roundMetric(perfMetrics.load),
+            fcp: roundMetric(perfMetrics.fcp),
+            lcp: roundMetric(perfMetrics.lcp),
+            firstScreen: roundMetric(perfMetrics.firstScreen),
+            scrollAvgFrame: roundMetric(perfMetrics.scrollAvgFrame),
+            scrollP95Frame: roundMetric(perfMetrics.scrollP95Frame),
+            scrollMaxFrame: roundMetric(perfMetrics.scrollMaxFrame),
+            scrollLongFrameRate: roundMetric(perfMetrics.scrollLongFrameRate)
+        };
+    }
+
+    function maybeReportPerformance() {
+        if (!perfFirstScreenReady || !perfScrollReady || perfReportScheduled) return;
+        perfReportScheduled = true;
+        window.requestAnimationFrame(() => {
+            const current = buildPerfSnapshot();
+            const baseline = readStorageValue(PERF_BASELINE_KEY);
+            if (!baseline) {
+                writeStorageValue(PERF_BASELINE_KEY, current);
+            }
+            const effectiveBaseline = baseline || current;
+            const delta = {
+                firstScreen: roundMetric(current.firstScreen - (effectiveBaseline.firstScreen || 0)),
+                scrollP95Frame: roundMetric(current.scrollP95Frame - (effectiveBaseline.scrollP95Frame || 0)),
+                scrollLongFrameRate: roundMetric(current.scrollLongFrameRate - (effectiveBaseline.scrollLongFrameRate || 0))
+            };
+            const history = readStorageValue(PERF_SAMPLES_KEY);
+            const samples = Array.isArray(history) ? history : [];
+            samples.push({
+                at: new Date().toISOString(),
+                metrics: current
+            });
+            writeStorageValue(PERF_SAMPLES_KEY, samples.slice(-20));
+            window.__NAV_PERF__ = {
+                current,
+                baseline: effectiveBaseline,
+                delta
+            };
+            console.groupCollapsed('[NAV-PERF] 首屏与滚动采样');
+            console.log('current', current);
+            console.log('baseline', effectiveBaseline);
+            console.log('delta', delta);
+            console.groupEnd();
+        });
+    }
+
+    function initPerformanceSampling() {
+        if (!window.performance || !window.performance.getEntriesByType) {
+            perfFirstScreenReady = true;
+            perfScrollReady = true;
+            return;
+        }
+        const nav = window.performance.getEntriesByType('navigation')[0];
+        if (nav) {
+            perfMetrics.ttfb = roundMetric(nav.responseStart);
+            perfMetrics.dcl = roundMetric(nav.domContentLoadedEventEnd);
+            perfMetrics.load = roundMetric(nav.loadEventEnd);
+        } else if (window.performance.timing) {
+            const timing = window.performance.timing;
+            const navStart = timing.navigationStart || 0;
+            perfMetrics.ttfb = roundMetric(timing.responseStart - navStart);
+            perfMetrics.dcl = roundMetric(timing.domContentLoadedEventEnd - navStart);
+            perfMetrics.load = roundMetric(timing.loadEventEnd - navStart);
+        }
+        const paintEntries = window.performance.getEntriesByType('paint') || [];
+        paintEntries.forEach((entry) => {
+            if (entry.name === 'first-contentful-paint') {
+                perfMetrics.fcp = roundMetric(entry.startTime);
+            }
+        });
+        updateFirstScreenMetric();
+        if ('PerformanceObserver' in window) {
+            try {
+                const lcpObserver = new PerformanceObserver((entryList) => {
+                    const entries = entryList.getEntries();
+                    const latest = entries[entries.length - 1];
+                    if (!latest) return;
+                    perfMetrics.lcp = roundMetric(latest.startTime || latest.renderTime || latest.loadTime || 0);
+                    updateFirstScreenMetric();
+                    maybeReportPerformance();
+                });
+                lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'hidden') {
+                        lcpObserver.takeRecords();
+                        lcpObserver.disconnect();
+                    }
+                });
+            } catch (e) {}
+        }
+        window.addEventListener('load', function() {
+            if (!perfMetrics.load && window.performance.getEntriesByType) {
+                const navEntry = window.performance.getEntriesByType('navigation')[0];
+                if (navEntry) {
+                    perfMetrics.load = roundMetric(navEntry.loadEventEnd);
+                }
+            }
+            updateFirstScreenMetric();
+            maybeReportPerformance();
+        }, { once: true });
+    }
+
+    function initScrollSampling() {
+        let rafId = 0;
+        let stopTimer = 0;
+        let lastTs = 0;
+        const frames = [];
+        function stopSampling() {
+            if (rafId) {
+                window.cancelAnimationFrame(rafId);
+                rafId = 0;
+            }
+            if (frames.length) {
+                const longFrames = frames.filter((item) => item > 50).length;
+                const frameCount = frames.length;
+                const sum = frames.reduce((acc, value) => acc + value, 0);
+                perfMetrics.scrollAvgFrame = roundMetric(sum / frameCount);
+                perfMetrics.scrollP95Frame = roundMetric(percentile(frames, 95));
+                perfMetrics.scrollMaxFrame = roundMetric(Math.max(...frames));
+                perfMetrics.scrollLongFrameRate = roundMetric((longFrames / frameCount) * 100);
+                perfScrollReady = true;
+                maybeReportPerformance();
+            }
+            frames.length = 0;
+            lastTs = 0;
+        }
+        function tick(ts) {
+            if (lastTs) {
+                const gap = ts - lastTs;
+                if (gap > 0 && gap < 1000) {
+                    frames.push(gap);
+                }
+            }
+            lastTs = ts;
+            rafId = window.requestAnimationFrame(tick);
+        }
+        function startSampling() {
+            if (!rafId) {
+                rafId = window.requestAnimationFrame(tick);
+            }
+            if (stopTimer) {
+                window.clearTimeout(stopTimer);
+            }
+            stopTimer = window.setTimeout(stopSampling, 800);
+        }
+        window.addEventListener('scroll', startSampling, { passive: true });
+    }
+
+    function getDomain(rawUrl) {
+        const normalized = normalizeUrl(rawUrl);
+        if (!normalized) return '';
+        try {
+            return new URL(normalized).hostname.toLowerCase();
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function readStorageJSON(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function writeStorageJSON(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+        } catch (e) {}
+    }
+
+    function hydrateExpireMap(key, targetMap) {
+        const now = Date.now();
+        const data = readStorageJSON(key);
+        Object.entries(data).forEach(([k, expiresAt]) => {
+            if (Number(expiresAt) > now) {
+                targetMap.set(k, Number(expiresAt));
+            }
+        });
+    }
+
+    function persistExpireMap(key, sourceMap) {
+        const now = Date.now();
+        const data = {};
+        sourceMap.forEach((expiresAt, value) => {
+            if (expiresAt > now) {
+                data[value] = expiresAt;
+            }
+        });
+        writeStorageJSON(key, data);
+    }
+
+    function pruneExpireMap(expireMap) {
+        const now = Date.now();
+        expireMap.forEach((expiresAt, value) => {
+            if (expiresAt <= now) {
+                expireMap.delete(value);
+            }
+        });
+    }
+
+    hydrateExpireMap(LOGO_FAILED_URL_KEY, failedUrlCache);
+    hydrateExpireMap(LOGO_BLOCKED_DOMAIN_KEY, blockedDomainCache);
+    pruneExpireMap(failedUrlCache);
+    pruneExpireMap(blockedDomainCache);
+    persistExpireMap(LOGO_FAILED_URL_KEY, failedUrlCache);
+    persistExpireMap(LOGO_BLOCKED_DOMAIN_KEY, blockedDomainCache);
+
+    function getSuccessCacheKey(url) {
+        return `${LOGO_SUCCESS_PREFIX}${encodeURIComponent(url)}`;
+    }
+
+    function writeSuccessCache(requestUrl, resolvedUrl) {
+        const normalizedRequest = normalizeUrl(requestUrl);
+        const normalizedResolved = normalizeUrl(resolvedUrl);
+        if (!normalizedRequest || !normalizedResolved) return;
+        runtimeLogoResolveCache.set(normalizedRequest, normalizedResolved);
+        try {
+            localStorage.setItem(
+                getSuccessCacheKey(normalizedRequest),
+                JSON.stringify({
+                    resolvedUrl: normalizedResolved,
+                    expiresAt: Date.now() + LOGO_SUCCESS_TTL
+                })
+            );
+        } catch (e) {}
+    }
+
+    function readSuccessCache(requestUrl) {
+        const normalizedRequest = normalizeUrl(requestUrl);
+        if (!normalizedRequest) return '';
+        if (runtimeLogoResolveCache.has(normalizedRequest)) {
+            return runtimeLogoResolveCache.get(normalizedRequest);
+        }
+        try {
+            const raw = localStorage.getItem(getSuccessCacheKey(normalizedRequest));
+            if (!raw) return '';
+            const parsed = JSON.parse(raw);
+            if (!parsed || !parsed.resolvedUrl || Number(parsed.expiresAt) <= Date.now()) {
+                localStorage.removeItem(getSuccessCacheKey(normalizedRequest));
+                return '';
+            }
+            const normalizedResolved = normalizeUrl(parsed.resolvedUrl);
+            if (!normalizedResolved) return '';
+            runtimeLogoResolveCache.set(normalizedRequest, normalizedResolved);
+            return normalizedResolved;
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function isUrlFailed(url) {
+        pruneExpireMap(failedUrlCache);
+        const normalized = normalizeUrl(url);
+        if (!normalized) return true;
+        return failedUrlCache.has(normalized);
+    }
+
+    function isDomainBlocked(url) {
+        pruneExpireMap(blockedDomainCache);
+        const domain = getDomain(url);
+        if (!domain) return false;
+        if (domain === window.location.hostname) return false;
+        return blockedDomainCache.has(domain);
+    }
+
+    function markFailure(url) {
+        const normalized = normalizeUrl(url);
+        if (!normalized) return;
+        failedUrlCache.set(normalized, Date.now() + LOGO_FAILED_URL_TTL);
+        persistExpireMap(LOGO_FAILED_URL_KEY, failedUrlCache);
+
+        const domain = getDomain(normalized);
+        if (!domain) return;
+        if (domain === window.location.hostname) return;
+        const now = Date.now();
+        const current = domainFailStats.get(domain);
+        if (!current || now - current.windowStart > LOGO_DOMAIN_FAIL_WINDOW) {
+            domainFailStats.set(domain, { count: 1, windowStart: now });
+            return;
+        }
+        current.count += 1;
+        if (current.count >= LOGO_DOMAIN_FAIL_THRESHOLD) {
+            blockedDomainCache.set(domain, now + LOGO_DOMAIN_BLOCK_TTL);
+            persistExpireMap(LOGO_BLOCKED_DOMAIN_KEY, blockedDomainCache);
+            domainFailStats.delete(domain);
+        } else {
+            domainFailStats.set(domain, current);
+        }
+    }
+
+    function clearFailure(url) {
+        const normalized = normalizeUrl(url);
+        if (!normalized) return;
+        if (failedUrlCache.delete(normalized)) {
+            persistExpireMap(LOGO_FAILED_URL_KEY, failedUrlCache);
+        }
+        const domain = getDomain(normalized);
+        if (!domain) return;
+        let changed = false;
+        if (domainFailStats.has(domain)) {
+            domainFailStats.delete(domain);
+        }
+        if (blockedDomainCache.has(domain)) {
+            blockedDomainCache.delete(domain);
+            changed = true;
+        }
+        if (changed) {
+            persistExpireMap(LOGO_BLOCKED_DOMAIN_KEY, blockedDomainCache);
+        }
+    }
+
+    function buildCandidateList(img) {
+        const primary = normalizeUrl(img.dataset.src || '');
+        let fallbacks = img.dataset.fallback ? img.dataset.fallback.split('||').map(s => normalizeUrl(s.trim())).filter(Boolean) : [];
+        const yandex = [];
+        const google = [];
+        const others = [];
+        fallbacks.forEach(item => {
+            if (item.includes('favicon.yandex.net')) {
+                yandex.push(item);
+            } else if (item.includes('www.google.com/s2/favicons')) {
+                google.push(item);
+            } else {
+                others.push(item);
+            }
+        });
+        fallbacks = yandex.concat(google, others);
+        const merged = [];
+        const seen = new Set();
+        const cachedPrimary = readSuccessCache(primary);
+        [cachedPrimary, primary, ...fallbacks].forEach(item => {
+            const normalized = normalizeUrl(item);
+            if (!normalized || seen.has(normalized)) return;
+            seen.add(normalized);
+            merged.push(normalized);
+        });
+        return merged;
+    }
+
+    function probeImage(url) {
+        const normalized = normalizeUrl(url);
+        if (!normalized) return Promise.reject(new Error('invalid_url'));
+        if (inflightLogoLoads.has(normalized)) {
+            return inflightLogoLoads.get(normalized);
+        }
+        const requestPromise = new Promise((resolve, reject) => {
+            const temp = new Image();
+            temp.decoding = 'async';
+            temp.onload = () => {
+                if (typeof isTransparentImage === 'function') {
+                    try {
+                        if (isTransparentImage(temp)) {
+                            reject(new Error('transparent'));
+                            return;
+                        }
+                    } catch (e) {}
+                }
+                resolve(normalized);
+            };
+            temp.onerror = () => reject(new Error('load_failed'));
+            temp.src = normalized;
+        });
+        const wrapped = requestPromise.finally(() => {
+            inflightLogoLoads.delete(normalized);
+        });
+        inflightLogoLoads.set(normalized, wrapped);
+        return wrapped;
+    }
+
+    async function resolveLogoUrl(img) {
+        const src = normalizeUrl(img.dataset.src || '');
+        const candidates = buildCandidateList(img);
+        for (const candidate of candidates) {
+            if (isUrlFailed(candidate) || isDomainBlocked(candidate)) {
+                continue;
+            }
+            const candidateResolved = readSuccessCache(candidate);
+            const target = normalizeUrl(candidateResolved || candidate);
+            if (!target || isUrlFailed(target) || isDomainBlocked(target)) {
+                continue;
+            }
+            try {
+                const okUrl = await probeImage(target);
+                writeSuccessCache(candidate, okUrl);
+                if (src) {
+                    writeSuccessCache(src, okUrl);
+                }
+                clearFailure(candidate);
+                clearFailure(okUrl);
+                return okUrl;
+            } catch (e) {
+                markFailure(target);
+            }
+        }
+        return '';
+    }
+
+    function setDefaultLogoIfNeeded(img) {
+        const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+        if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
+            img.src = defaultLogo;
+        }
+    }
+
+    function loadImage(img) {
+        if (img._loaded || img._loading) return;
+        setDefaultLogoIfNeeded(img);
+        const candidates = buildCandidateList(img);
+        if (!candidates.length) {
+            img._loaded = true;
+            img.removeAttribute('data-src');
+            return;
+        }
+        img._loading = true;
+        let index = 0;
+        const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
+        const cleanup = function() {
+            img._loading = false;
+            img.onload = null;
+            img.onerror = null;
+        };
+        const doneAsDefault = function() {
+            img.src = defaultLogo;
+            img.classList.add('img-placeholder');
+            img._loaded = true;
+            img.removeAttribute('data-src');
+            cleanup();
+        };
+        const tryNext = function() {
+            if (index >= candidates.length) {
+                doneAsDefault();
+                return;
+            }
+            const current = normalizeUrl(candidates[index++]);
+            if (!current) {
+                tryNext();
+                return;
+            }
+            img.onload = function() {
+                img._loaded = true;
+                img.removeAttribute('data-src');
+                cleanup();
+            };
+            img.onerror = function() {
+                tryNext();
+            };
+            img.src = current;
+        };
+        tryNext();
+    }
+
+    function loadImagePromise(img) {
+        return new Promise((resolve) => {
+            if (!img || img._loaded) {
+                resolve();
+                return;
+            }
+            let settled = false;
+            const done = function() {
+                if (settled) return;
+                settled = true;
+                resolve();
+            };
+            img.addEventListener('load', done, { once: true });
+            img.addEventListener('error', done, { once: true });
+            loadImage(img);
+            window.setTimeout(done, 3500);
+        });
+    }
+
+    const queuedImages = new Set();
+
+    const preloadQueue = [];
+    let preloadPumping = false;
+    const PRELOAD_CONCURRENCY = 5;
+    let preloadActive = 0;
+
+    function pumpPreloadQueue() {
+        if (preloadPumping) return;
+        preloadPumping = true;
+        const tick = function() {
+            while (preloadActive < PRELOAD_CONCURRENCY && preloadQueue.length) {
+                const img = preloadQueue.shift();
+                if (!img || img._loaded) {
+                    queuedImages.delete(img);
+                    continue;
+                }
+                preloadActive += 1;
+                loadImagePromise(img).finally(() => {
+                    preloadActive -= 1;
+                    queuedImages.delete(img);
+                    tick();
+                });
+            }
+            if (preloadActive === 0 && preloadQueue.length === 0) {
+                preloadPumping = false;
+                return;
+            }
+            preloadPumping = false;
+        };
+        tick();
+    }
+
+    function requestImageLoad(img, priority) {
+        if (!img || img._loaded) return;
+        if (queuedImages.has(img)) return;
+        queuedImages.add(img);
+        if (priority) {
+            preloadQueue.unshift(img);
+        } else {
+            preloadQueue.push(img);
+        }
+        pumpPreloadQueue();
+    }
+
+    function enqueuePreloadImages(images) {
+        images.forEach((img) => {
+            requestImageLoad(img, false);
+        });
+    }
+
+    function scheduleBurstLoad(images, perFrame) {
+        const list = images.filter((img) => img && !img._loaded);
+        if (!list.length) return;
+        const burst = Math.max(1, Number(perFrame) || 2);
+        let idx = 0;
+        const step = function() {
+            const end = Math.min(idx + burst, list.length);
+            for (; idx < end; idx += 1) {
+                requestImageLoad(list[idx], true);
+            }
+            if (idx < list.length) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function preloadListImages(list) {
+        const images = Array.from(list.querySelectorAll('img.lazy'));
+        if (!images.length) return;
+        const eagerLimit = 6;
+        scheduleBurstLoad(images.slice(0, eagerLimit), 2);
+        const lazyPart = images.slice(eagerLimit).filter((img) => !img._loaded);
+        if (!lazyPart.length) return;
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(() => enqueuePreloadImages(lazyPart), { timeout: 700 });
+            return;
+        }
+        window.setTimeout(() => enqueuePreloadImages(lazyPart), 180);
+    }
+
+    function ensureDefaultLogo() {
+        document.querySelectorAll('img.lazy').forEach(setDefaultLogoIfNeeded);
+    }
+
+    const pendingLazyImages = new Set();
+
+    const lazyObserver = ('IntersectionObserver' in window) ? new window.IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            setDefaultLogoIfNeeded(entry.target);
+            requestImageLoad(entry.target, true);
+            pendingLazyImages.delete(entry.target);
+            obs.unobserve(entry.target);
+        });
+    }, { rootMargin: '260px 0px' }) : null;
+
+    function observeLazyImage(img) {
+        if (img.classList.contains('_observed')) return;
+        setDefaultLogoIfNeeded(img);
+        if (lazyObserver) {
+            lazyObserver.observe(img);
+            img.classList.add('_observed');
+            return;
+        }
+        img.classList.add('_observed');
+    }
+
+    function trackLazyImage(img) {
+        if (!img || img._loaded) return;
+        pendingLazyImages.add(img);
+        observeLazyImage(img);
+    }
+
+    let fallbackAttached = false;
+    let fallbackScheduled = false;
+    function scanPendingLazyImages() {
+        const triggerTop = -220;
+        const triggerBottom = window.innerHeight + 220;
+        pendingLazyImages.forEach((img) => {
+            if (!img || img._loaded) {
+                pendingLazyImages.delete(img);
+                return;
+            }
+            const rect = img.getBoundingClientRect();
+            if (rect.bottom < triggerTop) return;
+            if (rect.top > triggerBottom) return;
+            requestImageLoad(img, true);
+            pendingLazyImages.delete(img);
+        });
+        if (fallbackAttached && pendingLazyImages.size === 0) {
+            window.removeEventListener('scroll', scheduleFallbackScan);
+            window.removeEventListener('resize', scheduleFallbackScan);
+            fallbackAttached = false;
+        }
+    }
+
+    function scheduleFallbackScan() {
+        if (fallbackScheduled) return;
+        fallbackScheduled = true;
+        window.requestAnimationFrame(() => {
+            fallbackScheduled = false;
+            scanPendingLazyImages();
+        });
+    }
+
+    function initLazyLoading() {
+        document.querySelectorAll('img.lazy[data-src]').forEach(trackLazyImage);
+        if (!lazyObserver) {
+            fallbackAttached = true;
+            window.addEventListener('scroll', scheduleFallbackScan, { passive: true });
+            window.addEventListener('resize', scheduleFallbackScan);
+            scheduleFallbackScan();
+        }
+    }
+
+    // 展开所有页面块
+    document.querySelectorAll('.page-content').forEach(page => {
+        page.style.display = 'block';
+    });
+
+    // 确保所有图片都有defaultLogo
+    ensureDefaultLogo();
+    
+    // 初始懒加载
+    initLazyLoading();
+
+    // 仅预加载首个可见列表，避免一次性加载过多图片
+    const firstVisibleList = Array.from(document.querySelectorAll('.row.card-list')).find(list => list.style.display !== 'none');
+    if (firstVisibleList) {
+        preloadListImages(firstVisibleList);
+    }
+    try {
+        if (localStorage.getItem('navPerf') === '1') {
+            initPerformanceSampling();
+            initScrollSampling();
+        }
+    } catch (e) {}
+
+    (function(){
+        const pad = 4;
+        const gap = 4;
+        const tooltip = document.createElement('div');
+        tooltip.className = 'instant-tooltip';
+        document.body.appendChild(tooltip);
+        let currentAnchor = null;
+        function position(anchor){
+            if (!anchor || tooltip.style.display !== 'block') return;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const a = anchor.getBoundingClientRect();
+            const t = tooltip.getBoundingClientRect();
+            let yBottom = a.bottom + gap;
+            let yTop = a.top - t.height - gap;
+            let useBottom = yBottom + t.height + pad <= vh || yTop < pad ? true : false;
+            let y = useBottom ? yBottom : yTop;
+            let x = a.left + (a.width - t.width) / 2;
+            if (x < pad) x = pad;
+            if (x + t.width + pad > vw) x = vw - t.width - pad;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = Math.max(pad, y) + 'px';
+        }
+        function show(anchor){
+            const text = anchor.getAttribute('data-desc') || '';
+            tooltip.textContent = text;
+            tooltip.style.display = text ? 'block' : 'none';
+            currentAnchor = anchor;
+            void tooltip.offsetWidth;
+            position(anchor);
+            window.addEventListener('resize', onChange, { passive: true });
+            window.addEventListener('scroll', onChange, { passive: true });
+        }
+        function hide(){
+            tooltip.style.display = 'none';
+            window.removeEventListener('resize', onChange);
+            window.removeEventListener('scroll', onChange);
+            currentAnchor = null;
+        }
+        function onChange(){ if (currentAnchor) position(currentAnchor); }
+        document.querySelectorAll('a.card.no-c.mb-4[data-desc]').forEach(a => {
+            a.addEventListener('mouseenter', () => show(a));
+            a.addEventListener('mouseleave', hide);
+        });
+    })();
+});
+</script>
+<!-- 弹窗提醒结束 -->

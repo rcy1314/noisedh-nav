@@ -1,0 +1,111 @@
+:root {
+    --sticker-accent: #355cff;
+    --sticker-accent-soft: rgba(53, 92, 255, 0.08);
+    --sticker-accent-soft-strong: rgba(53, 92, 255, 0.16);
+    --sticker-focus-ring: rgba(83, 128, 255, 0.18);
+    --sticker-focus-shadow: rgba(30, 41, 75, 0.18);
+    --sticker-text-primary: #171b2c;
+    --sticker-text-secondary: #4f5872;
+    --sticker-text-strong: #15182a;
+    --sticker-border-strong: rgba(17, 21, 33, 0.9);
+    --sticker-border-soft: rgba(17, 21, 33, 0.12);
+    --sticker-panel-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(239, 243, 255, 0.94));
+    --sticker-panel-shadow: 0 10px 24px rgba(71, 90, 148, 0.1);
+    --sticker-button-bg: linear-gradient(180deg, #ffffff, #edf2ff);
+    --sticker-button-text: #15182a;
+    --sticker-button-shadow: 0 4px 10px rgba(10, 12, 22, 0.14);
+}
+
+body.io-black-mode {
+    --sticker-accent: #8fb8ff;
+    --sticker-accent-soft: rgba(111, 141, 255, 0.14);
+    --sticker-accent-soft-strong: rgba(111, 141, 255, 0.24);
+    --sticker-focus-ring: rgba(143, 184, 255, 0.18);
+    --sticker-focus-shadow: rgba(1, 2, 10, 0.34);
+    --sticker-text-primary: #eef3ff;
+    --sticker-text-secondary: #aeb8d8;
+    --sticker-text-strong: #f2f6ff;
+    --sticker-border-strong: rgba(255, 255, 255, 0.1);
+    --sticker-border-soft: rgba(255, 255, 255, 0.08);
+    --sticker-panel-bg: linear-gradient(180deg, rgba(20, 24, 40, 0.98), rgba(13, 17, 30, 0.94));
+    --sticker-panel-shadow: 0 10px 26px rgba(2, 4, 12, 0.26);
+    --sticker-button-bg: linear-gradient(180deg, #232b46, #171d31);
+    --sticker-button-text: #eef2ff;
+    --sticker-button-shadow: 0 4px 10px rgba(4, 6, 14, 0.24);
+}
+
+.sticker-hero,
+.category-block,
+.friendlink.card,
+#sidebar .sidebar-nav-inner,
+.sticker-sidebar-brand,
+.sticker-nav-shell,
+.top-action-badge span,
+.sticker-mobile-brand,
+.mobile-menu-trigger,
+.recent-sites,
+.flex-item,
+.embed-container,
+.custom-html-container,
+.hotcard,
+.announcement-board {
+    will-change: transform;
+}
+
+.hero-action-btn:focus-visible,
+.nav-button:focus-visible,
+#search-button:focus-visible,
+#search-input:focus-visible,
+.announcement-item:focus-visible,
+.friendlink a:focus-visible,
+.subcat-tab:focus-visible,
+.card-list-toggle-btn:focus-visible,
+#sidebar .sidebar-item > a:focus-visible,
+#sidebar .sidebar-item ul li a:focus-visible,
+.sticker-top-menu > li > a:focus-visible,
+.sticker-top-menu .sub-menu a:focus-visible,
+.sticker-mobile-brand:focus-visible,
+.mobile-menu-trigger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--sticker-focus-ring), 0 12px 24px var(--sticker-focus-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .announcement-track {
+        animation: none !important;
+    }
+
+    .hero-floating-badge,
+    .hero-cover-card,
+    .hero-sticker,
+    .hero-stat,
+    .hero-action-btn,
+    .nav-button,
+    #search-button,
+    .announcement-item,
+    .recent-sites,
+    .flex-item,
+    .embed-container,
+    .custom-html-container,
+    .hotcard,
+    .announcement-board,
+    .category-block,
+    .subcat-tab,
+    .card-list-toggle-btn,
+    .url-card .url-body,
+    .url-card .card,
+    .friendlink.card,
+    .friendlink a,
+    .sticker-sidebar-brand,
+    #sidebar .sidebar-item > a,
+    #sidebar .sidebar-item ul li a,
+    .sticker-nav-shell,
+    .sticker-mini-btn,
+    .sticker-top-menu > li > a,
+    .sticker-top-menu .sub-menu a,
+    .sticker-mobile-brand,
+    .mobile-menu-trigger {
+        transition: none !important;
+        transform: none !important;
+    }
+}

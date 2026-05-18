@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="assets/images/favicon4.png" type="image/png" />
+    <title>安全中心 | NOISE导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            box-sizing: border-box;
+        }
+        :root {
+            --site-bg: #f7f9fe;
+            --text: #13203f;
+            --text-soft: rgba(19, 32, 63, 0.78);
+            --border: #121521;
+            --border-soft: rgba(18, 21, 33, 0.14);
+            --shadow: 0 6px 0 rgba(17, 20, 34, 0.14);
+            --paper-blue: linear-gradient(180deg, rgba(214, 233, 255, 0.96), rgba(170, 210, 255, 0.92));
+            --paper-soft: linear-gradient(180deg, rgba(255, 236, 198, 0.94), rgba(255, 214, 170, 0.92));
+            --paper-pink: linear-gradient(180deg, rgba(228, 224, 255, 0.96), rgba(176, 168, 255, 0.92));
+            --card-bg: linear-gradient(180deg, rgba(245, 249, 255, 0.97), rgba(227, 236, 255, 0.93));
+            --warn: #2856d8;
+            --safe: #00bf73;
+            --danger: #6d55ff;
+            --warn-bg: rgba(40, 86, 216, 0.12);
+            --safe-bg: rgba(0, 191, 115, 0.12);
+            --danger-bg: rgba(109, 85, 255, 0.12);
+            --warn-border: rgba(40, 86, 216, 0.28);
+            --safe-border: rgba(0, 191, 115, 0.28);
+            --danger-border: rgba(109, 85, 255, 0.28);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --site-bg: #1b1d1f;
+                --text: #eef3ff;
+                --text-soft: rgba(231, 237, 255, 0.72);
+                --border: rgba(255, 255, 255, 0.14);
+                --border-soft: rgba(255, 255, 255, 0.12);
+                --shadow: 0 6px 0 rgba(2, 4, 12, 0.32);
+                --paper-blue: linear-gradient(180deg, rgba(161, 203, 255, 0.96), rgba(108, 146, 255, 0.92));
+                --paper-soft: linear-gradient(180deg, rgba(255, 205, 176, 0.94), rgba(255, 168, 138, 0.9));
+                --paper-pink: linear-gradient(180deg, rgba(196, 190, 255, 0.94), rgba(140, 132, 255, 0.9));
+                --card-bg: linear-gradient(180deg, rgba(33, 41, 69, 0.96), rgba(20, 25, 43, 0.94));
+                --warn: #8fb3ff;
+                --safe: #26d58d;
+                --danger: #b6abff;
+                --warn-bg: rgba(143, 179, 255, 0.14);
+                --safe-bg: rgba(38, 213, 141, 0.14);
+                --danger-bg: rgba(182, 171, 255, 0.14);
+                --warn-border: rgba(143, 179, 255, 0.24);
+                --safe-border: rgba(38, 213, 141, 0.24);
+                --danger-border: rgba(182, 171, 255, 0.24);
+            }
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        body {
+            background-color: var(--site-bg);
+            color: var(--text);
+            font-family: "PingFang SC", "Open Sans", "Microsoft YaHei", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            transition: color 0.3s, background-color 0.3s;
+            position: relative;
+            background-image: none;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            inset: -30vh -30vw;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 18% 12%, rgba(123, 150, 255, 0.20), transparent 55%),
+                radial-gradient(circle at 88% 26%, rgba(255, 214, 109, 0.16), transparent 50%),
+                radial-gradient(circle at 62% 86%, rgba(176, 168, 255, 0.16), transparent 56%),
+                repeating-linear-gradient(0deg, rgba(18, 21, 33, 0.06) 0 1px, transparent 1px 18px),
+                repeating-linear-gradient(90deg, rgba(18, 21, 33, 0.05) 0 1px, transparent 1px 18px);
+            opacity: 0.9;
+            transform: translate3d(0, 0, 0);
+            animation: bgDrift 18s ease-in-out infinite alternate;
+        }
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            background-image: radial-gradient(rgba(18, 21, 33, 0.06) 1px, transparent 1px);
+            background-size: 22px 22px;
+            opacity: 0.55;
+            animation: bgGrain 10s linear infinite;
+        }
+        @media (prefers-color-scheme: dark) {
+            body::before {
+                background:
+                    radial-gradient(circle at 18% 12%, rgba(143, 179, 255, 0.26), transparent 58%),
+                    radial-gradient(circle at 88% 26%, rgba(255, 214, 96, 0.18), transparent 52%),
+                    radial-gradient(circle at 62% 86%, rgba(182, 171, 255, 0.18), transparent 58%),
+                    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 18px),
+                    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 18px);
+                opacity: 1;
+            }
+            body::after {
+                background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+                opacity: 0.6;
+            }
+        }
+        @keyframes bgDrift {
+            from { transform: translate3d(-1.4%, -1.2%, 0) scale(1.02); }
+            to { transform: translate3d(1.6%, 1.3%, 0) scale(1.04); }
+        }
+        @keyframes bgGrain {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(-22px, -22px, 0); }
+        }
+        .bg-wave {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(72px);
+            opacity: 0.22;
+            animation: floatWave 20s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .bg-wave.one {
+            width: 520px;
+            height: 520px;
+            left: -160px;
+            top: -180px;
+            background: radial-gradient(circle, rgba(123, 150, 255, 0.7), transparent 64%);
+        }
+        .bg-wave.two {
+            width: 460px;
+            height: 460px;
+            right: -160px;
+            top: 16%;
+            background: radial-gradient(circle, rgba(123, 150, 255, 0.6), transparent 64%);
+            animation-duration: 24s;
+            animation-direction: reverse;
+        }
+        .bg-wave.three {
+            width: 360px;
+            height: 360px;
+            right: 18%;
+            bottom: -140px;
+            background: radial-gradient(circle, rgba(176, 168, 255, 0.42), transparent 66%);
+            animation-duration: 28s;
+            display: block;
+        }
+        @media (prefers-color-scheme: dark) {
+            .bg-wave {
+                opacity: 0.34;
+                mix-blend-mode: screen;
+            }
+            .bg-wave.one {
+                background: radial-gradient(circle, rgba(143, 179, 255, 0.3), transparent 66%);
+            }
+            .bg-wave.two {
+                background: radial-gradient(circle, rgba(143, 179, 255, 0.34), transparent 66%);
+            }
+            .bg-wave.three {
+                background: radial-gradient(circle, rgba(182, 171, 255, 0.24), transparent 70%);
+            }
+        }
+        .particle-layer {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(123, 150, 255, 0.36);
+            box-shadow: 0 0 14px rgba(123, 150, 255, 0.18);
+            animation: particleMove linear infinite, particleTwinkle 3.6s ease-in-out infinite;
+        }
+        .particle:nth-child(2n) {
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 214, 109, 0.28);
+            box-shadow: 0 0 12px rgba(255, 214, 109, 0.16);
+        }
+        .particle:nth-child(3n) {
+            width: 8px;
+            height: 8px;
+            background: rgba(176, 168, 255, 0.18);
+            box-shadow: 0 0 16px rgba(176, 168, 255, 0.14);
+        }
+        @media (prefers-color-scheme: dark) {
+            .particle {
+                background: rgba(143, 179, 255, 0.28);
+                box-shadow: 0 0 16px rgba(143, 179, 255, 0.18);
+                mix-blend-mode: screen;
+            }
+            .particle:nth-child(2n) {
+                background: rgba(255, 214, 96, 0.2);
+                box-shadow: 0 0 14px rgba(255, 214, 96, 0.14);
+            }
+            .particle:nth-child(3n) {
+                background: rgba(182, 171, 255, 0.13);
+                box-shadow: 0 0 16px rgba(182, 171, 255, 0.12);
+            }
+        }
+        @keyframes particleTwinkle {
+            0%, 100% { opacity: 0.5; transform: translate3d(0, 0, 0) scale(0.95); }
+            50% { opacity: 1; transform: translate3d(0, 0, 0) scale(1.08); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body::before,
+            body::after,
+            .bg-wave,
+            .particle,
+            header,
+            main {
+                animation: none !important;
+            }
+        }
+        .shell {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: min(92vw, 760px);
+        }
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 18px;
+            animation: fadeInUp 0.8s ease;
+        }
+        header .logo {
+            width: 136px;
+            height: 136px;
+            margin-bottom: 18px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative;
+            transform: rotate(-3deg);
+        }
+        @media (prefers-color-scheme: dark) {
+            header .logo {
+                background: rgba(18, 24, 42, 0.96);
+            }
+        }
+        header .logo::after {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            width: 54px;
+            height: 14px;
+            border-radius: 999px;
+            background: rgba(215, 233, 255, 0.88);
+            border: 1px solid rgba(17, 21, 33, 0.08);
+            transform: translateX(-50%) rotate(-6deg);
+            opacity: 0.95;
+        }
+        header .logo img {
+            width: 98px;
+            height: 98px;
+            filter: drop-shadow(0 10px 18px rgba(70, 100, 255, 0.24));
+            animation: logoFloat 2.8s ease-in-out infinite;
+        }
+        header .title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        header .title .site-name {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            border-radius: 18px 18px 18px 8px;
+            background: var(--paper-pink);
+            box-shadow: var(--shadow);
+            transform: rotate(2deg);
+            color: #101323;
+        }
+        header .title .site-tip {
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+            padding: 6px 14px;
+            border: 2px solid var(--border);
+            border-radius: 999px;
+            background: var(--paper-blue);
+            box-shadow: var(--shadow);
+            transform: rotate(-1deg);
+            color: #101323;
+        }
+        .sticker-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 2px 0 12px;
+        }
+        .sticker-chip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 999px 999px 999px 10px;
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #101323;
+            transform: rotate(-2deg);
+            white-space: nowrap;
+        }
+        .sticker-chip::before {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: 10px;
+            width: 14px;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.62);
+            border: 1px solid rgba(17, 21, 33, 0.08);
+            transform: rotate(-8deg);
+            opacity: 0.9;
+        }
+        .sticker-chip:nth-child(2n) {
+            transform: rotate(2deg);
+        }
+        .sticker-chip:nth-child(3n) {
+            transform: rotate(-1deg);
+        }
+        .sticker-chip.blue {
+            background: var(--paper-blue);
+        }
+        .sticker-chip.purple {
+            background: var(--paper-pink);
+        }
+        .sticker-chip.soft {
+            background: var(--paper-soft);
+        }
+        main {
+            position: relative;
+            margin: 10px 20px 64px;
+            border-radius: 22px;
+            padding: 34px 28px 28px;
+            width: 100%;
+            min-width: 0;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            animation: fadeInUp 0.95s ease;
+            transform: rotate(-1deg);
+        }
+        main::before {
+            content: "";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            width: 74px;
+            height: 18px;
+            border-radius: 4px;
+            background: rgba(215, 233, 255, 0.88);
+            border: 1px solid rgba(17, 21, 33, 0.1);
+            transform: translateX(-50%) rotate(2deg);
+            opacity: 0.95;
+        }
+        main::after {
+            content: "";
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px 18px 14px 14px;
+            background: var(--paper-blue);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            transform: rotate(8deg);
+            opacity: 0.95;
+        }
+        main .tip {
+            display: block;
+            text-align: center;
+            margin-bottom: 14px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-soft);
+            font-weight: 700;
+        }
+        main #url {
+            display: block;
+            padding: 14px 16px;
+            border-radius: 14px;
+            width: 100%;
+            text-align: center;
+            border: 2px dashed var(--border-soft);
+            background: rgba(255, 255, 255, 0.65);
+            font-size: 13px;
+            word-break: break-all;
+            line-height: 1.6;
+            min-height: 52px;
+            color: var(--warn);
+            font-weight: 800;
+        }
+        @media (prefers-color-scheme: dark) {
+            main #url {
+                background: rgba(0, 0, 0, 0.18);
+            }
+        }
+        main #site-info {
+            display: inline-flex;
+            width: 100%;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-top: 18px;
+            font-size: 14px;
+            border-radius: 14px;
+            padding: 12px 14px;
+            border: 2px solid var(--border-soft);
+            background: rgba(255, 255, 255, 0.55);
+            transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+            color: var(--text);
+            font-weight: 800;
+        }
+        @media (prefers-color-scheme: dark) {
+            main #site-info {
+                background: rgba(0, 0, 0, 0.14);
+            }
+        }
+        main #jump-content.warn #site-info {
+            border-color: var(--warn-border);
+            background: var(--warn-bg);
+            color: var(--warn);
+        }
+        main #jump-content.safe #site-info {
+            border-color: var(--safe-border);
+            background: var(--safe-bg);
+            color: var(--safe);
+        }
+        main #jump-content.danger #site-info {
+            border-color: var(--danger-border);
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+        main #jump-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 54px;
+            width: 100%;
+            max-width: 260px;
+            margin: 22px auto 0;
+            border-radius: 999px;
+            color: #101323;
+            background: var(--paper-soft);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            cursor: pointer;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        main #jump-button:hover {
+            transform: translateY(-2px);
+        }
+        main #jump-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(17, 20, 34, 0.14);
+        }
+        @media (prefers-color-scheme: dark) {
+            main #jump-button:active {
+                box-shadow: 0 2px 0 rgba(2, 4, 12, 0.32);
+            }
+        }
+        main #jump-button.disabled {
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.65;
+            animation: none;
+            background: rgba(140, 145, 160, 0.28);
+            color: rgba(231, 237, 255, 0.78);
+            box-shadow: none;
+            border-color: rgba(180, 184, 197, 0.24);
+            text-transform: none;
+        }
+        main #jump-button.jumping {
+            animation: progressFlash 0.9s linear infinite;
+        }
+        .line-decor {
+            margin-top: 16px;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(118, 145, 235, 0.45), transparent);
+            opacity: 0.7;
+        }
+        footer {
+            width: 100%;
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+            margin: 18px;
+            opacity: 0.84;
+            font-size: 13px;
+            z-index: 2;
+        }
+        footer a {
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            backdrop-filter: none;
+        }
+        footer .icp::before {
+            content: "|";
+            margin: 0 8px;
+            margin-left: 4px;
+            opacity: 0.25;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+        @keyframes progressFlash {
+            0%, 100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.12);
+            }
+        }
+        @keyframes floatWave {
+            0% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            50% {
+                transform: translate3d(18px, -18px, 0) scale(1.05);
+            }
+            100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+        }
+        @keyframes particleMove {
+            from {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-120vh);
+                opacity: 0;
+            }
+        }
+        @media (max-width: 768px) {
+            .shell {
+                width: 94vw;
+            }
+            header .logo {
+                width: 124px;
+                height: 124px;
+            }
+            header .logo img {
+                width: 88px;
+                height: 88px;
+            }
+            header .title .site-name {
+                font-size: 22px;
+                padding: 7px 14px;
+            }
+            header .title .site-tip {
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+            main {
+                margin: 10px 16px 64px;
+                padding: 28px 18px 22px;
+                transform: none;
+            }
+            main::before {
+                top: -10px;
+                width: 64px;
+                height: 16px;
+            }
+            footer {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-wave one"></div>
+    <div class="bg-wave two"></div>
+    <div class="bg-wave three"></div>
+    <div class="particle-layer" id="particle-layer"></div>
+    <div class="shell">
+        <header>
+            <div class="logo">
+                <img src="assets/images/favicon5.png" alt="NOISE导航 Logo" />
+            </div>
+            <div class="title">
+                <span class="site-name">NOISE导航</span>
+                <span class="site-tip">安全中心</span>
+            </div>
+        </header>
+        <main>
+            <div class="sticker-row" aria-hidden="true">
+                <span class="sticker-chip blue">CHECK</span>
+                <span class="sticker-chip purple">SAFE</span>
+                <span class="sticker-chip soft">JUMP</span>
+            </div>
+            <span class="tip">即将离开 NOISE导航，正在前往以下站点</span>
+            <span id="url"></span>
+            <div id="jump-content" class="warn">
+                <span id="site-info">⚠️ 该网址安全性未知，请注意您的帐号和财产安全</span>
+                <div id="jump-button">继续前往</div>
+            </div>
+            <div class="line-decor"></div>
+        </main>
+    </div>
+    <footer>
+        <a class="power" href="index.html">
+            ©
+            <script>
+                document.write(new Date().getFullYear());
+            </script>
+            NOISE导航
+        </a>
+        <a class="icp" href="https://www.noisedh.cn" target="_blank">收录值得珍藏的网站</a>
+    </footer>
+    <script>
+        // 跳转网址
+        let jumpLink;
+        let interval;
+
+        // 获取元素
+        const urlDom = document.getElementById("url");
+        const urlTip = document.getElementById("site-info");
+        const jumpContent = document.getElementById("jump-content");
+        const jumpButton = document.getElementById("jump-button");
+        const particleLayer = document.getElementById("particle-layer");
+
+        // 网址白名单
+        const whitelist = [
+            "*.noisework.cn",
+            "noisevip.cn",
+            "noisedaohang.netlify.app",
+            "noisedh.vercel.app",
+            "*.pinterest.com",
+            "npmjs.com",
+        ];
+
+        // 网址黑名单
+        const blacklist = [
+            "*.taobao.com",
+            "*.6.aaa210.click:89/ads1.html",
+            "*.xb72303xbt.xxqnot.top:12766/keleios/?channelCode=xdk28",
+            "*.xmz2pvqpfq7hnjvymtnk44bfq.615431.com",
+            "*.jd.com",
+            "*.11166.memb6.com",
+            "*.11166.ydtngcs.com",
+            "*.ipy44uh89.5p1rqwpvqx.cc",
+            "*.xx1979.com",
+        ];
+
+        // 提示文本
+        const tipText = {
+            safe: "✅ 该网址为信任网址，即将跳转",
+            danger: "⛔ 该网址处于黑名单，已拦截",
+            warn: "⏳请注意您的帐号和财产安全",
+        };
+
+        // 容错解码，避免 URI malformed 直接中断
+        const safeDecodeUrl = (value) => {
+            try {
+                return decodeURIComponent(value);
+            } catch (error) {
+                return value;
+            }
+        };
+
+        // 统一规范跳转地址，仅允许 http/https
+        const normalizeJumpUrl = (rawUrl) => {
+            const decoded = safeDecodeUrl((rawUrl || "").trim());
+            const completed = /^https?:\/\//i.test(decoded) ? decoded : `https://${decoded}`;
+            const parsed = new URL(completed);
+            if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+                throw new Error("Unsupported protocol");
+            }
+            return parsed;
+        };
+
+        // 自动跳转逻辑
+        const autoJump = () => {
+            jumpButton.classList.add("jumping");
+            let count = 3;
+            const updateContent = () => {
+                jumpButton.innerHTML = `${count} 秒后自动跳转`;
+                count--;
+                if (count < 0) {
+                    clearInterval(interval);
+                    jumpButton.classList.remove("jumping");
+                    jumpButton.innerHTML = "正在跳转";
+                    window.location.replace(jumpLink);
+                }
+            };
+            // 每秒更新一次
+            updateContent();
+            interval = setInterval(updateContent, 1000);
+        };
+
+        // 获取跳转网址
+        const getJumpUrl = () => {
+            try {
+                // 解析 URL 参数
+                const urlParams = new URLSearchParams(window.location.search);
+                const encodedUrl = urlParams.get("url");
+                if (!encodedUrl) {
+                    throw new Error("No URL parameter provided");
+                }
+                // 解析和规范 URL
+                const parsedUrl = normalizeJumpUrl(encodedUrl);
+                jumpLink = parsedUrl.href;
+                urlDom.textContent = jumpLink;
+
+                // 获取网址的主机名
+                const urlHostname = parsedUrl.hostname;
+
+                // 判断网址是否在黑名单中
+                for (let i = 0; i < blacklist.length; i++) {
+                    const blackPattern = new RegExp(blacklist[i].replace(/\*/g, ".*"));
+                    if (urlHostname.match(blackPattern)) {
+                        // 显示提示信息
+                        urlTip.innerHTML = tipText.danger;
+                        jumpButton.innerHTML = "禁止跳转";
+                        jumpButton.classList.add("disabled");
+                        jumpContent.className = "danger";
+                        return;
+                    }
+                }
+
+                // 判断网址是否在白名单中
+                let isWhitelisted = false;
+                for (let i = 0; i < whitelist.length; i++) {
+                    const whitePattern = new RegExp(whitelist[i].replace(/\*/g, ".*"));
+                    if (urlHostname.match(whitePattern)) {
+                        isWhitelisted = true;
+                        break;
+                    }
+                }
+
+                if (isWhitelisted) {
+                    // 显示提示信息
+                    urlTip.innerHTML = tipText.safe;
+                    jumpContent.className = "safe";
+                    autoJump();
+                } else {
+                    // 默认提示
+                    urlTip.innerHTML = tipText.warn;
+                    jumpContent.className = "warn";
+
+                    jumpButton.addEventListener("click", () => {
+                        clearInterval(interval);
+                        jumpButton.classList.remove("jumping");
+                        jumpButton.innerHTML = "正在跳转";
+                        window.location.replace(jumpLink);
+                    });
+                    autoJump(); // 如果不是黑名单中的网址，自动跳转
+                }
+            } catch (error) {
+                console.error(error);
+                urlDom.textContent = "获取跳转链接失败";
+                urlTip.innerHTML = "⚠ 参数异常，请返回上一页重新访问";
+                jumpButton.innerHTML = "无法跳转";
+                jumpButton.classList.add("disabled");
+            }
+        };
+
+        // 动态粒子背景
+        const createParticles = () => {
+            const particleCount = 34;
+            for (let i = 0; i < particleCount; i++) {
+                const dot = document.createElement("span");
+                dot.className = "particle";
+                dot.style.left = `${Math.random() * 100}%`;
+                dot.style.bottom = `${-Math.random() * 90}px`;
+                dot.style.animationDuration = `${10 + Math.random() * 12}s`;
+                dot.style.animationDelay = `${Math.random() * 6}s`;
+                dot.style.opacity = `${0.45 + Math.random() * 0.55}`;
+                particleLayer.appendChild(dot);
+            }
+        };
+
+        // 防止右键和F12
+        document.addEventListener("contextmenu", function (event) {
+            event.preventDefault();
+        });
+        document.addEventListener("keydown", function (event) {
+            if (event.keyCode === 123) {
+                event.preventDefault();
+            }
+            if (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74 || event.keyCode === 67)) {
+                event.preventDefault();
+            }
+        });
+
+        // 页面加载完成后执行
+        window.addEventListener("DOMContentLoaded", () => {
+            createParticles();
+            getJumpUrl();
+        });
+    </script>
+</body>
+</html>

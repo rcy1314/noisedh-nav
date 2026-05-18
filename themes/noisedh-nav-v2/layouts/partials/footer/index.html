@@ -1,0 +1,462 @@
+<script>
+    window.addEventListener('load', function () {
+        const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        if (isLocalPreview) return;
+
+        const script = document.createElement('script');
+        script.defer = true;
+        script.charset = 'UTF-8';
+        script.id = 'LA_COLLECT';
+        script.src = '//sdk.51.la/js-sdk-pro.min.js';
+        script.onload = function () {
+            if (window.LA && typeof window.LA.init === 'function') {
+                window.LA.init({id:"3KPnWbkdUF6PmFfg",ck:"3KPnWbkdUF6PmFfg"});
+            }
+        };
+
+        document.head.appendChild(script);
+    });
+</script>
+{{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}
+<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/jquery.ui.touch-punch.min-0.2.2.js?v={{ $assetVer }}' id='jqueryui-touch-js'></script>
+
+<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/tooltip-extend.js?v={{ $assetVer }}' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+
+</script>
+<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/bootstrap.min-4.3.1.js?v={{ $assetVer }}' id='bootstrap-js'></script>
+<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/theia-sticky-sidebar-1.5.0.js?v={{ $assetVer }}' id='sidebar-js'></script>
+<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/APlayer.min.js?v={{ $assetVer }}' id='APlayer.min-js'></script>
+<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/Meting.min.js?v={{ $assetVer }}' id='Meting.min-js'></script>
+
+
+
+{{ if $.Site.Params.expandSidebar }}
+
+{{ else }}
+<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/app-mini.js?v={{ $assetVer }}' id='appmini-js'></script>
+{{ end }}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const siteWelcome = document.getElementById('loading');
+        if (!siteWelcome) return;
+        siteWelcome.classList.add('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>
+    function setNightMode(night) {
+        const isNight = night === '1';
+
+        const root = document.documentElement;
+        root.classList.add('theme-switching');
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                root.classList.remove('theme-switching');
+            });
+        });
+        window.setTimeout(() => root.classList.remove('theme-switching'), 250);
+
+        const body = document.body;
+        if (body) {
+            body.classList.toggle('io-black-mode', isNight);
+            body.classList.toggle('io-grey-mode', !isNight);
+        }
+
+        // 更新 cookie 和 localStorage
+        document.cookie = `night=${night};path=/`;
+        localStorage.setItem('night', night);
+
+        try {
+            document.querySelectorAll('iframe.embedded-page-frame').forEach(function (frame) {
+                if (!frame || !frame.contentWindow) return;
+                frame.contentWindow.postMessage({ type: 'ndh:theme', night: isNight ? '1' : '0' }, window.location.origin);
+            });
+        } catch (e) {
+        }
+
+        // 更新切换按钮的文本
+        const switchDarkMode = document.querySelector('.switch-dark-mode');
+        if (switchDarkMode) {
+            const nextTitle = isNight ? '日间模式' : '夜间模式';
+            switchDarkMode.setAttribute('data-original-title', nextTitle);
+            switchDarkMode.setAttribute('title', nextTitle);
+        }
+
+        // 更新图标样式
+        const modeIco = document.querySelector('.mode-ico');
+        if (modeIco) {
+            modeIco.classList.toggle('icon-light', isNight);
+            modeIco.classList.toggle('icon-night', !isNight);
+        }
+    }
+
+    // 初始化页面加载时的模式
+    (function () {
+        // 优先从 localStorage 读取用户选择
+        const night = localStorage.getItem('night') || (document.cookie.match(/night=([^;]+)/) || ['', '0'])[1];
+
+        // 如果有用户选择，直接应用
+        if (night !== null) {
+            setNightMode(night);
+        } else {
+            // 否则根据时间自动判断
+            const hour = new Date().getHours();
+            setNightMode(hour > 22 || hour < 6 ? '1' : '0');
+        }
+    })();
+
+    // 切换夜间模式
+    function switchNightMode() {
+        const night = localStorage.getItem('night') || '0';
+
+        // 切换模式
+        setNightMode(night === '0' ? '1' : '0');
+    }
+</script>
+
+<style>
+    /* 默认样式 */
+    html {
+        background-color: #000; /* 默认黑色 */
+        color: #fff; /* 默认白色 */
+    }
+
+    /* 夜间模式 */
+    .io-black-mode {
+        background-color: #000;
+        color: #fff;
+        transition: none; /* 避免闪烁，不使用过渡效果 */
+    }
+
+    /* 日间模式 */
+    .io-grey-mode {
+        background-color: #201f1f;
+        color: #000;
+        transition: none; /* 避免闪烁，不使用过渡效果 */
+    }
+
+    /* 优化：避免大规模重绘 */
+    body {
+        will-change: background-color, color; /* 提示浏览器优化 */
+    }
+
+    /* 图标样式 */
+    .mode-ico {
+        transition: opacity 0.1s ease; /* 优化图标过渡 */
+    }
+
+    /* 背景图片优化 */
+    #component-bg {
+        will-change: auto;
+    }
+
+    #footer-tools {
+        position: fixed !important;
+        z-index: 2147483647 !important;
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #footer-tools .btn {
+        width: 40px !important;
+        height: 40px !important;
+        line-height: 1 !important;
+        font-size: 1rem !important;
+        border-radius: 999px !important;
+        border: 2px solid rgba(18, 21, 33, 0.18) !important;
+        background: linear-gradient(180deg, rgba(255, 245, 178, 0.96), rgba(255, 222, 141, 0.92)) !important;
+        color: #182039 !important;
+        box-shadow: 0 6px 0 rgba(17, 20, 34, 0.14) !important;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #footer-tools > .btn {
+        margin-top: 8px !important;
+    }
+
+    #footer-tools > .btn:first-child {
+        margin-top: 0 !important;
+    }
+
+    #footer-tools > .btn.switch-dark-mode {
+        margin-top: 4px !important;
+    }
+
+    #footer-tools .btn i,
+    #footer-tools .btn svg {
+        line-height: 1;
+    }
+
+    #footer-tools .toggle-section {
+        display: flex !important;
+        flex-direction: column;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(6px);
+        pointer-events: none;
+        transition: max-height 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+        margin-top: 0 !important;
+    }
+
+    #footer-tools .toggle-section.show {
+        max-height: 360px;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+        margin-top: 8px !important;
+    }
+
+    #footer-tools .toggle-section > .btn {
+        margin: 0 !important;
+    }
+
+    #footer-tools .toggle-section > .btn + .btn {
+        margin-top: 8px !important;
+    }
+
+    #footer-tools #toggleButton.active {
+        filter: saturate(1.12) brightness(1.02);
+        border-color: rgba(33, 79, 211, 0.28) !important;
+    }
+
+    #go-to-up {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(6px);
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+    }
+
+    #go-to-up.is-visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+        transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s;
+    }
+
+    #footer-tools .btn:hover {
+        transform: translateY(-2px);
+        filter: saturate(1.05);
+        box-shadow: 0 4px 0 rgba(17, 20, 34, 0.14) !important;
+    }
+
+    #footer-tools .btn:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 rgba(17, 20, 34, 0.14) !important;
+    }
+
+    #footer-tools .btn.go-up,
+    #footer-tools #go-to-up {
+        background: linear-gradient(180deg, rgba(214, 233, 255, 0.96), rgba(170, 210, 255, 0.92)) !important;
+    }
+
+    #footer-tools .btn.kefu {
+        background: linear-gradient(180deg, rgba(255, 236, 198, 0.94), rgba(255, 214, 170, 0.92)) !important;
+    }
+
+    #footer-tools .btn.switch-dark-mode {
+        background: linear-gradient(180deg, rgba(228, 224, 255, 0.96), rgba(176, 168, 255, 0.92)) !important;
+    }
+
+    body.io-black-mode #footer-tools {
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+    }
+
+    body.io-black-mode #footer-tools .btn {
+        border-color: rgba(255, 255, 255, 0.12) !important;
+        background: linear-gradient(180deg, rgba(255, 222, 111, 0.98), rgba(255, 174, 85, 0.92)) !important;
+        color: #141929 !important;
+        box-shadow: 0 6px 0 rgba(2, 4, 12, 0.28) !important;
+    }
+
+    body.io-black-mode #footer-tools .btn.go-up,
+    body.io-black-mode #footer-tools #go-to-up {
+        background: linear-gradient(180deg, rgba(143, 184, 255, 0.92), rgba(108, 146, 255, 0.86)) !important;
+    }
+
+    body.io-black-mode #footer-tools .btn.kefu {
+        background: linear-gradient(180deg, rgba(255, 214, 108, 0.96), rgba(255, 180, 86, 0.92)) !important;
+    }
+
+    body.io-black-mode #footer-tools .btn.switch-dark-mode {
+        background: linear-gradient(180deg, rgba(196, 190, 255, 0.94), rgba(140, 132, 255, 0.9)) !important;
+    }
+
+    body {
+        --ndh-tooltip-bg: rgba(24, 32, 57, 0.92);
+        --ndh-tooltip-border: rgba(255, 255, 255, 0.12);
+        --ndh-tooltip-color: rgba(255, 255, 255, 0.96);
+        --ndh-tooltip-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    body.io-black-mode {
+        --ndh-tooltip-bg: rgba(20, 24, 34, 0.92);
+        --ndh-tooltip-border: rgba(255, 255, 255, 0.14);
+        --ndh-tooltip-color: rgba(255, 255, 255, 0.92);
+        --ndh-tooltip-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+    }
+
+    .tooltip {
+        transition: none !important;
+    }
+    .tooltip.fade {
+        transition: none !important;
+    }
+
+    .tooltip-inner {
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: var(--ndh-tooltip-bg);
+        color: var(--ndh-tooltip-color);
+        border: 1px solid var(--ndh-tooltip-border);
+        box-shadow: var(--ndh-tooltip-shadow);
+    }
+
+    .bs-tooltip-top .arrow::before,
+    .bs-tooltip-auto[x-placement^="top"] .arrow::before {
+        border-top-color: var(--ndh-tooltip-bg);
+    }
+
+    .bs-tooltip-right .arrow::before,
+    .bs-tooltip-auto[x-placement^="right"] .arrow::before {
+        border-right-color: var(--ndh-tooltip-bg);
+    }
+
+    .bs-tooltip-bottom .arrow::before,
+    .bs-tooltip-auto[x-placement^="bottom"] .arrow::before {
+        border-bottom-color: var(--ndh-tooltip-bg);
+    }
+
+    .bs-tooltip-left .arrow::before,
+    .bs-tooltip-auto[x-placement^="left"] .arrow::before {
+        border-left-color: var(--ndh-tooltip-bg);
+    }
+</style>
+
+
+<!-- 弹窗提示 -->	
+    <!--link rel="stylesheet" href="assets/css/tc.css" />
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <body>
+    <div class="layer"></div>
+    <div id="globalAd">
+        <div id='hero-img' style="background-color: #1a95ff;background: linear-gradient(to left, #5dadf3 0, #4583ca 100%);">
+        </div>
+        <div id='profile-img'>
+            <img src="https://cdn.jsdelivr.net/gh/rcy1314/tuchuang@main/NV/image.700l662bj680.jpg" />
+        </div>
+        <div id='content'>
+            <p style="font-size: 16px;font-weight: bold;">公告</p>
+            <p></p>
+            <p>Noise导航站正在完成静态化</p>
+            <p>收录来源于我的各个网站及频道</p>
+            <p>欢迎联系我提出建议及网站投稿</p>
+            <p>主域名：www.noisedh.cn</p>
+            <p>Netlify:noisedh.netlify.app</p>
+            <a onclick="closeGlobalAd();" class="btn btn-default" rel='nofollow'>我已了解</a>
+            <a href="http://www.noisedh.cn" onclick="redirectUrlToActive();" class="btn btn-default" rel='nofollow'>点击访问</a>
+        </div>
+    </div>
+
+    <script>
+        jQuery.cookie = function(name, value, options) {
+            if(typeof value != 'undefined') {
+                options = options || {};
+                if(value === null) {
+                    value = '';
+                    options.expires = -1;
+                }
+                var expires = '';
+                if(options.expires && (typeof options.expires == 'number' || options.expires.toUTCString)) {
+                    var date;
+                    if(typeof options.expires == 'number') {
+                        date = new Date();
+                        var totalTime = 24 * 3600;
+                        var hour = date.getHours();
+                        var minutes = date.getMinutes();
+                        var seconds = date.getSeconds();
+                        var pastTime = 3600 * hour + 60 * minutes + seconds;
+                        var leftTime = totalTime - pastTime;
+                        date.setTime(date.getTime() + (options.expires * leftTime * 1000));
+                    } else {
+                        date = options.expires;
+                    }
+                    expires = '; expires=' + date.toUTCString();
+                }
+                var path = options.path ? '; path=' + (options.path) : '';
+                var domain = options.domain ? '; domain=' + (options.domain) : '';
+                var secure = options.secure ? '; secure' : '';
+                document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
+            } else {
+                var cookieValue = null;
+                if(document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for(var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        if(cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        };
+        $(function() {
+            var COOKIE_NAME = "erdangjiade";
+            if($.cookie(COOKIE_NAME)) {
+                $(".layer").hide();
+                $("#globalAd").hide();
+            } else {
+                var erdangjiadeH = $(window).height();
+                var erdangjiadeW = $(window).width();
+                $(".layer").show();
+                $("#globalAd").css({
+                    'top': erdangjiadeH / 2 - $("#globalAd").height() / 2,
+                    'left': erdangjiadeW / 2 - $("#globalAd").width() / 2
+                });
+                $("#globalAd").slideDown(300, function() {
+                    setTimeout("closeGloableAd()", '300000');
+                });
+                $.cookie(COOKIE_NAME, "erdangjiade", {
+                    path: '/',
+                    expires: 1
+                });
+            }
+        });
+
+        function closeGlobalAd() {
+            $('#globalAd').hide();
+            $('.layer').hide();
+
+        }
+
+        function redirectUrlToActive() {
+            $('#globalAd').hide();
+            $('.layer').hide();
+        }
+    </script>
+   <!- 弹窗结束 -->
+</body>
+</html>

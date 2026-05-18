@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 图标样式 */
+    #noisenotification-icon {
+        position: fixed;
+        top: 22px;
+        right: 20px;
+        font-size: 22px;
+        cursor: pointer;
+        color: white;
+        transition: color 0.3s;
+    }
+
+    #noisenotification-icon.active {
+        color: orange;
+    }
+
+    /* 弹窗样式 */
+    #noisenotification-container {
+        position: fixed;
+        background-color: rgba(37, 35, 35, 0.745);
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        display: none;
+        z-index: 1000;
+        transition: opacity 0.5s;
+        opacity: 0;
+        max-height: 300px;
+        overflow-y: auto;
+        width: 250px;
+        right: 20px;
+        top: 70px;
+    }
+
+    #noisenotification-container a {
+        color: orange;
+        text-decoration: none;
+    }
+
+    #noisenotification-container a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        #noisenotification-icon {
+            display: none;
+        }
+    }
+</style>
+
+<i id="noisenotification-icon" class="fa fa-bell-o"></i>
+<div id="noisenotification-container"></div>

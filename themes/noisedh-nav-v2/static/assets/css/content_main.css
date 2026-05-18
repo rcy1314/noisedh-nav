@@ -1,0 +1,133 @@
+
+.popup {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background-color: rgba(27, 26, 26, 0.961); /* 不透明黑色背景 */
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 9999; /* 确保在最上层 */
+color: rgba(231, 128, 38, 0.974); /* 高对比度文字颜色 */
+text-align: center;
+padding: 20px; /* 添加内边距 */
+width: 80%; /* 弹窗宽度 */
+max-width: 600px; /* 最大宽度限制 */
+box-shadow: 0 4px 10px rgba(26, 26, 26, 0.5); /* 添加阴影效果 */
+}
+
+.popup-content {
+max-width: 100%; /* 内容宽度限制 */
+}
+
+.large-text {
+font-size: 20px; /* 大文字 */
+color: #ea660e; /* 文字颜色 */
+margin: 15px 0; /* 为每段文字添加上下间距 */
+line-height: 1.5; /* 增加行高，提升可读性 */
+letter-spacing: 4px; /* 字与字之间的左右间隔 */
+}
+@media (max-width: 768px) { /* 通常，768px 是手机和平板的分界线 */
+.large-text {
+font-size: 14px; /* 在手机尺寸下字体大小为14px */
+}
+}
+.category-title {
+    font-size: 20px; /* 稍微调小一点 */
+    font-weight: 600; /* 加粗一点 */
+    margin-bottom: 15px; /* 调整间距 */
+    color: #e0e0e0; /* 柔和的白色 */
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px; /* 底部增加一点内边距 */
+    /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 可选：添加分隔线 */
+}
+.category-title i {
+     margin-right: 8px; /* 图标和文字间距 */
+     color: #6c63ff; /* 图标颜色，可以自定义 */
+}
+
+body.io-black-mode .category-title { /* 使用 io-black-mode */
+     /* 暗黑模式：亮灰色标题 */
+     color: #e0e0e0;
+}
+.category-title i {
+     /* ... existing styles ... */
+     /* 白天模式：蓝色图标 */
+     color: #4a89f7;
+}
+ body.io-black-mode .category-title i { /* 使用 io-black-mode */
+     /* 暗黑模式：稍亮的蓝紫色图标 */
+     color: #6c63ff;
+ }
+
+/* --- 默认 (白天/io-grey-mode) 样式 --- */
+.subcat-tabs {
+    display: inline-flex; /* 使宽度自适应内容 */
+    gap: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-bottom: 20px;
+    padding: 6px;
+    background-color: #f1f3f5; /* 白天模式：非常浅的灰色背景 (匹配图片) */
+    border-radius: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+   
+    max-width: 100%;
+}
+.subcat-tabs::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.subcat-tab {
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: transparent; /* 白天模式：透明标签背景 */
+    color: #6c757d; /* 白天模式：灰色文字 (匹配图片) */
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    margin-right: 0;
+   
+    flex-shrink: 0;
+}
+
+.subcat-tab:hover {
+    color: #212529; /* 白天模式：悬停时黑色文字 */
+    background-color: #c3c6c9; /* 白天模式：悬停时稍深灰色背景 */
+}
+
+.subcat-tab.active {
+    background: #4a89f7; /* 激活时蓝色背景 (匹配图片) */
+    color: #fff; /* 激活时白色文字 */
+    font-weight: 600;
+    transform: scale(1.03);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* --- 暗黑 (io-black-mode) 模式下的调整 --- */
+body.io-black-mode .subcat-tabs { /* 使用 io-black-mode */
+     background-color: #2a2a2e; /* 暗黑模式：深灰色容器背景 (匹配图片) */
+     box-shadow: none;
+}
+body.io-black-mode .subcat-tab { /* 使用 io-black-mode */
+    background: #40404009; /* 暗黑模式：稍浅灰色标签背景 (匹配图片) */
+    color: #adb5bd; /* 暗黑模式：稍亮灰色文字 (匹配图片) */
+}
+ body.io-black-mode .subcat-tab:hover { /* 使用 io-black-mode */
+     color: #fff; /* 暗黑模式：悬停时白色文字 */
+     background-color: #555555; /* 暗黑模式：悬停时更亮的灰色背景 */
+ }
+body.io-black-mode .subcat-tab.active { /* 使用 io-black-mode */
+    background: #4a89f7; /* 暗黑模式：激活时蓝色背景 (匹配图片) */
+    color: #fff; /* 暗黑模式：激活时白色文字 */
+    transform: scale(1.03);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.subcat-hidden {
+    display: none !important;
+}

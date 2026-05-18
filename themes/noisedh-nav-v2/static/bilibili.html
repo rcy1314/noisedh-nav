@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOISE-B站播放器</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        body {
+            background: transparent;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+        }
+
+        .center-message {
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            transform: translateX(-50%) rotate(-1.4deg);
+            display: none;
+            max-width: min(520px, 92vw);
+            padding: 12px 14px 12px 14px;
+            border-radius: 16px;
+            border: 2px dashed rgba(255, 255, 255, 0.28);
+            background:
+                radial-gradient(circle at 12% 18%, rgba(255, 228, 150, 0.22), transparent 54%),
+                radial-gradient(circle at 86% 26%, rgba(170, 210, 255, 0.18), transparent 56%),
+                rgba(12, 16, 28, 0.72);
+            color: rgba(242, 246, 255, 0.94);
+            font-size: 14px;
+            line-height: 1.6;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            box-shadow:
+                0 18px 38px rgba(0, 0, 0, 0.32),
+                8px 8px 0 rgba(0, 0, 0, 0.22);
+            backdrop-filter: none;
+            z-index: 11;
+        }
+
+        .center-message::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 14px;
+            width: 74px;
+            height: 22px;
+            border-radius: 8px;
+            transform: rotate(-6deg);
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.26);
+            pointer-events: none;
+        }
+
+        .center-message::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 18px 18px;
+            border-color: transparent transparent rgba(255, 255, 255, 0.18) transparent;
+            pointer-events: none;
+        }
+
+        .close-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(13, 17, 30, 0.56);
+            color: rgba(242, 246, 255, 0.92);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message-text {
+            display: block;
+            padding-right: 34px;
+        }
+
+        .message-text strong {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 900;
+        }
+
+        .message-text strong::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 226, 114, 0.9);
+            box-shadow: 0 0 0 4px rgba(255, 226, 114, 0.18);
+        }
+
+        .control-button {
+            position: fixed;
+            top: 45%;
+            width: 46px;
+            height: 46px;
+            padding: 0;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: linear-gradient(180deg, rgba(52, 62, 84, 0.92), rgba(13, 17, 30, 0.92));
+            color: rgba(242, 246, 255, 0.92);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: none;
+            transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+            z-index: 10;
+            pointer-events: none;
+            box-shadow:
+                0 16px 34px rgba(0, 0, 0, 0.32),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        .control-button span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+        }
+
+        .control-button svg {
+            width: 22px;
+            height: 22px;
+            fill: rgba(242, 246, 255, 0.92);
+        }
+
+        .prev-button {
+            left: 20px;
+        }
+
+        .next-button {
+            right: 20px;
+        }
+
+        body:hover .control-button {
+            opacity: 1;
+            filter: brightness(1.06);
+            pointer-events: auto;
+        }
+
+        .control-button:active {
+            transform: translateY(1px);
+            filter: brightness(0.98);
+        }
+
+        .control-button:focus-visible {
+            opacity: 1;
+            pointer-events: auto;
+            outline: none;
+        }
+
+        @media (hover: none), (pointer: coarse) {
+            .control-button {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <iframe name="player" onload="iframeLoaded()" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
+
+    <button class="control-button prev-button" onclick="playPreviousVideo()" aria-label="上一条">
+        <span aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M6 5h2v14H6zM19 6v12l-9-6z"></path>
+            </svg>
+        </span>
+    </button>
+    <button class="control-button next-button" onclick="playRandomVideo()" aria-label="下一条">
+        <span aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M16 5h2v14h-2zM5 6v12l9-6z"></path>
+            </svg>
+        </span>
+    </button>
+
+    <div class="center-message" id="centerMessage" role="status" aria-live="polite">
+        <span class="close-button" onclick="closeMessage()" aria-label="关闭提示">×</span>
+        <span class="message-text"><strong>提示</strong> 正在载入视频…</span>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const mediaId = urlParams.get('id');
+        const playerFrame = document.querySelector('iframe');
+        const messageBox = document.getElementById('centerMessage');
+        const messageText = messageBox ? messageBox.querySelector('.message-text') : null;
+
+        let showMessage = true;
+        let playedVideos = [];
+        let currentVideoIndex = -1;
+        let timerId = null;
+        let cachedBvids = [];
+        const cacheKey = mediaId ? `ndh_bili_fav_${mediaId}` : '';
+
+        function readCache() {
+            if (!cacheKey) return null;
+            try {
+                const raw = localStorage.getItem(cacheKey);
+                if (!raw) return null;
+                const payload = JSON.parse(raw);
+                if (!payload || !Array.isArray(payload.bvids)) return null;
+                if (typeof payload.ts !== 'number') return null;
+                if (Date.now() - payload.ts > 1000 * 60 * 60 * 6) return null;
+                return payload.bvids.filter(Boolean);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function writeCache(bvids) {
+            if (!cacheKey) return;
+            try {
+                localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), bvids: bvids.slice(0, 80) }));
+            } catch (e) {
+            }
+        }
+
+        function setMessage(visible, text) {
+            if (!messageBox) return;
+            messageBox.style.display = visible && showMessage ? 'block' : 'none';
+            if (text && messageText) messageText.innerHTML = `<strong>提示</strong> ${text}`;
+        }
+
+        function closeMessage() {
+            showMessage = false;
+            setMessage(false);
+        }
+
+        function iframeLoaded() {
+            setMessage(false);
+        }
+
+        function fetchAllOrigins(url) {
+            return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { cache: 'no-store' })
+                .then(response => {
+                    if (!response.ok) throw new Error('request_failed');
+                    return response.json();
+                })
+                .then(data => JSON.parse(data.contents));
+        }
+
+        function extractBvids(payload) {
+            if (!payload || !payload.data) return [];
+            if (Array.isArray(payload.data)) return payload.data.map(item => item && item.bvid).filter(Boolean);
+            if (payload.data.medias && Array.isArray(payload.data.medias)) return payload.data.medias.map(item => item && item.bvid).filter(Boolean);
+            if (payload.data.list && Array.isArray(payload.data.list)) return payload.data.list.map(item => item && item.bvid).filter(Boolean);
+            return [];
+        }
+
+        function scheduleNext(bvid) {
+            if (timerId) {
+                clearTimeout(timerId);
+                timerId = null;
+            }
+            fetchAllOrigins(`https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(bvid)}`)
+                .then(videoData => {
+                    const duration = videoData && videoData.data && typeof videoData.data.duration === 'number' ? videoData.data.duration : 600;
+                    const ms = Math.min(Math.max((duration + 6) * 1000, 60000), 30 * 60 * 1000);
+                    timerId = setTimeout(() => {
+                        playRandomVideo();
+                    }, ms);
+                })
+                .catch(() => {
+                    timerId = setTimeout(() => {
+                        playRandomVideo();
+                    }, 10 * 60 * 1000);
+                });
+        }
+
+        function playBvid(bvid) {
+            if (!playerFrame) return;
+            setMessage(true, '正在载入视频…');
+            playerFrame.src = `https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${encodeURIComponent(bvid)}&as_wide=1&high_quality=1&danmaku=0`;
+            scheduleNext(bvid);
+        }
+
+        function playPreviousVideo() {
+            if (currentVideoIndex <= 0) return;
+            currentVideoIndex -= 1;
+            playBvid(playedVideos[currentVideoIndex]);
+        }
+
+        function playRandomVideo() {
+            if (!mediaId) {
+                setMessage(true, '缺少参数：id（mediaId）');
+                return;
+            }
+
+            if (!cachedBvids.length) {
+                const fromCache = readCache();
+                if (fromCache && fromCache.length) {
+                    cachedBvids = fromCache;
+                }
+            }
+
+            if (cachedBvids.length) {
+                let candidates = cachedBvids.filter(bvid => !playedVideos.includes(bvid));
+                if (!candidates.length) {
+                    playedVideos = [];
+                    currentVideoIndex = -1;
+                    candidates = cachedBvids.slice();
+                }
+                const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+                playedVideos.push(chosen);
+                currentVideoIndex = playedVideos.length - 1;
+                playBvid(chosen);
+                return;
+            }
+
+            setMessage(true, '正在获取收藏列表…');
+
+            fetchAllOrigins(`https://api.bilibili.com/x/v3/fav/resource/ids?media_id=${encodeURIComponent(mediaId)}`)
+                .then(data => {
+                    const bvids = extractBvids(data);
+                    if (!bvids.length) throw new Error('empty');
+                    cachedBvids = bvids.slice();
+                    writeCache(cachedBvids);
+                    let candidates = bvids.filter(bvid => !playedVideos.includes(bvid));
+                    if (!candidates.length) {
+                        playedVideos = [];
+                        currentVideoIndex = -1;
+                        candidates = bvids.slice();
+                        candidates = bvids.slice();
+                    }
+
+                    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+                    playedVideos.push(chosen);
+                    currentVideoIndex = playedVideos.length - 1;
+                    playBvid(chosen);
+                })
+                .catch(() => {
+                    setMessage(true, '加载失败，请刷新或更换网络/地区');
+                });
+        }
+
+        playRandomVideo();
+    </script>
+</body>
+</html>

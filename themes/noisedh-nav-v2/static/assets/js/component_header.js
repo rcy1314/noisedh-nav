@@ -1,0 +1,618 @@
+// 网站问候与统计
+document.addEventListener("DOMContentLoaded", function () {
+    // 网站问候
+    const weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+    const today = new Date();
+    const hrs = today.getHours();
+    const date = `${today.getFullYear()}年${(today.getMonth() + 1).toString().padStart(2, '0')}月${today.getDate().toString().padStart(2, '0')}日`;
+    const siteName = window.CONFIG && window.CONFIG.siteName ? window.CONFIG.siteName : "NOISE导航";
+    const greet = hrs < 5 ? `凌晨好,欢迎访问 ${siteName}` :
+        hrs < 9 ? `早上好,欢迎访问 ${siteName}` :
+            hrs < 11 ? `上午好,欢迎访问 ${siteName}` :
+                hrs < 13 ? `中午好,欢迎访问 ${siteName}` :
+                    hrs < 17 ? `下午好,欢迎访问 ${siteName}` :
+                        hrs < 19 ? `傍晚好,欢迎访问 ${siteName}` :
+                            hrs < 22 ? `晚上好,欢迎访问 ${siteName}` : `${siteName}提醒您，夜深了，早点休息哦😯`;
+    const lbl = document.getElementById('lbl');
+    if (lbl) {
+        lbl.innerHTML = `${greet}<div id="date">今天是:${date}</div>`;
+    }
+
+    // 网站统计API软编码
+    const statisticsApi = window.CONFIG && window.CONFIG.statisticsApi ? window.CONFIG.statisticsApi : "";
+    if (statisticsApi) {
+        fetch(statisticsApi)
+            .then(response => response.json())
+            .then(data => {
+                const urlCount = data.urlCount;
+                const dateDiv = document.getElementById('date');
+                if (dateDiv) {
+                    // 检查是否已经插入过“本站已收录”，避免重复
+                    if (!dateDiv.innerHTML.includes('本站已收录')) {
+                        dateDiv.innerHTML += ` 本站已收录:${urlCount}个网站`;
+                    }
+                }
+            })
+            .catch(error => {
+                const dateDiv = document.getElementById('date');
+                if (dateDiv) dateDiv.innerHTML += ` 无法获取网站数量`;
+            });
+    }
+
+    // 最近收录网站功能
+    fetchRecentSites();
+
+    // 搜索模块事件绑定
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    const searchResults = document.getElementById('search-results');
+    const overlay = document.getElementById('overlay');
+    let resultsHeader = null;
+    if (searchResults) {
+        resultsHeader = searchResults.querySelector('.results-header');
+    }
+
+    if (searchButton && searchInput) {
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    }
+    if (overlay && searchResults) {
+        overlay.addEventListener('click', function () {
+            searchResults.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+    }
+
+    // 近期收录弹窗
+    fetchAndShowLatestNotification();
+    setInterval(function () {
+        if (document.visibilityState === 'visible') {
+            fetchAndShowLatestNotification();
+        }
+    }, 60000);
+});
+
+// --- 最近收录网站相关 ---
+async function fetchRecentSites() {
+    const siteListElement = document.getElementById('site-list');
+    const titleElement = document.getElementById('recent-sites-title');
+    const recentSitesElement = document.getElementById('recent-sites');
+    if (!siteListElement || !titleElement || !recentSitesElement) return;
+
+    const cachedData = localStorage.getItem('recentSites');
+    const cachedTime = localStorage.getItem('recentSitesTimestamp');
+    if (cachedData && cachedTime) {
+        const currentTime = Date.now();
+        const timeDiff = currentTime - cachedTime;
+        if (timeDiff < 3600000) {
+            displaySites(JSON.parse(cachedData));
+            return;
+        }
+    }
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        // 修改为软编码 recentSitesApi
+        const recentSitesApi = window.CONFIG && window.CONFIG.recentSitesApi ? window.CONFIG.recentSitesApi : 'https://extension.noisework.cn/api/notifications';
+        const response = await fetch(recentSitesApi, {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error('网络响应不正常: ' + response.status);
+        }
+
+        const data = await response.json();
+        localStorage.setItem('recentSites', JSON.stringify(data));
+        localStorage.setItem('recentSitesTimestamp', Date.now());
+        displaySites(data);
+    } catch (error) {
+        if (titleElement) titleElement.style.display = 'none';
+        if (recentSitesElement) recentSitesElement.style.display = 'none';
+    }
+}
+
+function displaySites(data) {
+    const siteListElement = document.getElementById('site-list');
+    const titleElement = document.getElementById('recent-sites-title');
+    const recentSitesElement = document.getElementById('recent-sites');
+    if (!siteListElement || !titleElement || !recentSitesElement) return;
+    siteListElement.innerHTML = '';
+    siteListElement.dataset.scrolling = '';
+    siteListElement.scrollTop = 0;
+
+    if (data.message) {
+        const messageItem = document.createElement('li');
+        messageItem.textContent = data.message;
+        siteListElement.appendChild(messageItem);
+        titleElement.style.display = '';
+        recentSitesElement.style.display = '';
+        return;
+    }
+
+    data.forEach(site => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `<strong class="title">${site.title}：</strong><a class="url" href="${site.url}" target="_blank">${site.url}</a>：<span class="description">${site.description || '无描述'}</span>`;
+        siteListElement.appendChild(listItem);
+    });
+
+    titleElement.style.display = '';
+    recentSitesElement.style.display = '';
+    startScrolling(siteListElement);
+}
+
+function startScrolling(element) {
+    if (!element || element.dataset.scrolling === 'true') return;
+    const scrollHeight = element.scrollHeight;
+    const visibleHeight = element.clientHeight;
+    const maxScrollTop = Math.max(0, scrollHeight - visibleHeight);
+    let scrollTop = 0;
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || scrollHeight <= visibleHeight + 4) return;
+    element.dataset.scrolling = 'true';
+    let lastFrameTime = 0;
+    function scroll(now) {
+        if (document.visibilityState !== 'visible') {
+            requestAnimationFrame(scroll);
+            return;
+        }
+        if (now - lastFrameTime < 42) {
+            requestAnimationFrame(scroll);
+            return;
+        }
+        lastFrameTime = now;
+        scrollTop += 0.3;
+        if (scrollTop >= maxScrollTop) {
+            scrollTop = 0;
+        }
+        element.scrollTop = scrollTop;
+        requestAnimationFrame(scroll);
+    }
+    requestAnimationFrame(scroll);
+}
+
+// --- 搜索相关 ---
+const serverUrl = window.CONFIG && window.CONFIG.serverUrl ? window.CONFIG.serverUrl : '';
+const filePath = window.CONFIG && window.CONFIG.filePath ? window.CONFIG.filePath : '';
+
+async function performSearch() {
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    const overlay = document.getElementById('overlay');
+    const resultsHeader = searchResults ? searchResults.querySelector('.results-header') : null;
+    if (!searchInput || !searchResults) return;
+    const keyword = searchInput.value.trim();
+    if (keyword) {
+        try {
+            const response = await fetch(`${serverUrl}/api/search?keyword=${encodeURIComponent(keyword)}&filePath=${encodeURIComponent(filePath)}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                alert(`搜索请求失败: ${response.status} - ${errorText}`);
+                return;
+            }
+            const results = await response.json();
+            displaySearchResults(results, searchResults, overlay, resultsHeader);
+        } catch (error) {
+            alert('网络请求失败，请检查网络连接');
+        }
+    } else {
+        alert('请输入搜索关键词');
+    }
+}
+
+function displaySearchResults(results, searchResults, overlay, resultsHeader) {
+    if (!searchResults) return;
+    searchResults.innerHTML = '';
+    if (resultsHeader) {
+        resultsHeader.style.display = "block";
+        searchResults.appendChild(resultsHeader);
+    }
+    if (Array.isArray(results) && results.length > 0) {
+        results.forEach(result => {
+            const div = document.createElement('div');
+            div.classList.add('result-item');
+            div.innerHTML = `
+                <div class="result-title">${result.title}</div>
+                <div class="result-url"><a href="${result.url}" target="_blank">${result.url}</a></div>
+                <div class="result-description">${result.description || '无描述'}</div>
+            `;
+            searchResults.appendChild(div);
+        });
+    } else {
+        const div = document.createElement('div');
+        div.textContent = "未找到相关结果";
+        searchResults.appendChild(div);
+    }
+    searchResults.style.display = "flex";
+    if (overlay) overlay.style.display = "block";
+}
+
+// --- 近期收录弹窗（只保留右上角iziToast）---
+let shownNotifications = [];
+try {
+    shownNotifications = JSON.parse(localStorage.getItem('shownNotifications')) || [];
+} catch (e) {
+    shownNotifications = [];
+}
+
+async function fetchAndShowLatestNotification() {
+    try {
+        const recentSitesApi = window.CONFIG && window.CONFIG.recentSitesApi ? window.CONFIG.recentSitesApi : 'https://extension.noisework.cn/api/notifications';
+        const response = await fetch(recentSitesApi);
+        const notifications = await response.json();
+
+        const bellIcon = document.getElementById('noisenotification-icon');
+        let hasNewNotification = false;
+
+        if (Array.isArray(notifications) && notifications.length > 0) {
+            const latestNotification = notifications.reduce((latest, current) => {
+                return new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest;
+            });
+
+            const notificationContent = `🎉站点收录更新通知：<strong>${latestNotification.title}</strong><br><a href="${latestNotification.url}" target="_blank" style="color:#ff9800;text-decoration:underline;">${latestNotification.description}</a>`;
+
+            // 首次访问 shownNotifications 为空，必弹
+            if (!shownNotifications.includes(notificationContent)) {
+                shownNotifications.push(notificationContent);
+                // 限制缓存长度，防止无限增长
+                if (shownNotifications.length > 20) shownNotifications.shift();
+                localStorage.setItem('shownNotifications', JSON.stringify(shownNotifications));
+                if (window.iziToast) {
+                    iziToast.show({
+                        title: false,
+                        message: notificationContent,
+                        position: 'topRight',
+                        timeout: 5000,
+                        messageColor: '#222',
+                        backgroundColor: '#fff',
+                        icon: 'icon-star'
+                    });
+                }
+                hasNewNotification = true;
+            }
+        }
+        // 控制铃铛图标颜色
+        if (bellIcon) {
+            if (hasNewNotification) {
+                bellIcon.classList.add('active');
+                // 标记有新通知
+                localStorage.setItem('hasNewNotification', '1');
+            } else if (localStorage.getItem('hasNewNotification') === '1') {
+                // 只要本地有未读通知，也保持变色
+                bellIcon.classList.add('active');
+            } else {
+                bellIcon.classList.remove('active');
+            }
+        }
+        // 可选：监听用户点击铃铛，清除未读标记
+        if (bellIcon) {
+            bellIcon.onclick = function() {
+                bellIcon.classList.remove('active');
+                localStorage.removeItem('hasNewNotification');
+            };
+        }
+    } catch (error) {
+        console.error('获取通知失败:', error);
+    }
+}
+
+function syncHeaderPageMode(activeKey) {
+    var headerTop = document.querySelector('.header-top');
+    if (!headerTop) return;
+    var isDefault = !activeKey || activeKey === 'default';
+    headerTop.classList.toggle('is-default-page', isDefault);
+    headerTop.classList.toggle('is-page-active', !isDefault);
+    queueSyncHeaderColumnHeights();
+}
+
+var headerHeightResizeObserver = null;
+var headerHeightMutationObserver = null;
+var cachedDefaultSideHeight = 0;
+var cachedDefaultHeaderTopHeight = 0;
+var headerHeightSyncRafId = 0;
+var headerHeightSyncTimerId = 0;
+
+function clearHeaderPageHeightStyles(side) {
+    if (!side) return;
+    var region = side.querySelector('.header-page-region');
+    if (region) {
+        region.style.height = '';
+        region.style.maxHeight = '';
+    }
+    side.querySelectorAll('.page, .page-shell, .hot-page-shell, .hot-page-panels, .hot-page-panel, .hot-page-panel-body').forEach(function (node) {
+        node.style.height = '';
+        node.style.maxHeight = '';
+    });
+}
+
+function syncHeaderColumnHeights() {
+    var headerTop = document.querySelector('.header-top');
+    if (!headerTop) return;
+    var main = headerTop.querySelector('.header-top-main');
+    var side = headerTop.querySelector('.header-top-side');
+    if (!main || !side) return;
+
+    // 重置所有内联样式以获取自然高度
+    headerTop.style.height = '';
+    headerTop.style.minHeight = '';
+    headerTop.style.maxHeight = '';
+    main.style.minHeight = '';
+    side.style.minHeight = '';
+    main.style.height = '';
+    side.style.height = '';
+    clearHeaderPageHeightStyles(side);
+
+    if (window.innerWidth <= 768) {
+        return;
+    }
+
+    void headerTop.offsetHeight;
+
+    // 获取当前状态
+    var isPageActive = headerTop.classList.contains('is-page-active');
+    
+    // 获取左侧栏的自然高度（作为基准）
+    var mainRect = main.getBoundingClientRect();
+    var mainHeight = mainRect.height;
+
+    // 获取/更新默认右侧内容的自然高度
+    var defaultSide = side.querySelector('.header-side-default');
+    if (defaultSide) {
+        if (!isPageActive) {
+            cachedDefaultSideHeight = defaultSide.getBoundingClientRect().height;
+            cachedDefaultHeaderTopHeight = headerTop.getBoundingClientRect().height;
+        } else if (cachedDefaultSideHeight === 0) {
+            // 如果初始加载就是分页状态，尝试获取一次
+            var originalDisplay = defaultSide.style.display;
+            defaultSide.style.display = 'flex';
+            cachedDefaultSideHeight = defaultSide.getBoundingClientRect().height;
+            defaultSide.style.display = originalDisplay;
+        }
+    }
+
+    // 计算目标高度
+    // 分页激活时，锁定为默认状态下的整体高度，避免热榜/iframe 内容变化导致整体高度被“撑爆”
+    // 默认状态时，以左右栏更高的一侧作为基准
+    var targetHeight = isPageActive && cachedDefaultHeaderTopHeight > 0
+        ? cachedDefaultHeaderTopHeight
+        : Math.max(mainHeight, cachedDefaultSideHeight);
+
+    if (targetHeight > 0) {
+        var headerStyles = window.getComputedStyle(headerTop);
+        var headerPaddingTop = parseFloat(headerStyles.paddingTop || '0') || 0;
+        var headerPaddingBottom = parseFloat(headerStyles.paddingBottom || '0') || 0;
+        var innerColumnHeight = Math.max(0, targetHeight - headerPaddingTop - headerPaddingBottom);
+
+        // 应用高度锁定，确保左右栏等高且不因内容加载而闪烁
+        headerTop.style.height = targetHeight + 'px';
+        headerTop.style.minHeight = targetHeight + 'px';
+        headerTop.style.maxHeight = targetHeight + 'px';
+        main.style.height = innerColumnHeight + 'px';
+        side.style.height = innerColumnHeight + 'px';
+        // 同时设置 min-height 增强稳定性
+        main.style.minHeight = innerColumnHeight + 'px';
+        side.style.minHeight = innerColumnHeight + 'px';
+
+        // 如果分页处于激活状态，需要精确计算内部滚动区域的高度
+        if (isPageActive) {
+            var region = side.querySelector('.header-page-region');
+            var activePageNode = side.querySelector('.page.active');
+            
+            if (region && activePageNode) {
+                // 计算分页区域在右侧栏中的可用空间
+                var sideRect = side.getBoundingClientRect();
+                var regionRect = region.getBoundingClientRect();
+                var regionTopOffset = regionRect.top - sideRect.top;
+                var availableHeight = Math.max(0, innerColumnHeight - regionTopOffset);
+
+                region.style.height = availableHeight + 'px';
+                region.style.maxHeight = availableHeight + 'px';
+                var regionStyles = window.getComputedStyle(region);
+                var regionPaddingTop = parseFloat(regionStyles.paddingTop || '0') || 0;
+                var regionPaddingBottom = parseFloat(regionStyles.paddingBottom || '0') || 0;
+                var regionBorderTop = parseFloat(regionStyles.borderTopWidth || '0') || 0;
+                var regionBorderBottom = parseFloat(regionStyles.borderBottomWidth || '0') || 0;
+                var innerAvailableHeight = Math.max(0, availableHeight - regionPaddingTop - regionPaddingBottom - regionBorderTop - regionBorderBottom);
+
+                activePageNode.style.height = innerAvailableHeight + 'px';
+                activePageNode.style.maxHeight = innerAvailableHeight + 'px';
+
+                var shell = activePageNode.querySelector('.page-shell');
+                if (shell) {
+                    shell.style.height = innerAvailableHeight + 'px';
+                    shell.style.maxHeight = innerAvailableHeight + 'px';
+                }
+
+                // 针对热榜页面的特殊精确计算
+                var hotShell = activePageNode.querySelector('.hot-page-shell');
+                if (hotShell) {
+                    hotShell.style.height = innerAvailableHeight + 'px';
+                    hotShell.style.maxHeight = innerAvailableHeight + 'px';
+                    
+                    var intro = hotShell.querySelector('.hot-page-intro');
+                    var tabs = hotShell.querySelector('.hot-page-tabs');
+                    var panels = hotShell.querySelector('.hot-page-panels');
+                    
+                    if (panels) {
+                        var introHeight = intro ? intro.getBoundingClientRect().height : 0;
+                        var tabsHeight = tabs ? tabs.getBoundingClientRect().height : 0;
+                        var hotShellStyles = window.getComputedStyle(hotShell);
+                        var rowGap = parseFloat(hotShellStyles.rowGap || hotShellStyles.gap || '0') || 0;
+                        
+                        // 计算面板容器高度：总高度 - 说明区 - 切换标签 - 间距
+                        var panelsHeight = Math.max(0, innerAvailableHeight - introHeight - tabsHeight - (rowGap * 2));
+                        panels.style.height = panelsHeight + 'px';
+                        panels.style.maxHeight = panelsHeight + 'px';
+                        
+                        panels.querySelectorAll('.hot-page-panel').forEach(function (panel) {
+                            panel.style.height = panelsHeight + 'px';
+                            panel.style.maxHeight = panelsHeight + 'px';
+                            
+                            var head = panel.querySelector('.hot-page-panel-head');
+                            var updateTime = panel.querySelector('.update-time');
+                            var body = panel.querySelector('.hot-page-panel-body');
+                            
+                            if (body) {
+                                var panelStyles = window.getComputedStyle(panel);
+                                var panelGap = parseFloat(panelStyles.rowGap || panelStyles.gap || '0') || 0;
+                                var panelPadding = parseFloat(panelStyles.paddingTop || '0') + parseFloat(panelStyles.paddingBottom || '0');
+                                
+                                var headHeight = head ? head.getBoundingClientRect().height : 0;
+                                var timeHeight = updateTime ? updateTime.getBoundingClientRect().height : 0;
+                                
+                                // 计算列表主体高度
+                                var bodyHeight = Math.max(0, panelsHeight - headHeight - timeHeight - (panelGap * 2) - panelPadding);
+                                body.style.height = bodyHeight + 'px';
+                                body.style.maxHeight = bodyHeight + 'px';
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
+}
+
+function queueSyncHeaderColumnHeights() {
+    if (!headerHeightSyncRafId) {
+        headerHeightSyncRafId = requestAnimationFrame(function () {
+            headerHeightSyncRafId = 0;
+            syncHeaderColumnHeights();
+        });
+    }
+    clearTimeout(headerHeightSyncTimerId);
+    headerHeightSyncTimerId = setTimeout(syncHeaderColumnHeights, 180);
+}
+
+function observeHeaderColumnChanges() {
+    var headerTop = document.querySelector('.header-top');
+    if (headerHeightResizeObserver) {
+        headerHeightResizeObserver.disconnect();
+        headerHeightResizeObserver = null;
+    }
+    if (headerHeightMutationObserver) {
+        headerHeightMutationObserver.disconnect();
+        headerHeightMutationObserver = null;
+    }
+    if (!headerTop || window.innerWidth <= 768) return;
+    var main = headerTop.querySelector('.header-top-main');
+    var side = headerTop.querySelector('.header-top-side');
+    if (!main || !side) return;
+
+    if ('ResizeObserver' in window) {
+        headerHeightResizeObserver = new ResizeObserver(function () {
+            queueSyncHeaderColumnHeights();
+        });
+        headerHeightResizeObserver.observe(main);
+        headerHeightResizeObserver.observe(side);
+        var activePage = side.querySelector('.page.active');
+        var defaultSide = side.querySelector('.header-side-default');
+        if (activePage) {
+            headerHeightResizeObserver.observe(activePage);
+        }
+        if (defaultSide) {
+            headerHeightResizeObserver.observe(defaultSide);
+        }
+    }
+
+    headerHeightMutationObserver = new MutationObserver(function () {
+        queueSyncHeaderColumnHeights();
+    });
+    headerHeightMutationObserver.observe(side, {
+        childList: true,
+        subtree: true
+    });
+}
+
+function switchHotPanel(target) {
+    var hotShell = document.querySelector('.hot-page-shell');
+    if (!hotShell) return;
+
+    hotShell.querySelectorAll('.hot-page-tab').forEach(function (tab) {
+        var isActive = tab.getAttribute('data-hot-target') === target;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    hotShell.querySelectorAll('.hot-page-panel').forEach(function (panel) {
+        var isActive = panel.getAttribute('data-hot-panel') === target;
+        panel.classList.toggle('active', isActive);
+    });
+
+    queueSyncHeaderColumnHeights();
+}
+
+function ensureHotPanelSelection() {
+    var hotShell = document.querySelector('.hot-page-shell');
+    if (!hotShell) return;
+    var activeTab = hotShell.querySelector('.hot-page-tab.active');
+    if (activeTab) {
+        switchHotPanel(activeTab.getAttribute('data-hot-target'));
+        return;
+    }
+    var firstTab = hotShell.querySelector('.hot-page-tab');
+    if (firstTab) {
+        switchHotPanel(firstTab.getAttribute('data-hot-target'));
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    var currentPage = document.querySelector('.page.active');
+    syncHeaderPageMode(currentPage ? currentPage.id : 'default');
+    ensureHotPanelSelection();
+    window.addEventListener('resize', queueSyncHeaderColumnHeights);
+    window.addEventListener('load', queueSyncHeaderColumnHeights);
+    window.addEventListener('resize', observeHeaderColumnChanges);
+    document.addEventListener('hotlist:updated', function () {
+        queueSyncHeaderColumnHeights();
+        observeHeaderColumnChanges();
+    });
+    observeHeaderColumnChanges();
+});
+
+function broadcastEmbeddedTheme() {
+    try {
+        var isNight = document.body && document.body.classList && document.body.classList.contains('io-black-mode');
+        document.querySelectorAll('iframe.embedded-page-frame').forEach(function (frame) {
+            if (!frame || !frame.contentWindow) return;
+            frame.contentWindow.postMessage({ type: 'ndh:theme', night: isNight ? '1' : '0' }, window.location.origin);
+        });
+    } catch (e) {
+    }
+}
+
+// Tab 切换功能
+function showPage(key) {
+    // 隐藏所有页面
+    document.querySelectorAll('.page').forEach(function(page) {
+        page.classList.remove('active');
+    });
+    // 显示当前页面
+    var current = document.getElementById(key);
+    if (current) {
+        current.classList.add('active');
+    }
+    // 切换按钮高亮
+    document.querySelectorAll('.nav-button').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    // 高亮当前按钮
+    var btns = document.querySelectorAll('.nav-button');
+    btns.forEach(function(btn) {
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(key)) {
+            btn.classList.add('active');
+        }
+    });
+    syncHeaderPageMode(key);
+    if (key === 'waline') {
+        ensureHotPanelSelection();
+    }
+    broadcastEmbeddedTheme();
+    observeHeaderColumnChanges();
+}

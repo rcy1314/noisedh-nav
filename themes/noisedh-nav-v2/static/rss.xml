@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+    <title>NOISE导航收录更新</title>
+    <link>http://www.noisedh.cn</link>
+    <description>最新更新通知</description>
+    <image>
+        <url>https://s2.loli.net/2025/02/26/a6yMIxOUZjHDghp.png</url>
+        <title>NOISE导航</title>
+        <link>https://www.noisedh.cn</link>
+    </image>
+    
+        <item>
+            <title>MonkeyCode 智能开发平台</title>
+            <link>https://monkeycode-ai.com/</link>
+            <description>MonkeyCode是一个免费的在线AI开发平台，提供云端开发环境并集成主流大模型，支持从开发到验证的全流程AI编程。</description>
+            <guid>https://monkeycode-ai.com/</guid>
+            <pubDate>2026/5/15 20:32:24</pubDate>
+        </item>
+    
+        <item>
+            <title>Subnautica 2 Wik</title>
+            <link>https://subnautica2wiki.net/zh</link>
+            <description>Subnautica 2 已以抢先体验形式上线。查看发售状态、合作模式、Game Pass、PC 配置要求、已知首发问题和轻剧透新手建议。</description>
+            <guid>https://subnautica2wiki.net/zh</guid>
+            <pubDate>2026/5/15 20:24:46</pubDate>
+        </item>
+    
+        <item>
+            <title>Unbound AI</title>
+            <link>https://unboundai.net/</link>
+            <description>Unbound AI 是一款无审查、无限制的AI图像与视频生成工具，支持文本、参考图像及多种模型（如Seedance 2.0、Wan 2.7、GPT Image 2），提供快速创作体验。</description>
+            <guid>https://unboundai.net/</guid>
+            <pubDate>2026/5/15 20:21:46</pubDate>
+        </item>
+    
+        <item>
+            <title>Image to Video AI</title>
+            <link>https://imagetovideoai.pro/zh</link>
+            <description>将静态图片一键转化为富有故事感的短片，支持多种AI模型、关键帧控制、电影级音效及Chrome/Figma集成。</description>
+            <guid>https://imagetovideoai.pro/zh</guid>
+            <pubDate>2026/5/15 20:20:53</pubDate>
+        </item>
+    
+        <item>
+            <title>AI涂色页生成器 | ColoringStore</title>
+            <link>https://coloringstore.com/zh</link>
+            <description>ColoringStore是一款AI涂色页生成器，可将文字或图片快速转换为可打印的涂色页，支持PNG和PDF下载，适合家庭、课堂和创意项目。</description>
+            <guid>https://coloringstore.com/zh</guid>
+            <pubDate>2026/5/15 20:19:21</pubDate>
+        </item>
+    
+        <item>
+            <title>Oh My PPT</title>
+            <link>https://arcsin1.github.io/</link>
+            <description>AI驱动的HTML幻灯片桌面客户端，支持一句话生成演示文稿、对话式编辑、多格式导入导出，数据本地存储。</description>
+            <guid>https://arcsin1.github.io/</guid>
+            <pubDate>2026/5/15 20:18:35</pubDate>
+        </item>
+    
+        <item>
+            <title>MetalBear</title>
+            <link>https://metalbear.com/</link>
+            <description>为AI驱动的Kubernetes团队提供开发者工具，通过mirrord连接开发者和AI代理到共享集群，实现真实环境测试。</description>
+            <guid>https://metalbear.com/</guid>
+            <pubDate>2026/5/15 20:18:18</pubDate>
+        </item>
+    
+        <item>
+            <title>产品派 - 发现优质产品、产品榜单与社区讨论</title>
+            <link>https://chanpinpai.com/</link>
+            <description>产品派是一个发现和分享优质产品的创意社区，聚合热门榜单、产品评测、社区讨论与精选推荐内容，帮助用户高效找到值得关注的新产品、AI 工具与创意项目。</description>
+            <guid>https://chanpinpai.com/</guid>
+            <pubDate>2026/5/15 20:16:37</pubDate>
+        </item>
+    
+        <item>
+            <title>AIPET.DEV - AI像素宠物生成器</title>
+            <link>https://aipet.dev/</link>
+            <description>用一句话描述理想宠物，AI生成独特的32×32像素作品，附带8种动画状态，支持导入AI Agent工具。</description>
+            <guid>https://aipet.dev/</guid>
+            <pubDate>2026/5/15 20:16:08</pubDate>
+        </item>
+    
+        <item>
+            <title>灵机剪影 - 开源 AI 视频创作工作台</title>
+            <link>https://yoqu.github.io/lingji-cut-homepage/</link>
+            <description>灵机剪影（Lingji Cut）是一个本地优先的开源 AI 视频创作工作台，从写稿、素材管理到视频导出，一站式完成内容创作。</description>
+            <guid>https://yoqu.github.io/lingji-cut-homepage/</guid>
+            <pubDate>2026/5/15 20:15:36</pubDate>
+        </item>
+    
+        <item>
+            <title>Luma - 创意代理人平台</title>
+            <link>https://lumalabs.ai/app</link>
+            <description>Luma提供创意代理人，协助团队在创意工作各阶段规划、生成、迭代和完善内容，支持图像、视频、音频等多格式协作。</description>
+            <guid>https://lumalabs.ai/app</guid>
+            <pubDate>2026/5/15 20:15:06</pubDate>
+        </item>
+    
+        <item>
+            <title>CowAgent - 超级AI助手</title>
+            <link>https://cowagent.ai/</link>
+            <description>基于大模型的超级AI助理，支持自主任务规划、长期记忆、技能系统、多模型和多渠道接入。</description>
+            <guid>https://cowagent.ai/</guid>
+            <pubDate>2026/5/15 20:14:18</pubDate>
+        </item>
+    
+        <item>
+            <title>Gemini Omni AI 视频生成器</title>
+            <link>https://geminiomni.co/zh-hans</link>
+            <description>Google推出的统一全模态模型，支持原生4K、120fps视频生成，集成对话编辑、音频合成和角色一致性功能。</description>
+            <guid>https://geminiomni.co/zh-hans</guid>
+            <pubDate>2026/5/15 20:13:28</pubDate>
+        </item>
+    
+        <item>
+            <title>BIGFA Blog</title>
+            <link>https://blog.freeorg.dpdns.org/</link>
+            <description>一个追求自由与民主的个人博客，提供了ChatGPT图像2.0视觉指南、提示词仓库、MCP服务以及丰富的设计案例与教程。</description>
+            <guid>https://blog.freeorg.dpdns.org/</guid>
+            <pubDate>2026/5/15 20:12:07</pubDate>
+        </item>
+    
+        <item>
+            <title>next-ai-blog-cms</title>
+            <link>https://github.com/fcppddl/next-ai-blog-cms</link>
+            <description>基于 Next.js App Router 的博客与后台一体化项目：公开前台、管理员 CMS、AI 写作助手，以及基于向量检索（RAG）的站内智能问答</description>
+            <guid>https://github.com/fcppddl/next-ai-blog-cms</guid>
+            <pubDate>2026/5/15 20:11:10</pubDate>
+        </item>
+    
+        <item>
+            <title>玄武 XuanWu - 国产算力的大模型自由</title>
+            <link>https://xw.tsingmao.com/</link>
+            <description>国产算力大模型推理工具，通过CLI一键适配华为昇腾等芯片，简化环境配置并优化性能。</description>
+            <guid>https://xw.tsingmao.com/</guid>
+            <pubDate>2026/5/14 20:11:28</pubDate>
+        </item>
+    
+        <item>
+            <title>Awesome AI</title>
+            <link>https://ai.doocs.org/</link>
+            <description>一个聚合AI行业动态、工具排行、日报和周报的资讯平台，专注于提取有价值的AI信号，覆盖多个技术方向。</description>
+            <guid>https://ai.doocs.org/</guid>
+            <pubDate>2026/5/14 20:10:59</pubDate>
+        </item>
+    
+        <item>
+            <title>Deep Code</title>
+            <link>https://deepcode.vegamo.cn/</link>
+            <description>deep code是基于DeepSeek打造的专业编程助手Agent，提供代码生成、调试、优化、答疑等全流程编程辅助服务，助力开发者高效完成编程任务。</description>
+            <guid>https://deepcode.vegamo.cn/</guid>
+            <pubDate>2026/5/14 20:09:50</pubDate>
+        </item>
+    
+        <item>
+            <title>萤核智能文件夹</title>
+            <link>https://aifolder.iocn.cn/zh-CN/</link>
+            <description>AI驱动的跨平台文件管理工具，提供智能分析、虚拟文件夹和一键整理功能，支持本地离线处理和隐私保护。</description>
+            <guid>https://aifolder.iocn.cn/zh-CN/</guid>
+            <pubDate>2026/5/14 20:08:54</pubDate>
+        </item>
+    
+        <item>
+            <title>Abu (阿布) - 本地运行的AI桌面办公助手</title>
+            <link>https://myabu.cn/</link>
+            <description>开源免费的AI桌面办公助手，支持自然语言交互、自主规划执行、多模型接入，可读文件、跑命令、写文档、做报表，本地优先且数据不上传。</description>
+            <guid>https://myabu.cn/</guid>
+            <pubDate>2026/5/14 20:06:40</pubDate>
+        </item>
+    
+        <item>
+            <title>OpenTalking</title>
+            <link>https://datascale-ai.github.io/opentalking/</link>
+            <description>面向实时数字人的开源编排层，整合语音识别、大语言模型、语音合成与WebRTC推送，支持可插拔模型与多部署形态。</description>
+            <guid>https://datascale-ai.github.io/opentalking/</guid>
+            <pubDate>2026/5/14 20:05:43</pubDate>
+        </item>
+    
+        <item>
+            <title>腾讯DB代理内存</title>
+            <link>https://github.com/Tencent/TencentDB-Agent-Memory</link>
+            <description>腾讯开源的四层渐进式流水线，为AI代理提供完全本地长期内存，无外部API依赖。</description>
+            <guid>https://github.com/Tencent/TencentDB-Agent-Memory</guid>
+            <pubDate>2026/5/14 20:04:49</pubDate>
+        </item>
+    
+        <item>
+            <title>Better Auth</title>
+            <link>https://better-auth.com/</link>
+            <description>Better Auth 是一个基于 TypeScript 的认证框架，支持多租户、社交登录、AI 代理认证、可组合插件，适用于从小型项目到大型企业应用。</description>
+            <guid>https://better-auth.com/</guid>
+            <pubDate>2026/5/14 20:01:44</pubDate>
+        </item>
+    
+        <item>
+            <title>Happy Horse AI</title>
+            <link>https://www.happy-horse-ai.ai/zh</link>
+            <description>Happy Horse AI 是基于 Happy Horse 1.0 的先进 AI 视频生成器，支持文生视频和图生视频，同步生成音频，提供电影级画质和流畅运动。</description>
+            <guid>https://www.happy-horse-ai.ai/zh</guid>
+            <pubDate>2026/5/14 20:00:48</pubDate>
+        </item>
+    
+        <item>
+            <title>Daily Hot Videos — 每日热门视频追踪与洞察</title>
+            <link>https://hot-feed-watch.lovable.app/</link>
+            <description>追踪 B站、微博、Reddit、TikTok、小红书每日热门视频，结合 AI 洞察发现跨平台爆款趋势。</description>
+            <guid>https://hot-feed-watch.lovable.app/</guid>
+            <pubDate>2026/5/14 18:12:07</pubDate>
+        </item>
+    
+        <item>
+            <title>1024Proxy</title>
+            <link>https://1024proxy.com/partner/</link>
+            <description>1024Proxy为合作伙伴提供动态住宅IP、静态住宅IP等代理服务，支持定制化方案及专享折扣，助力业务增长。</description>
+            <guid>https://1024proxy.com/partner/</guid>
+            <pubDate>2026/5/14 17:48:21</pubDate>
+        </item>
+    
+        <item>
+            <title>SparkNoteAI</title>
+            <link>https://spark-ai-boy.github.io/</link>
+            <description>开源免费的知识管理工具，支持多平台内容采集、大模型智能总结和知识图谱可视化，可一键部署。</description>
+            <guid>https://spark-ai-boy.github.io/</guid>
+            <pubDate>2026/5/14 12:15:04</pubDate>
+        </item>
+    
+        <item>
+            <title>WeryAI</title>
+            <link>https://www.weryai.com/zh</link>
+            <description>一站式AI视频与图像生成平台，支持访问Veo、Sora、Kling等顶级AI视频模型及多种图像生成模型，提供视频特效、编辑工具和图像处理功能。</description>
+            <guid>https://www.weryai.com/zh</guid>
+            <pubDate>2026/5/14 12:12:58</pubDate>
+        </item>
+    
+        <item>
+            <title>Remotion Lab</title>
+            <link>https://remotionlab.com/</link>
+            <description>Remotion Lab 是一個專注於程式化影片創作的學習與分享平台，提供官方文件、教學、作品展示及動畫模板等資源。</description>
+            <guid>https://remotionlab.com/</guid>
+            <pubDate>2026/5/14 12:12:19</pubDate>
+        </item>
+    
+        <item>
+            <title>OPC日报</title>
+            <link>https://claws-zh.github.io/opc-daily-signal/</link>
+            <description>每日资讯，帮助一人公司（OPC）做出更好的决策</description>
+            <guid>https://claws-zh.github.io/opc-daily-signal/</guid>
+            <pubDate>2026/5/14 12:11:08</pubDate>
+        </item>
+    
+        <item>
+            <title>Color Grading Central - 获取电影级色彩</title>
+            <link>https://www.colorgradingcentral.com/</link>
+            <description>提供色彩分级教程、免费LUT和CineDream工具，帮助创作者轻松实现电影级画面效果。</description>
+            <guid>https://www.colorgradingcentral.com/</guid>
+            <pubDate>2026/5/14 12:08:42</pubDate>
+        </item>
+    
+        <item>
+            <title>Artlist - 为创作者提供的生成式AI工具与数字资产</title>
+            <link>https://artlist.io/</link>
+            <description>Artlist是一个集AI视频、AI图像、AI配音、AI音乐及世界级素材库于一体的创意平台，支持50M+创作者高效制作视频内容。</description>
+            <guid>https://artlist.io/</guid>
+            <pubDate>2026/5/14 12:07:38</pubDate>
+        </item>
+    
+        <item>
+            <title>Elgato Marketplace</title>
+            <link>https://marketplace.elgato.com/</link>
+            <description>Elgato官方数字资产市场，提供Stream Deck插件、图标、音效、场景集等，助力直播和内容创作。</description>
+            <guid>https://marketplace.elgato.com/</guid>
+            <pubDate>2026/5/14 12:06:54</pubDate>
+        </item>
+    
+        <item>
+            <title>Garuda</title>
+            <link>https://awplanets.github.io/garuda/</link>
+            <description>一款AI 全流程协作制作的 STG + Roguelike 竖屏空战射击游戏。开发层面采用 Vibecoding 方式进行构建</description>
+            <guid>https://awplanets.github.io/garuda/</guid>
+            <pubDate>2026/5/13 21:07:59</pubDate>
+        </item>
+    
+        <item>
+            <title>musicflow</title>
+            <link>https://github.com/yantianqi1/musicflow</link>
+            <description>AI 全链路音乐创作 SaaS — MiniMax API + FastAPI + React，支持 Agent 工具调用 / 歌词 / 音乐 / 翻唱 / 语音合成 / 声音克隆，带 docker compose 一键部署</description>
+            <guid>https://github.com/yantianqi1/musicflow</guid>
+            <pubDate>2026/5/13 20:37:45</pubDate>
+        </item>
+    
+        <item>
+            <title>AI Master - 精通人工智能 | AI学习平台</title>
+            <link>https://www.ai-master.cc/</link>
+            <description>AI Master 是专业的人工智能学习与实践平台。提供 311+ 篇 AI 知识库文章、146+ 篇深度技术博客、324+ AI 工具推荐、969+ 条 AI 前沿动态。从入门到精通，探索大语言模型、AI Agent、RAG、机器学习等热门技术。</description>
+            <guid>https://www.ai-master.cc/</guid>
+            <pubDate>2026/5/13 20:36:19</pubDate>
+        </item>
+    
+        <item>
+            <title>OCS网课助手</title>
+            <link>https://docs.ocsjs.com/</link>
+            <description>拥有 一键刷课，多账号刷课，浏览器多开/分身，浏览器管理，自动登录，等功能，支持 Windows, Linux, Mac 多个操作系统</description>
+            <guid>https://docs.ocsjs.com/</guid>
+            <pubDate>2026/5/13 20:34:29</pubDate>
+        </item>
+    
+        <item>
+            <title>file-share</title>
+            <link>https://github.com/tri5m/file-share</link>
+            <description>一个局域网文件共享工具</description>
+            <guid>https://github.com/tri5m/file-share</guid>
+            <pubDate>2026/5/13 20:32:17</pubDate>
+        </item>
+    
+        <item>
+            <title>AndroMeld - Mac与Android无缝连接工具</title>
+            <link>https://andromeld.catchingnow.com/</link>
+            <description>一款Mac应用，可将Android手机挂载到Finder、实现高清低延迟投屏和剪贴板同步，支持有线和无线模式，目前免费无广告。</description>
+            <guid>https://andromeld.catchingnow.com/</guid>
+            <pubDate>2026/5/13 20:31:10</pubDate>
+        </item>
+    
+        <item>
+            <title>imagefree-免费AI图片生成器</title>
+            <link>https://imagefree.net/zh</link>
+            <description>免费 AI 图片生成器，无需注册。即刻从文字创建无限量 AI 生成图片。适用于艺术、头像、社交媒体和图形设计。</description>
+            <guid>https://imagefree.net/zh</guid>
+            <pubDate>2026/5/13 11:18:02</pubDate>
+        </item>
+    
+</channel>
+</rss>
