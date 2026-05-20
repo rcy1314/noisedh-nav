@@ -49,7 +49,8 @@ self.addEventListener('fetch', function(event) {
   }
 
   if (isHtmlRequest(request)) {
-    event.respondWith(networkFirst(request));
+    // 优化：先返回缓存，后台更新（实现秒开）
+    event.respondWith(staleWhileRevalidate(request));
     return;
   }
 
