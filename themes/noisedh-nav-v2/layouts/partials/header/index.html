@@ -56,30 +56,18 @@
     <script defer src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
     <!-- 添加Service Worker -->
     <script>
-        // 延迟注册Service Worker
-        if ('serviceWorker' in navigator) {
-            const registerServiceWorker = function() {
+        (function() {
+            var currentVersion = document.querySelector('meta[name="site-version"]');
+            currentVersion = currentVersion ? currentVersion.getAttribute('content') : '';
+            
+            // 延迟注册Service Worker
+            if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('service-worker.js?v={{ $assetVer }}', {
                     scope: '/',
                     updateViaCache: 'none'
                 }).catch(console.error);
-
-                // 监听 Service Worker 消息
-                navigator.serviceWorker.addEventListener('message', function(event) {
-                    if (!event.data) return;
-                    
-                    // 收到刷新指令，自动刷新获取最新内容
-                    if (event.data.type === 'refresh') {
-                        window.location.reload(true);
-                    }
-                });
-            };
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(registerServiceWorker, { timeout: 5000 });
-            } else {
-                setTimeout(registerServiceWorker, 2000);
             }
-        }
+        })();
     </script>
      <link rel="manifest" href="manifest.json">
      <!-- 引入热榜 -->
