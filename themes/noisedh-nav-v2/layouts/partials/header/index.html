@@ -31,6 +31,8 @@
 
     <meta name="theme-color" content="#f9f9f9">
     <title>{{ .Site.Title }}</title>
+    <!-- 网站版本号，用于 Service Worker 检测更新 -->
+    <meta name="site-version" content="{{ now.Unix }}">
     <link rel="shortcut icon" href="{{ $.Site.Params.images.favicon }}">
     <meta name="keywords" content="{{ .Site.Title }}">
     <meta name="baidu-site-verification" content="code-ERzo5lqNbW" />
@@ -62,9 +64,12 @@
                     updateViaCache: 'none'
                 }).catch(console.error);
 
-                // 监听 Service Worker 消息，收到刷新指令时强制刷新页面
+                // 监听 Service Worker 消息
                 navigator.serviceWorker.addEventListener('message', function(event) {
-                    if (event.data && event.data.type === 'refresh') {
+                    if (!event.data) return;
+                    
+                    // 收到刷新指令，自动刷新获取最新内容
+                    if (event.data.type === 'refresh') {
                         window.location.reload(true);
                     }
                 });
