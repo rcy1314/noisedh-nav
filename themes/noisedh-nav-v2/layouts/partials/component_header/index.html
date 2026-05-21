@@ -169,11 +169,12 @@
                                         <span class="player-stage-placeholder-dot"></span>
                                     </div>
                                 </div>
-                                <meting-js list-max-height="75px"
+                                <meting-js list-folded="false"
+                                    list-max-height="100%"
                                     server="{{ $.Site.Params.musicServer }}"
                                     type="playlist"
-                                    data-fixed="true"
-                                    data-autoplay="false"
+                                    fixed="false"
+                                    autoplay="false"
                                     api="https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r"
                                     id="{{ $.Site.Params.musicId }}"></meting-js>
                             </div>
@@ -562,6 +563,11 @@
     min-width: 0;
     display: flex;
     height: auto;
+  }
+  
+  .top-default-media-player {
+    position: relative;
+    z-index: 10;
   }
 
   .page {
@@ -1949,6 +1955,7 @@
     border: 2px solid rgba(18, 21, 33, 0.14);
     background: linear-gradient(180deg, rgba(255, 249, 236, 0.22), rgba(238, 243, 255, 0.14));
     overflow: hidden;
+    z-index: 0;
   }
 
   .player-stage::before {
@@ -1964,7 +1971,7 @@
     border: 1px solid rgba(18, 21, 33, 0.14);
     box-shadow: 0 10px 22px rgba(9, 12, 24, 0.12);
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;
   }
 
   .player-stage::after {
@@ -1978,13 +1985,27 @@
     border-width: 0 0 28px 28px;
     border-color: transparent transparent rgba(18, 21, 33, 0.10) transparent;
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;
   }
 
   .player-stage meting-js {
     display: block;
     height: 100%;
     max-height: 100%;
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+  }
+  
+  .player-stage .aplayer,
+  .player-stage .aplayer .aplayer-list,
+  .player-stage .aplayer .aplayer-info,
+  .player-stage .aplayer .aplayer-controller,
+  .player-stage .aplayer .aplayer-icon {
+    pointer-events: auto;
+  }
+  
+  .player-stage .aplayer {
     position: relative;
     z-index: 2;
   }
@@ -2345,8 +2366,11 @@
   }
 
   .player-stage .aplayer .aplayer-info .aplayer-controller .aplayer-time {
-    flex: 0 0 clamp(72px, 18vw, 92px);
-    text-align: right;
+    flex: 0 0 clamp(132px, 22vw, 168px);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
   }
 
   .player-stage .aplayer.aplayer-loading .aplayer-info .aplayer-controller .aplayer-bar-wrap {

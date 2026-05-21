@@ -3380,12 +3380,7 @@
                 <div class="ai-welcome-title">{{ default "NOISE AI 助手" $.Site.Params.ai.welcomeTitle }}</div>
                 <div class="ai-welcome-text">{{ default "你好！我是 NOISE导航 的AI助手，可以帮你搜索站内收录的网站资源。" $.Site.Params.ai.welcomeText | markdownify }}</div>
                 <div class="ai-welcome-tips">
-                    {{- $defaultTips := slice
-                        (dict "label" "AI 工具推荐" "q" "有什么好用的AI工具？")
-                        (dict "label" "设计素材" "q" "推荐一些设计素材网站")
-                        (dict "label" "编程学习" "q" "搜索编程学习资源")
-                        (dict "label" "影视资源" "q" "有哪些影视资源网站？")
-                    -}}
+                    {{- $defaultTips := slice (dict "label" "AI 工具推荐" "q" "有什么好用的AI工具？") (dict "label" "设计素材" "q" "推荐一些设计素材网站") (dict "label" "编程学习" "q" "搜索编程学习资源") (dict "label" "影视资源" "q" "有哪些影视资源网站？") -}}
                     {{- $welcomeTips := $.Site.Params.ai.welcomeTips | default $defaultTips -}}
                     {{- range $welcomeTips -}}
                     {{- $tipLabel := .label | default "" -}}
