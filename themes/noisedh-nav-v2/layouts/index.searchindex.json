@@ -1,0 +1,2 @@
+{{- $result := partialCached "component_header/search_index_data.html" . "header-search-index-data" -}}
+{{- jsonify (dict "indent" "") $result -}}

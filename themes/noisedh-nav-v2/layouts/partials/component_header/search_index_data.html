@@ -1,0 +1,26 @@
+{{- $result := slice -}}
+{{- range .Site.Data.webstack -}}
+  {{- $taxonomy := printf "%v" (.taxonomy | default "") -}}
+  {{- if .links -}}
+    {{- range .links -}}
+      {{- $item := dict "title" (printf "%v" (.title | default "")) "url" (printf "%v" (.url | default "")) "description" (printf "%v" (.description | default "")) "taxonomy" $taxonomy "term" "" -}}
+      {{- $result = $result | append $item -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if .list -}}
+    {{- range .list -}}
+      {{- $term := printf "%v" (.term | default "") -}}
+      {{- if .links -}}
+        {{- range .links -}}
+          {{- $item := dict "title" (printf "%v" (.title | default "")) "url" (printf "%v" (.url | default "")) "description" (printf "%v" (.description | default "")) "taxonomy" $taxonomy "term" $term -}}
+          {{- $result = $result | append $item -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range .Site.Data.friendlinks -}}
+  {{- $item := dict "title" (printf "%v" (.title | default "")) "url" (printf "%v" (.url | default "")) "description" (printf "%v" (.description | default "")) "taxonomy" "友情链接" "term" "" -}}
+  {{- $result = $result | append $item -}}
+{{- end -}}
+{{- return $result -}}

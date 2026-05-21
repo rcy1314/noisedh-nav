@@ -132,22 +132,22 @@ rssApiUrl = "https://rssserversub.fly.dev/rss"
 exportBookmarksUrl = "https://你的后端地址/api/export-bookmarks"
 
 
-# 头部收录通知路由recentSitesApi、网址统计路由statisticsApi、后端服务地址serverUrl、数据文件路径filePath
-recentSitesApi = "https://example.com/api/notifications"
-statisticsApi = "https://example.com/api/statistics"
-serverUrl = "https://example.com"
-filePath = "webstack.yml路径地址"
+# 头部收录通知路由recentSitesApi、网址统计路由statisticsApi、后端服务地址serverUrl
+recentSitesApi = "https://你的后端地址/api/notifications"
+statisticsApi = ""
+statisticsMode = "local"
+serverUrl = "https://你的后端地址"
 
 # 广告位配置
 adList = [
-  { img = "assets/images/noisedh.webp", url = "#", desc = "一键式导航" },
+  { img = "assets/images/noisedh.webp", url = "#", desc = "一站式导航" },
+  { img = "assets/images/cloudapi1.webp", url = "https://www.claudeapi.com?source=noise", desc = "优惠的国内直连Claude API中转站，支持一键配置" },
   { img = "assets/images/gw2.webp", url = "#", desc = "广告位+" },
   { img = "assets/images/gw1.webp", url = "https://simhaoka.com/phone/index?id=A7BA17EFD6DC47F6826F0C67B898725A", desc = "超大流量性价比手机卡渠道1" },
   { img = "assets/images/nsfmusic.webp", url = "https://nsf.nesbbs.com", desc = "在线经典复古游戏8bit音乐" },
   { img = "assets/images/天空之城.webp", url = "https://www.skypixel.com", desc = "航拍摄影师、拍手叫绝的航拍作品与独具价值的航拍攻略" },
   { img = "assets/images/gw3.webp", url = "https://hk.yunhaoka.cn/#/pages/micro_store/index?agent_id=422648", desc = "超大流量性价比手机卡渠道2" },
-  { img = "assets/images/mh1.webp", url = "https://app.xkcc.vip/invitation_register?invitation_code=KIklg4ZV", desc = "专业破解软件下载商店" },
-  { img = "assets/images/cher.webp", url = "https://cherry-ai.com", desc = "强大的多模型 AI 助手，支持 iOS、macOS 和 Windows 平台" }
+  { img = "assets/images/mh1.webp", url = "https://app.xkcc.vip/invitation_register?invitation_code=KIklg4ZV", desc = "专业破解软件下载商店" }
 ]
 
 searchPlaceholder = "站内搜索..."
@@ -208,6 +208,56 @@ endpoints = ["https://hot.noisework.cn", "https://example.com"]
     title = "HelloGitHub"
     icon = "https://hellogithub.com/favicon/android-icon-192x192.png"
     color = "bg-indigo-500"
+
+[params.ai]
+  enable = true
+  iconUrl = "/assets/images/favicon4.png"  # 旧版兼容字段：未单独配置时，buttonIconUrl / panelIconUrl 会回退到这里
+  buttonIconUrl = "/assets/images/favicon4.png"  # 右下角 AI 按钮图标，支持绝对 URL、/assets/... 或 Font Awesome 类名
+  panelIconUrl = "/assets/images/favicon4.png"  # AI 面板头部/欢迎区图标，支持绝对 URL、/assets/... 或 Font Awesome 类名
+  panelHeaderTitle = "AI助手"
+  # 聊天气泡头像：支持绝对 URL 或 /assets/...；留空时使用默认贴纸头像
+  assistantAvatarUrl = ""  # AI 回复头像图片
+  userAvatarUrl = ""  # 用户消息头像图片
+  assistantAvatarLabel = "AI"  # 未配置 AI 头像图时显示的默认文字
+  userAvatarLabel = "ME"  # 未配置用户头像图时显示的默认文字
+  apiUrl = ""
+  apiKey = ""
+  model = ""
+  mcpUrl = "https://你的后端地址/mcp"
+  mcpSearchUrl = "https://你的后端地址/api/search"
+  enableMcp = true
+  enableLocalSearch = true
+  searchMode = "local"
+  enableThinking = true
+  maxTokens = 4096
+  temperature = 0.7
+  systemPrompt = "你是 NOISE导航 的AI助手，帮助用户搜索和了解站内收录的网站资源。当用户询问网站推荐或工具时，优先使用搜索站内数据给出精准回答。回答应简洁有用，包含网站名称、链接和简要说明。"
+  placeholder = "输入问题，搜索站内资源..."
+  welcomeTitle = "NOISE AI 助手"
+  welcomeText = """你好！我是NOISE导航的AI助手，可以帮你搜索站内收录的资源
+
+试试问我：
+• 有什么好用的AI工具？
+• 推荐一些剪辑工具网站"""
+  [[params.ai.welcomeTips]]
+    label = "AI工具推荐"
+    q = "有什么好用的AI工具？"
+  [[params.ai.welcomeTips]]
+    label = "剪辑工具"
+    q = "推荐一些剪辑工具网站"
+  [[params.ai.welcomeTips]]
+    label = "运营工具"
+    q = "搜索运营工具资源"
+  [[params.ai.welcomeTips]]
+    label = "影视资源"
+    q = "有哪些影视资源网站？"
+
+[params.redirect]
+  siteName = "NOISE导航"
+  siteTip = "安全中心"
+  leaveTip = "即将离开 {site}，正在前往以下站点"
+  logo = "assets/images/favicon5.png"
+  favicon = "assets/images/favicon4.png"
 
 # B站收藏视频配置
 [params.bilibili]

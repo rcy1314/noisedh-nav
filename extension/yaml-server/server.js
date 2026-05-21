@@ -392,6 +392,14 @@ function collectWebstackLinks(yamlData) {
     return items;
 }
 
+function normalizeSiteUrl(url) {
+    return String(url == null ? '' : url)
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/+$/, '');
+}
+
 function removeLinksByUrl(yamlData, urlsToRemove) {
     const urls = urlsToRemove instanceof Set ? urlsToRemove : new Set();
     if (!Array.isArray(yamlData) || urls.size === 0) return { yamlData, removed: [] };
@@ -2309,44 +2317,48 @@ function startMcpStdioServer() {
         tryParseFrames();
     });
 }
-// GET 路由，用于统计 data 文件夹中 webstack.yml 文件中 url 字段的数量
+// GET 路由，用于统计 webstack.yml 中唯一网站数量
 app.get('/api/statistics', async (req, res) => {
     const dataDir = path.resolve(baseDir, 'data');
     const yamlFilePath = path.join(dataDir, 'webstack.yml');
-    let urlCount = 0;
 
     try {
         if (fs.existsSync(yamlFilePath)) {
             const yamlContent = await fs.promises.readFile(yamlFilePath, 'utf8');
             const yamlData = yaml.load(yamlContent);
 
-            if (Array.isArray(yamlData)) {
-                yamlData.forEach(category => {
-                    if (Array.isArray(category.links)) {
-                        urlCount += category.links.length;
-                    }
-
-                    if (Array.isArray(category.list)) {
-                        category.list.forEach(subCategory => {
-                            if (Array.isArray(subCategory.links)) {
-                                urlCount += subCategory.links.length;
-                            }
-                        });
-                    }
-                });
-            } else {
+            if (!Array.isArray(yamlData)) {
                 console.error('数据格式不正确:', yamlFilePath);
                 res.status(400).json({ error: '数据格式不正确' });
                 return;
             }
+
+            const links = collectWebstackLinks(yamlData);
+            const uniqueUrls = new Set();
+
+            links.forEach((item) => {
+                const normalizedUrl = normalizeSiteUrl(item && item.url);
+                if (normalizedUrl) uniqueUrls.add(normalizedUrl);
+            });
+
+            const rawUrlCount = links.length;
+            const uniqueUrlCount = uniqueUrls.size;
+            const duplicateUrlCount = Math.max(0, rawUrlCount - uniqueUrlCount);
+
+            // 兼容旧前端字段：urlCount 现在明确表示唯一网站数
+            res.json({
+                urlCount: uniqueUrlCount,
+                uniqueUrlCount,
+                rawUrlCount,
+                duplicateUrlCount,
+                countMode: 'unique_url'
+            });
+            return;
         } else {
             console.error('文件未找到:', yamlFilePath);
             res.status(404).json({ error: 'webstack.yml 文件未找到' });
             return;
         }
-
-        // 移除了成功的日志记录
-        res.json({ urlCount });
     } catch (error) {
         console.error('统计 URL 时出错:', error);
         res.status(500).json({ error: '统计 URL 时出错' });

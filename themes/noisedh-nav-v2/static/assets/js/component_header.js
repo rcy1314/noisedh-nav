@@ -20,14 +20,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 网站统计API软编码
     const statisticsApi = window.CONFIG && window.CONFIG.statisticsApi ? window.CONFIG.statisticsApi : "";
-    if (statisticsApi) {
+    const statisticsMode = window.CONFIG && window.CONFIG.statisticsMode ? window.CONFIG.statisticsMode : "";
+    const localCountRaw = window.CONFIG && window.CONFIG.statisticsLocalUrlCount !== undefined ? window.CONFIG.statisticsLocalUrlCount : null;
+    const localCount = typeof localCountRaw === 'number' ? localCountRaw : Number(localCountRaw);
+    if (statisticsMode === 'local') {
+        const dateDiv = document.getElementById('date');
+        if (Number.isFinite(localCount) && localCount > 0) {
+            if (dateDiv && !dateDiv.innerHTML.includes('本站已收录')) {
+                dateDiv.innerHTML += ` 本站已收录:${localCount}个网站`;
+            }
+        } else {
+            resolveLocalStatisticsCount()
+                .then(function (count) {
+                    if (dateDiv && Number.isFinite(count) && count > 0 && !dateDiv.innerHTML.includes('本站已收录')) {
+                        dateDiv.innerHTML += ` 本站已收录:${count}个网站`;
+                    }
+                })
+                .catch(function () {
+                    // Ignore local count fetch errors and keep header usable.
+                });
+        }
+    } else if (statisticsApi) {
         fetch(statisticsApi)
             .then(response => response.json())
             .then(data => {
                 const urlCount = data.urlCount;
                 const dateDiv = document.getElementById('date');
                 if (dateDiv) {
-                    // 检查是否已经插入过“本站已收录”，避免重复
                     if (!dateDiv.innerHTML.includes('本站已收录')) {
                         dateDiv.innerHTML += ` 本站已收录:${urlCount}个网站`;
                     }
@@ -86,6 +105,31 @@ function buildNoCacheUrl(rawUrl) {
         var sep = rawUrl.indexOf('?') >= 0 ? '&' : '?';
         return rawUrl + sep + '_t=' + Date.now();
     }
+}
+
+function normalizeSiteUrl(url) {
+    return String(url == null ? '' : url)
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/+$/, '');
+}
+
+async function resolveLocalStatisticsCount() {
+    const items = await ensureLocalSearchIndex();
+    if (!Array.isArray(items) || !items.length) {
+        return null;
+    }
+
+    const uniqueUrls = new Set();
+    for (let j = 0; j < items.length; j++) {
+        const item = items[j] || {};
+        if (String(item.taxonomy || '') === '友情链接') continue;
+        const normalizedUrl = normalizeSiteUrl(item.url);
+        if (normalizedUrl) uniqueUrls.add(normalizedUrl);
+    }
+
+    return uniqueUrls.size || null;
 }
 
 async function fetchRecentSites() {
@@ -194,39 +238,297 @@ function startScrolling(element) {
     requestAnimationFrame(scroll);
 }
 
-// --- 搜索相关 ---
-const serverUrl = window.CONFIG && window.CONFIG.serverUrl ? window.CONFIG.serverUrl : '';
-const filePath = window.CONFIG && window.CONFIG.filePath ? window.CONFIG.filePath : '';
+// --- 本地搜索相关 ---
+let _localSearchIndex = null;
+let _localSearchIndexLoaded = false;
+let _localSearchIndexLoadPromise = null;
+let _localSearchIndexScriptPromise = null;
 
+function coerceSearchIndexPayload(payload) {
+    if (Array.isArray(payload)) return payload;
+    if (payload && Array.isArray(payload.results)) return payload.results;
+    if (payload && Array.isArray(payload.data)) return payload.data;
+    if (typeof payload === 'string') {
+        try {
+            return coerceSearchIndexPayload(JSON.parse(payload));
+        } catch (e) {
+            return null;
+        }
+    }
+    return null;
+}
+
+function readLocalSearchIndexFromDom() {
+    if (typeof window !== 'undefined' && window.__HEADER_SEARCH_INDEX__) {
+        const fromWindow = coerceSearchIndexPayload(window.__HEADER_SEARCH_INDEX__);
+        if (Array.isArray(fromWindow)) return fromWindow;
+    }
+    try {
+        var el = document.getElementById('header-search-index');
+        var raw = el ? (el.textContent || el.innerText || '') : '';
+        return coerceSearchIndexPayload(raw ? JSON.parse(raw) : []);
+    } catch (e) {
+        return null;
+    }
+}
+
+async function fetchLocalSearchIndexFromFiles() {
+    if (window.location.protocol === 'file:') {
+        return [];
+    }
+    const configSearchIndexUrl = window.CONFIG && window.CONFIG.searchIndexUrl ? String(window.CONFIG.searchIndexUrl) : '';
+    const origin = window.location.origin || '';
+    const pathname = window.location.pathname || '/';
+    const baseDir = pathname.replace(/\/[^/]*$/, '/') || '/';
+    const candidates = [
+        configSearchIndexUrl,
+        origin + '/search-index.json',
+        origin + '/index.searchindex.json',
+        '/search-index.json',
+        '/index.searchindex.json',
+        'search-index.json',
+        '../search-index.json',
+        '../../search-index.json',
+        baseDir + 'search-index.json',
+        baseDir + 'index.searchindex.json'
+    ];
+    const seen = new Set();
+
+    for (let i = 0; i < candidates.length; i++) {
+        const url = candidates[i];
+        if (!url || seen.has(url)) continue;
+        seen.add(url);
+        try {
+            const resp = await fetch(url, { cache: 'no-store' });
+            if (!resp.ok) continue;
+            const parsed = coerceSearchIndexPayload(await resp.json());
+            if (Array.isArray(parsed) && parsed.length) {
+                return parsed;
+            }
+        } catch (e) {
+            // Try the next generated Hugo index path.
+        }
+    }
+
+    return [];
+}
+
+function ensureLocalSearchIndexScript() {
+    const existingIndex = readLocalSearchIndexFromDom();
+    if (Array.isArray(existingIndex) && existingIndex.length) {
+        return Promise.resolve(existingIndex);
+    }
+
+    if (_localSearchIndexScriptPromise) {
+        return _localSearchIndexScriptPromise;
+    }
+
+    _localSearchIndexScriptPromise = new Promise(function (resolve) {
+        const scriptUrl = window.CONFIG && window.CONFIG.searchIndexScriptUrl ? String(window.CONFIG.searchIndexScriptUrl) : 'search-index.js';
+        const existingScript = document.getElementById('header-search-index-js');
+
+        function finish() {
+            const loadedIndex = readLocalSearchIndexFromDom();
+            resolve(Array.isArray(loadedIndex) ? loadedIndex : []);
+        }
+
+        if (existingScript) {
+            if (Array.isArray(window.__HEADER_SEARCH_INDEX__) && window.__HEADER_SEARCH_INDEX__.length) {
+                finish();
+                return;
+            }
+            existingScript.addEventListener('load', finish, { once: true });
+            existingScript.addEventListener('error', function () {
+                resolve([]);
+            }, { once: true });
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.id = 'header-search-index-js';
+        script.src = scriptUrl;
+        script.async = false;
+        script.onload = finish;
+        script.onerror = function () {
+            resolve([]);
+        };
+        document.head.appendChild(script);
+    }).finally(function () {
+        _localSearchIndexScriptPromise = null;
+    });
+
+    return _localSearchIndexScriptPromise;
+}
+
+async function ensureLocalSearchIndex() {
+    if (_localSearchIndexLoaded) return _localSearchIndex || [];
+    if (_localSearchIndexLoadPromise) return _localSearchIndexLoadPromise;
+    _localSearchIndexLoadPromise = (async function () {
+        var index = readLocalSearchIndexFromDom();
+        if (!Array.isArray(index) || !index.length) {
+            index = await ensureLocalSearchIndexScript();
+        }
+        if (!Array.isArray(index) || !index.length) {
+            index = await fetchLocalSearchIndexFromFiles();
+        }
+
+        _localSearchIndex = Array.isArray(index) ? index : [];
+        _localSearchIndexLoaded = true;
+        _localSearchIndexLoadPromise = null;
+        return _localSearchIndex;
+    })();
+    return _localSearchIndexLoadPromise;
+}
+
+function escapeHeaderHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value == null ? '' : String(value);
+    return div.innerHTML;
+}
+
+function normalizeSearchField(value) {
+    return value == null ? '' : String(value);
+}
+
+function normalizeSearchQuery(keyword) {
+    let query = String(keyword || '')
+        .toLowerCase()
+        .replace(/[，,。.;；、/|]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    if (!query) return '';
+    query = query
+        .replace(/^(有没有|有什么|有哪些|请|帮我|推荐|搜索|搜一下|找一下|找找|我想|请问|能不能|可以|怎么样|如何|怎么)\s*/g, '')
+        .replace(/\s*(呢|吗|吧|啊|呀|嘛|么)$/g, '')
+        .trim();
+    return query;
+}
+
+function extractSearchTerms(keyword) {
+    const normalized = normalizeSearchQuery(keyword);
+    if (!normalized) return [];
+
+    const terms = new Set();
+    normalized.split(/\s+/).filter(Boolean).forEach(function (part) {
+        terms.add(part);
+
+        const cjkSegments = part.match(/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]+/g) || [];
+        cjkSegments.forEach(function (seg) {
+            if (seg.length === 1) {
+                terms.add(seg);
+                return;
+            }
+            if (seg.length <= 4) terms.add(seg);
+            for (let i = 0; i < seg.length - 1; i++) {
+                terms.add(seg.slice(i, i + 2));
+            }
+        });
+
+        const latinWords = part.match(/[a-z0-9]+/g) || [];
+        latinWords.forEach(function (word) {
+            if (word) terms.add(word);
+        });
+    });
+
+    return Array.from(terms).filter(Boolean);
+}
+
+function doLocalSearch(keyword) {
+    if (!_localSearchIndex || !_localSearchIndex.length) return [];
+
+    const terms = extractSearchTerms(keyword);
+    if (!terms.length) return [];
+
+    const results = [];
+
+    for (let i = 0; i < _localSearchIndex.length; i++) {
+        const item = _localSearchIndex[i];
+        const titleValue = normalizeSearchField(item.title);
+        const descValue = normalizeSearchField(item.description);
+        const taxonomyValue = normalizeSearchField(item.taxonomy);
+        const termValue = normalizeSearchField(item.term);
+        const urlValue = normalizeSearchField(item.url);
+        const title = titleValue.toLowerCase();
+        const desc = descValue.toLowerCase();
+        const taxonomy = taxonomyValue.toLowerCase();
+        const term = termValue.toLowerCase();
+        const url = urlValue.toLowerCase();
+        
+        let score = 0;
+        for (let t = 0; t < terms.length; t++) {
+            const q = terms[t];
+            if (!q) continue;
+            let matched = false;
+            if (title.includes(q)) {
+                score += title === q ? 18 : 10;
+                matched = true;
+            }
+            if (term.includes(q)) {
+                score += term === q ? 10 : 6;
+                matched = true;
+            }
+            if (taxonomy.includes(q)) {
+                score += taxonomy === q ? 9 : 5;
+                matched = true;
+            }
+            if (desc.includes(q)) {
+                score += 3;
+                matched = true;
+            }
+            if (url.includes(q)) {
+                score += 1;
+                matched = true;
+            }
+            if (!matched) score -= 1;
+        }
+
+        if (score > 0) {
+            results.push({
+                _score: score,
+                title: titleValue,
+                url: urlValue,
+                description: descValue,
+                taxonomy: taxonomyValue,
+                term: termValue
+            });
+        }
+    }
+
+    results.sort((a, b) => b._score - a._score);
+    return results;
+}
+
+// --- 搜索相关 ---
 async function performSearch() {
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
     const overlay = document.getElementById('overlay');
     const resultsHeader = searchResults ? searchResults.querySelector('.results-header') : null;
     if (!searchInput || !searchResults) return;
+    
+    await ensureLocalSearchIndex();
+    
     const keyword = searchInput.value.trim();
     if (keyword) {
-        try {
-            const response = await fetch(`${serverUrl}/api/search?keyword=${encodeURIComponent(keyword)}&filePath=${encodeURIComponent(filePath)}`);
-            if (!response.ok) {
-                const errorText = await response.text();
-                alert(`搜索请求失败: ${response.status} - ${errorText}`);
-                return;
-            }
-            const results = await response.json();
-            displaySearchResults(results, searchResults, overlay, resultsHeader);
-        } catch (error) {
-            alert('网络请求失败，请检查网络连接');
-        }
+        // 使用本地搜索
+        const results = doLocalSearch(keyword);
+        displaySearchResults(results, searchResults, overlay, resultsHeader);
     } else {
-        alert('请输入搜索关键词');
+        displaySearchResults([], searchResults, overlay, resultsHeader);
     }
+}
+
+if (typeof window !== 'undefined') {
+    window.performSearch = performSearch;
 }
 
 function displaySearchResults(results, searchResults, overlay, resultsHeader) {
     if (!searchResults) return;
     searchResults.innerHTML = '';
     if (resultsHeader) {
+        if (Array.isArray(results)) {
+            resultsHeader.textContent = results.length ? ('当前搜索结果如下（' + results.length + '）') : '当前搜索结果如下：';
+        }
         resultsHeader.style.display = "block";
         searchResults.appendChild(resultsHeader);
     }
@@ -234,10 +536,11 @@ function displaySearchResults(results, searchResults, overlay, resultsHeader) {
         results.forEach(result => {
             const div = document.createElement('div');
             div.classList.add('result-item');
+            const meta = [result.taxonomy, result.term].filter(Boolean).join(' / ');
             div.innerHTML = `
-                <div class="result-title">${result.title}</div>
-                <div class="result-url"><a href="${result.url}" target="_blank">${result.url}</a></div>
-                <div class="result-description">${result.description || '无描述'}</div>
+                <div class="result-title">${escapeHeaderHtml(result.title || '未命名')}${meta ? `<span style="font-size:11px;opacity:0.65;margin-left:6px;">${escapeHeaderHtml(meta)}</span>` : ''}</div>
+                <div class="result-url"><a href="${escapeHeaderHtml(result.url || '#')}" target="_blank">${escapeHeaderHtml(result.url || '#')}</a></div>
+                <div class="result-description">${escapeHeaderHtml(result.description || '无描述')}</div>
             `;
             searchResults.appendChild(div);
         });
@@ -367,7 +670,7 @@ function syncHeaderColumnHeights() {
     side.style.height = '';
     clearHeaderPageHeightStyles(side);
 
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 1024) {
         return;
     }
 
@@ -519,7 +822,7 @@ function observeHeaderColumnChanges() {
         headerHeightMutationObserver.disconnect();
         headerHeightMutationObserver = null;
     }
-    if (!headerTop || window.innerWidth <= 768) return;
+    if (!headerTop || window.innerWidth <= 1024) return;
     var main = headerTop.querySelector('.header-top-main');
     var side = headerTop.querySelector('.header-top-side');
     if (!main || !side) return;

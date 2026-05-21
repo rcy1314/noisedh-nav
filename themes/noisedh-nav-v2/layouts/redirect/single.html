@@ -1,0 +1,695 @@
+{{- $raw := readFile "themes/noisedh-nav/static/redirect.html" -}}
+{{- $siteName := .Site.Params.redirect.siteName | default "NOISE导航" -}}
+{{- $siteTip := .Site.Params.redirect.siteTip | default "安全中心" -}}
+{{- $leaveTipTpl := .Site.Params.redirect.leaveTip | default "即将离开 {site}，正在前往以下站点" -}}
+{{- $leaveTip := replace $leaveTipTpl "{site}" $siteName -}}
+{{- $logo := .Site.Params.redirect.logo | default "assets/images/favicon5.png" -}}
+{{- $favicon := .Site.Params.redirect.favicon | default "assets/images/favicon4.png" -}}
+{{- $logoSrc := $logo -}}
+{{- $faviconSrc := $favicon -}}
+{{- $html := $raw -}}
+{{- $html = replace $html "assets/images/favicon4.png" $favicon -}}
+{{- $html = replace $html "<title>安全中心 | NOISE导航</title>" (printf "<title>%s | %s</title>" $siteTip $siteName) -}}
+{{- $html = replace $html "assets/images/favicon5.png" $logo -}}
+{{- $html = replace $html "alt=\"NOISE导航 Logo\"" (printf "alt=\"%s Logo\"" $siteName) -}}
+{{- $html = replace $html "<span class=\"site-name\">NOISE导航</span>" (printf "<span class=\"site-name\">%s</span>" $siteName) -}}
+{{- $html = replace $html "<span class=\"site-tip\">安全中心</span>" (printf "<span class=\"site-tip\">%s</span>" $siteTip) -}}
+{{- $html = replace $html "即将离开 NOISE导航，正在前往以下站点" $leaveTip -}}
+{{- $html | safeHTML -}}
+{{ if false }}
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="{{ $faviconSrc }}" type="image/png" />
+    <title>{{ $siteTip }} | {{ $siteName }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            box-sizing: border-box;
+        }
+        :root {
+            --site-bg: #f7f9fe;
+            --text: #13203f;
+            --text-soft: rgba(19, 32, 63, 0.78);
+            --border: #121521;
+            --border-soft: rgba(18, 21, 33, 0.14);
+            --shadow: 0 6px 0 rgba(17, 20, 34, 0.14);
+            --paper-blue: linear-gradient(180deg, rgba(214, 233, 255, 0.96), rgba(170, 210, 255, 0.92));
+            --paper-soft: linear-gradient(180deg, rgba(255, 236, 198, 0.94), rgba(255, 214, 170, 0.92));
+            --paper-pink: linear-gradient(180deg, rgba(228, 224, 255, 0.96), rgba(176, 168, 255, 0.92));
+            --card-bg: linear-gradient(180deg, rgba(245, 249, 255, 0.97), rgba(227, 236, 255, 0.93));
+            --warn: #2856d8;
+            --safe: #00bf73;
+            --danger: #6d55ff;
+            --warn-bg: rgba(40, 86, 216, 0.12);
+            --safe-bg: rgba(0, 191, 115, 0.12);
+            --danger-bg: rgba(109, 85, 255, 0.12);
+            --warn-border: rgba(40, 86, 216, 0.28);
+            --safe-border: rgba(0, 191, 115, 0.28);
+            --danger-border: rgba(109, 85, 255, 0.28);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --site-bg: #1b1d1f;
+                --text: #eef3ff;
+                --text-soft: rgba(231, 237, 255, 0.72);
+                --border: rgba(255, 255, 255, 0.14);
+                --border-soft: rgba(255, 255, 255, 0.12);
+                --shadow: 0 6px 0 rgba(2, 4, 12, 0.32);
+                --paper-blue: linear-gradient(180deg, rgba(161, 203, 255, 0.96), rgba(108, 146, 255, 0.92));
+                --paper-soft: linear-gradient(180deg, rgba(255, 205, 176, 0.94), rgba(255, 168, 138, 0.9));
+                --paper-pink: linear-gradient(180deg, rgba(196, 190, 255, 0.94), rgba(140, 132, 255, 0.9));
+                --card-bg: linear-gradient(180deg, rgba(33, 41, 69, 0.96), rgba(20, 25, 43, 0.94));
+                --warn: #8fb3ff;
+                --safe: #26d58d;
+                --danger: #b6abff;
+                --warn-bg: rgba(143, 179, 255, 0.14);
+                --safe-bg: rgba(38, 213, 141, 0.14);
+                --danger-bg: rgba(182, 171, 255, 0.14);
+                --warn-border: rgba(143, 179, 255, 0.24);
+                --safe-border: rgba(38, 213, 141, 0.24);
+                --danger-border: rgba(182, 171, 255, 0.24);
+            }
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        body {
+            background-color: var(--site-bg);
+            color: var(--text);
+            font-family: "PingFang SC", "Open Sans", "Microsoft YaHei", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            transition: color 0.3s, background-color 0.3s;
+            position: relative;
+            background-image: none;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            inset: -30vh -30vw;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 18% 12%, rgba(123, 150, 255, 0.20), transparent 55%),
+                radial-gradient(circle at 88% 26%, rgba(255, 214, 109, 0.16), transparent 50%),
+                radial-gradient(circle at 62% 86%, rgba(176, 168, 255, 0.16), transparent 56%),
+                repeating-linear-gradient(0deg, rgba(18, 21, 33, 0.06) 0 1px, transparent 1px 18px),
+                repeating-linear-gradient(90deg, rgba(18, 21, 33, 0.05) 0 1px, transparent 1px 18px);
+            opacity: 0.9;
+            transform: translate3d(0, 0, 0);
+            animation: bgDrift 18s ease-in-out infinite alternate;
+        }
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            background-image: radial-gradient(rgba(18, 21, 33, 0.06) 1px, transparent 1px);
+            background-size: 22px 22px;
+            opacity: 0.55;
+            animation: bgGrain 10s linear infinite;
+        }
+        @media (prefers-color-scheme: dark) {
+            body::before {
+                background:
+                    radial-gradient(circle at 18% 12%, rgba(143, 179, 255, 0.26), transparent 58%),
+                    radial-gradient(circle at 88% 26%, rgba(255, 214, 96, 0.18), transparent 52%),
+                    radial-gradient(circle at 62% 86%, rgba(182, 171, 255, 0.18), transparent 58%),
+                    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 18px),
+                    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 18px);
+                opacity: 1;
+            }
+            body::after {
+                background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+                opacity: 0.6;
+            }
+        }
+        @keyframes bgDrift {
+            from { transform: translate3d(-1.4%, -1.2%, 0) scale(1.02); }
+            to { transform: translate3d(1.6%, 1.3%, 0) scale(1.04); }
+        }
+        @keyframes bgGrain {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(-22px, -22px, 0); }
+        }
+        .bg-wave {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(72px);
+            opacity: 0.22;
+            animation: floatWave 20s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .bg-wave.one {
+            width: 520px;
+            height: 520px;
+            left: -160px;
+            top: -180px;
+            background: radial-gradient(circle, rgba(123, 150, 255, 0.7), transparent 64%);
+        }
+        .bg-wave.two {
+            width: 460px;
+            height: 460px;
+            right: -160px;
+            top: 16%;
+            background: radial-gradient(circle, rgba(123, 150, 255, 0.6), transparent 64%);
+            animation-duration: 24s;
+            animation-direction: reverse;
+        }
+        .bg-wave.three {
+            width: 360px;
+            height: 360px;
+            right: 18%;
+            bottom: -140px;
+            background: radial-gradient(circle, rgba(176, 168, 255, 0.42), transparent 66%);
+            animation-duration: 28s;
+            display: block;
+        }
+        @media (prefers-color-scheme: dark) {
+            .bg-wave {
+                opacity: 0.34;
+                mix-blend-mode: screen;
+            }
+            .bg-wave.one {
+                background: radial-gradient(circle, rgba(143, 179, 255, 0.3), transparent 66%);
+            }
+            .bg-wave.two {
+                background: radial-gradient(circle, rgba(143, 179, 255, 0.34), transparent 66%);
+            }
+            .bg-wave.three {
+                background: radial-gradient(circle, rgba(182, 171, 255, 0.24), transparent 70%);
+            }
+        }
+        @keyframes floatWave {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(40px, -28px, 0); }
+        }
+        .particle-layer {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(123, 150, 255, 0.36);
+            box-shadow: 0 0 14px rgba(123, 150, 255, 0.18);
+            animation: particleMove linear infinite, particleTwinkle 3.6s ease-in-out infinite;
+        }
+        .particle:nth-child(2n) {
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 214, 109, 0.28);
+            box-shadow: 0 0 12px rgba(255, 214, 109, 0.16);
+        }
+        .particle:nth-child(3n) {
+            width: 8px;
+            height: 8px;
+            background: rgba(176, 168, 255, 0.18);
+            box-shadow: 0 0 16px rgba(176, 168, 255, 0.14);
+        }
+        @media (prefers-color-scheme: dark) {
+            .particle {
+                background: rgba(143, 179, 255, 0.28);
+                box-shadow: 0 0 16px rgba(143, 179, 255, 0.18);
+                mix-blend-mode: screen;
+            }
+            .particle:nth-child(2n) {
+                background: rgba(255, 214, 96, 0.2);
+                box-shadow: 0 0 14px rgba(255, 214, 96, 0.14);
+            }
+            .particle:nth-child(3n) {
+                background: rgba(182, 171, 255, 0.13);
+                box-shadow: 0 0 16px rgba(182, 171, 255, 0.12);
+            }
+        }
+        @keyframes particleMove {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(0, -120vh, 0); }
+        }
+        @keyframes particleTwinkle {
+            0%, 100% { opacity: 0.5; transform: translate3d(0, 0, 0) scale(0.95); }
+            50% { opacity: 1; transform: translate3d(0, 0, 0) scale(1.08); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body::before,
+            body::after,
+            .bg-wave,
+            .particle,
+            header,
+            main {
+                animation: none !important;
+            }
+        }
+        .shell {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: min(560px, 92vw);
+        }
+        header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border: 1px solid var(--border-soft);
+            border-radius: 18px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: "";
+            position: absolute;
+            top: -16px;
+            right: -34px;
+            width: 140px;
+            height: 72px;
+            border-radius: 999px;
+            background: radial-gradient(circle at center, rgba(123, 150, 255, 0.35), transparent 68%);
+            transform: rotate(-18deg);
+            pointer-events: none;
+        }
+        header .logo {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            background: var(--paper-blue);
+            border: 2px solid var(--border);
+            box-shadow: 4px 4px 0 rgba(17, 20, 34, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+        header .logo::after {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: inherit;
+            border: 1px dashed rgba(18, 21, 33, 0.22);
+            pointer-events: none;
+        }
+        header .logo img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+            animation: logoFloat 2.8s ease-in-out infinite;
+        }
+        @keyframes logoFloat {
+            0%, 100% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+            50% { transform: translate3d(0, -4px, 0) rotate(6deg); }
+        }
+        header .title {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+        header .site-name {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+        header .site-tip {
+            font-size: 12px;
+            color: var(--text-soft);
+            font-weight: 600;
+        }
+        main {
+            width: 100%;
+            margin-top: 18px;
+            padding: 30px 26px 26px;
+            border: 1px solid var(--border-soft);
+            border-radius: 22px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        main::before {
+            content: "";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            width: 82px;
+            height: 20px;
+            border-radius: 999px;
+            background: var(--paper-soft);
+            border: 1px solid rgba(18, 21, 33, 0.14);
+            transform: translateX(-50%) rotate(-6deg);
+            box-shadow: 0 6px 12px rgba(17, 20, 34, 0.12);
+            pointer-events: none;
+        }
+        .sticker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .sticker-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            border: 1px solid var(--border-soft);
+            box-shadow: 3px 3px 0 rgba(17, 20, 34, 0.12);
+        }
+        .sticker-chip.blue { background: var(--paper-blue); }
+        .sticker-chip.soft { background: var(--paper-soft); }
+        .sticker-chip.purple { background: var(--paper-pink); }
+        .tip {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.6;
+            margin-bottom: 10px;
+            display: block;
+        }
+        #url {
+            display: block;
+            font-size: 13px;
+            color: var(--text-soft);
+            word-break: break-all;
+            line-height: 1.6;
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px dashed var(--border-soft);
+            background: rgba(255, 255, 255, 0.42);
+            margin-bottom: 18px;
+        }
+        @media (prefers-color-scheme: dark) {
+            #url { background: rgba(0, 0, 0, 0.18); }
+        }
+        #jump-content {
+            border-radius: 18px;
+            border: 2px solid var(--warn-border);
+            background: var(--warn-bg);
+            padding: 14px 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        #site-info {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+        #jump-button {
+            align-self: flex-start;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            color: #fff;
+            background: linear-gradient(135deg, var(--warn), #6d55ff);
+            box-shadow: 5px 5px 0 rgba(17, 20, 34, 0.14);
+            cursor: pointer;
+            transition: transform 0.18s ease;
+        }
+        #jump-button:hover {
+            transform: translateY(-1px);
+        }
+        .warn.safe {
+            border-color: var(--safe-border);
+            background: var(--safe-bg);
+        }
+        .warn.safe #jump-button {
+            background: linear-gradient(135deg, var(--safe), #00b4a7);
+        }
+        .warn.danger {
+            border-color: var(--danger-border);
+            background: var(--danger-bg);
+        }
+        .warn.danger #jump-button {
+            background: linear-gradient(135deg, var(--danger), #2856d8);
+        }
+        .warn.danger #jump-button {
+            pointer-events: none;
+            opacity: 0.55;
+            filter: grayscale(0.2);
+        }
+        .line-decor {
+            width: 100%;
+            height: 2px;
+            margin-top: 20px;
+            background: repeating-linear-gradient(
+                to right,
+                rgba(18, 21, 33, 0.22) 0 14px,
+                transparent 14px 26px
+            );
+            opacity: 0.28;
+        }
+        footer {
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--text-soft);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 2;
+        }
+        footer a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.85;
+            transition: opacity 0.2s ease;
+        }
+        footer a:hover {
+            opacity: 1;
+        }
+        @media (max-width: 520px) {
+            .shell {
+                width: 92vw;
+            }
+            header {
+                padding: 12px 14px;
+                border-radius: 16px;
+            }
+            header .logo {
+                width: 46px;
+                height: 46px;
+                border-radius: 16px;
+            }
+            header .site-name {
+                font-size: 14px;
+            }
+            main {
+                margin: 10px 16px 64px;
+                padding: 28px 18px 22px;
+                transform: none;
+            }
+            main::before {
+                top: -10px;
+                width: 64px;
+                height: 16px;
+            }
+            footer {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-wave one"></div>
+    <div class="bg-wave two"></div>
+    <div class="bg-wave three"></div>
+    <div class="particle-layer" id="particle-layer"></div>
+    <div class="shell">
+        <header>
+            <div class="logo">
+                <img src="{{ $logoSrc }}" alt="{{ $siteName }} Logo" />
+            </div>
+            <div class="title">
+                <span class="site-name">{{ $siteName }}</span>
+                <span class="site-tip">{{ $siteTip }}</span>
+            </div>
+        </header>
+        <main>
+            <div class="sticker-row" aria-hidden="true">
+                <span class="sticker-chip blue">CHECK</span>
+                <span class="sticker-chip purple">SAFE</span>
+                <span class="sticker-chip soft">JUMP</span>
+            </div>
+            <span class="tip">{{ $leaveTip }}</span>
+            <span id="url"></span>
+            <div id="jump-content" class="warn">
+                <span id="site-info">⚠️ 该网址安全性未知，请注意您的帐号和财产安全</span>
+                <div id="jump-button">继续前往</div>
+            </div>
+            <div class="line-decor"></div>
+        </main>
+    </div>
+    <footer>
+        <a class="power" href="index.html">
+            ©
+            <script>
+                document.write(new Date().getFullYear());
+            </script>
+            {{ $siteName }}
+        </a>
+        <a class="icp" href="{{ .Site.BaseURL }}" target="_blank">收录值得珍藏的网站</a>
+    </footer>
+    <script>
+        // 跳转网址
+        let jumpLink;
+        let interval;
+        
+        // 获取元素
+        const urlDom = document.getElementById("url");
+        const urlTip = document.getElementById("site-info");
+        const jumpContent = document.getElementById("jump-content");
+        const jumpButton = document.getElementById("jump-button");
+        const particleLayer = document.getElementById("particle-layer");
+        
+        // 网址白名单
+        const whitelist = [
+            "*.noisework.cn",
+            "noisevip.cn",
+            "noisedaohang.netlify.app",
+            "noisedh.vercel.app",
+            "*.pinterest.com",
+            "npmjs.com",
+        ];
+        
+        // 网址黑名单
+        const blacklist = [
+            "*.taobao.com",
+            "*.6.aaa210.click:89/ads1.html",
+            "*.xb72303xbt.xxqnot.top:12766/keleios/?channelCode=xdk28",
+            "*.xmz2pvqpfq7hnjvymtnk44bfq.615431.com",
+            "*.jd.com",
+            "*.11166.memb6.com",
+            "*.11166.ydtngcs.com",
+            "*.ipy44uh89.5p1rqwpvqx.cc",
+            "*.xx1979.com",
+        ];
+        
+        // 提示文本
+        const tipText = {
+            safe: "✅ 该网址为信任网址，即将跳转",
+            danger: "⛔ 该网址处于黑名单，已拦截",
+            warn: "⏳请注意您的帐号和财产安全",
+        };
+        
+        // 容错解码，避免 URI malformed 直接中断
+        const safeDecodeUrl = (value) => {
+            try {
+                return decodeURIComponent(value);
+            } catch (error) {
+                return value;
+            }
+        };
+        
+        // 统一规范跳转地址，仅允许 http/https
+        const normalizeJumpUrl = (rawUrl) => {
+            const decoded = safeDecodeUrl((rawUrl || "").trim());
+            try {
+                const parsed = new URL(decoded, window.location.origin);
+                if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.toString();
+            } catch (e) {}
+            return "";
+        };
+        
+        // 判断字符串是否匹配通配符规则
+        const wildcardMatch = (pattern, text) => {
+            const safePattern = String(pattern || "")
+                .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+                .replace(/\*/g, ".*");
+            const reg = new RegExp("^" + safePattern + "$", "i");
+            return reg.test(text);
+        };
+        
+        const isInList = (list, hostname, url) => {
+            return list.some((rule) => wildcardMatch(rule, hostname) || wildcardMatch(rule, url));
+        };
+        
+        const createParticles = () => {
+            if (!particleLayer) return;
+            const count = 18;
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement("div");
+                el.className = "particle";
+                el.style.left = Math.random() * 100 + "%";
+                el.style.top = 100 + Math.random() * 40 + "%";
+                el.style.animationDuration = 12 + Math.random() * 14 + "s";
+                el.style.animationDelay = -Math.random() * 18 + "s";
+                particleLayer.appendChild(el);
+            }
+        };
+        
+        // 初始化
+        (function () {
+            createParticles();
+            const params = new URLSearchParams(window.location.search);
+            const urlValue = params.get("url") || "";
+            jumpLink = normalizeJumpUrl(urlValue);
+            if (!jumpLink) {
+                urlDom.textContent = "无效链接";
+                urlTip.textContent = "⛔ 跳转地址无效";
+                jumpContent.classList.add("danger");
+                return;
+            }
+        
+            urlDom.textContent = jumpLink;
+            const parsed = new URL(jumpLink);
+            const hostname = parsed.hostname;
+        
+            const isBlack = isInList(blacklist, hostname, jumpLink);
+            const isWhite = isInList(whitelist, hostname, jumpLink);
+        
+            if (isBlack) {
+                urlTip.textContent = tipText.danger;
+                jumpContent.classList.add("danger");
+                return;
+            }
+        
+            if (isWhite) {
+                urlTip.textContent = tipText.safe;
+                jumpContent.classList.add("safe");
+                interval = setInterval(function () {
+                    window.location.href = jumpLink;
+                }, 800);
+            } else {
+                urlTip.textContent = tipText.warn;
+            }
+        
+            jumpButton.addEventListener("click", function () {
+                window.location.href = jumpLink;
+            });
+        })();
+    </script>
+</body>
+</html>
+{{ end }}

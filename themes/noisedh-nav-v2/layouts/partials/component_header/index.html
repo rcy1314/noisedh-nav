@@ -9,6 +9,17 @@
         </div>
         {{ $headerParams := .Site.Params.header }}
         {{ $announcements := $headerParams.announcements }}
+        {{ $searchPlaceholder := .Site.Params.header.searchPlaceholder | default .Site.Params.searchPlaceholder | default "站内搜索..." }}
+        {{ $recentSitesTitle := .Site.Params.header.recentSitesTitle | default .Site.Params.recentSitesTitle | default "最近收录的站点" }}
+        {{ $rssmergeUrl := .Site.Params.header.rssmergeUrl | default .Site.Params.rssmergeUrl }}
+        {{ $talkUrl := .Site.Params.header.talkUrl | default .Site.Params.talkUrl }}
+        {{ $gameUrl := .Site.Params.header.gameUrl | default .Site.Params.gameUrl }}
+        {{ $rssApiUrl := .Site.Params.header.rssApiUrl | default .Site.Params.rssApiUrl }}
+        {{ $recentSitesApi := .Site.Params.header.recentSitesApi | default .Site.Params.recentSitesApi }}
+        {{ $statisticsApi := .Site.Params.header.statisticsApi | default .Site.Params.statisticsApi }}
+        {{ $statisticsMode := .Site.Params.header.statisticsMode | default .Site.Params.statisticsMode }}
+        {{ $serverUrl := .Site.Params.header.serverUrl | default .Site.Params.serverUrl }}
+        {{ $filePath := .Site.Params.header.filePath | default .Site.Params.filePath }}
 
         <div class="header-top is-default-page">
             <div class="header-top-main">
@@ -202,14 +213,14 @@
                 <div class="header-side-default">
                     <div class="recent-sites header-recent" id="recent-sites">
                         <h2 id="recent-sites-title" class="recent-sites-title">
-                            {{ .Site.Params.header.recentSitesTitle }}
+                            {{ $recentSitesTitle }}
                         </h2>
                         <ul id="site-list"></ul>
                     </div>
                     <div class="header-search-panel">
                         <div class="search-toolbar">
-                            <input type="text" id="search-input" placeholder="{{ $.Site.Params.header.searchPlaceholder }}" />
-                            <button id="search-button">🔍</button>
+                            <input type="text" id="search-input" placeholder="{{ $searchPlaceholder }}" onkeydown="if(event.key==='Enter')performSearch()" />
+                            <button id="search-button" onclick="performSearch()">🔍</button>
                         </div>
                     </div>
                     <div id="overlay"></div>
@@ -234,13 +245,13 @@
                         {{ else if eq .key "rssmerge" }}
                             <div class="page-shell">
                                 <div class="embed-container transparent-embed rssmerge-embed">
-                                <iframe src='{{ printf "%s?rssApiUrl=%s" $.Site.Params.header.rssmergeUrl ($.Site.Params.header.rssApiUrl | urlquery) }}' class="embedded-page-frame" loading="lazy" frameborder="0" allowtransparency="true"></iframe>
+                                <iframe src='{{ printf "%s?rssApiUrl=%s" $rssmergeUrl ($rssApiUrl | urlquery) }}' class="embedded-page-frame" loading="lazy" frameborder="0" allowtransparency="true"></iframe>
                                 </div>
                             </div>
                         {{ else if eq .key "talk" }}
                             <div class="page-shell">
                                 <div class="embed-container transparent-embed">
-                                <iframe src="{{ $.Site.Params.header.talkUrl }}" class="embedded-page-frame" loading="lazy" frameborder="0" allowtransparency="true"></iframe>
+                                <iframe src="{{ $talkUrl }}" class="embedded-page-frame" loading="lazy" frameborder="0" allowtransparency="true"></iframe>
                                 </div>
                             </div>
                         {{ else if eq .key "time" }}
@@ -303,7 +314,7 @@
                         {{ else if eq .key "game" }}
                             <div class="page-shell">
                                 <div class="embed-container transparent-embed">
-                                <iframe src="{{ $.Site.Params.header.gameUrl }}" class="embedded-page-frame" loading="lazy" frameborder="0" allowtransparency="true"></iframe>
+                                <iframe src="{{ $gameUrl }}" class="embedded-page-frame" loading="lazy" frameborder="0" allowtransparency="true"></iframe>
                                 </div>
                             </div>
                         {{ else if eq .key "waline" }}
@@ -3725,6 +3736,18 @@
       padding: 4px 10px 10px;
       border-radius: 0;
       width: 100%;
+      max-height: none;
+      overflow: visible;
+    }
+
+    #component-bg {
+      overflow: hidden;
+      max-height: none;
+    }
+
+    .header-top-main {
+      max-height: none;
+      overflow: visible;
     }
 
     .header-top-main,
@@ -3967,14 +3990,22 @@
     }
   }
 </style>
+{{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}
+{{ $headerSearchIndex := partialCached "component_header/search_index_data.html" . "header-search-index-data" }}
+{{ $headerSearchIndexJson := jsonify (dict "indent" "") $headerSearchIndex }}
+{{ $headerSearchIndexJs := resources.FromString "generated/header-search-index.js" (printf "window.__HEADER_SEARCH_INDEX__=%s;" $headerSearchIndexJson) | minify | fingerprint }}
 <script>
     window.CONFIG = {
-      recentSitesApi: "{{ .Site.Params.header.recentSitesApi }}",
-      statisticsApi: "{{ .Site.Params.header.statisticsApi }}",
+      recentSitesApi: "{{ $recentSitesApi }}",
+      statisticsApi: "{{ $statisticsApi }}",
+      statisticsMode: '{{ $statisticsMode | default "" }}',
+      statisticsLocalUrlCount: Number(''),
       siteName: "{{ .Site.Params.author }}",
-      serverUrl: "{{ .Site.Params.header.serverUrl }}",
-      filePath: "{{ .Site.Params.header.filePath }}",
-      rssApiUrl: "{{ .Site.Params.header.rssApiUrl }}",
+      serverUrl: "{{ $serverUrl }}",
+      filePath: "{{ $filePath }}",
+      rssApiUrl: "{{ $rssApiUrl }}",
+      searchIndexUrl: '{{ "search-index.json" | relURL }}',
+      searchIndexScriptUrl: '{{ $headerSearchIndexJs.RelPermalink }}',
       hotApiEndpoints: JSON.parse('{{ .Site.Params.hotApi.endpoints | default (slice "https://hot.noisework.cn" "https://hot.noisedh.link") | jsonify | safeJS }}')
     }
 </script>
@@ -4135,5 +4166,5 @@
     });
   })();
 </script>
-{{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}
-<script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/component_header.js?v={{ $assetVer }}' id='component_header-js'></script>
+<script defer type='text/javascript' src='{{ $headerSearchIndexJs.RelPermalink }}' id='header-search-index-js'></script>
+<script defer type='text/javascript' src='{{ "assets/js/component_header.js" | relURL }}?v={{ $assetVer }}' id='component_header-js'></script>

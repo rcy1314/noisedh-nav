@@ -82,12 +82,17 @@ body:not(.io-black-mode){
 }
 
 body{
+    --ndh-page-bg: #ffffff;
     --ndh-togo-color: rgba(34, 40, 53, 0.78);
     --ndh-togo-color-hover: #214fd3;
     --ndh-togo-bg: rgba(17, 24, 39, 0.06);
     --ndh-togo-bg-hover: rgba(83, 128, 255, 0.12);
     --ndh-togo-gradient: linear-gradient(135deg, #ffd66c 0%, #ffce7c 40%, #7e91ff 100%);
     --ndh-togo-stroke: rgba(18, 21, 33, 0.68);
+    --ndh-sidebar-grid-line: rgba(17, 21, 33, 0.055);
+    --ndh-sidebar-grid-glow: rgba(83, 128, 255, 0.10);
+    --ndh-sidebar-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(249, 250, 252, 0.92));
+    --ndh-sidebar-border: rgba(17, 21, 33, 0.10);
 }
 body.io-grey-mode .page-container,
 body.io-grey-mode .main-content,
@@ -99,11 +104,12 @@ body:not(.io-black-mode) .main-content,
 body:not(.io-black-mode) .content-site,
 body:not(.io-black-mode) .site-content,
 body:not(.io-black-mode) .grid-bg{
-    background-color: #ffffff !important;
+    background-color: var(--ndh-page-bg) !important;
 }
 
 body.io-black-mode{
-    --ndh-bg: #1b1d1f;
+    --ndh-bg: #18191c;
+    --ndh-page-bg: #18191c;
     --ndh-surface: #2c2e2f;
     --ndh-surface-2: #363738;
     --ndh-border: rgba(255, 255, 255, 0.12);
@@ -117,6 +123,10 @@ body.io-black-mode{
     --ndh-togo-bg-hover: rgba(143, 184, 255, 0.14);
     --ndh-togo-gradient: linear-gradient(135deg, #ffd76f 0%, #8fb8ff 100%);
     --ndh-togo-stroke: rgba(238, 243, 255, 0.28);
+    --ndh-sidebar-grid-line: rgba(255, 255, 255, 0.055);
+    --ndh-sidebar-grid-glow: rgba(143, 184, 255, 0.10);
+    --ndh-sidebar-surface: linear-gradient(180deg, rgba(27, 29, 31, 0.98), rgba(21, 23, 27, 0.95));
+    --ndh-sidebar-border: rgba(255, 255, 255, 0.09);
     background: var(--ndh-bg) !important;
 }
 
@@ -125,7 +135,7 @@ body.io-black-mode .main-content,
 body.io-black-mode .content-site,
 body.io-black-mode .site-content,
 body.io-black-mode .grid-bg{
-    background-color: var(--ndh-bg) !important;
+    background-color: var(--ndh-page-bg) !important;
 }
  #sidebar.sidebar-nav{
      background: transparent !important;
@@ -138,6 +148,32 @@ body.io-black-mode .grid-bg{
     background: transparent !important;
     box-shadow: none;
     overflow: visible;
+    position: relative;
+ }
+ .sidebar-grid-surface{
+    position: relative;
+    isolation: isolate;
+ }
+ .sidebar-grid-surface::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ndh-sidebar-surface);
+    z-index: -2;
+ }
+ .sidebar-grid-surface::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(var(--ndh-sidebar-grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--ndh-sidebar-grid-line) 1px, transparent 1px),
+        radial-gradient(circle at top, var(--ndh-sidebar-grid-glow), transparent 38%);
+    background-size: 22px 22px, 22px 22px, 100% 100%;
+    background-position: 0 0, 0 0, center top;
+    opacity: .92;
+    z-index: -1;
+    pointer-events: none;
  }
  #sidebar .sidebar-menu-inner{
      padding: 6px 0;
@@ -211,6 +247,44 @@ body.io-black-mode .grid-bg{
      color: #214fd3 !important;
  }
 
+.sidebar-nav-inner{
+    position: relative;
+}
+
+.io-grey-mode .sidebar-nav-inner::after,
+body:not(.io-black-mode) .sidebar-nav-inner::after{
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 2px;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(17,21,33,.22) 0 4px,
+        var(--ndh-page-bg) 4px 12px
+    );
+    pointer-events: none;
+    z-index: 5;
+}
+
+ .io-grey-mode .sidebar-nav-inner::before,
+ body:not(.io-black-mode) .sidebar-nav-inner::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    height: 74px;
+    right: 0;
+    width: 2px;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(17,21,33,.10) 0 4px,
+        var(--ndh-page-bg) 4px 12px
+    );
+    pointer-events: none;
+    z-index: 6;
+ }
+
 /* 浅色模式下侧边栏图标颜色 */
 body.io-grey-mode #sidebar .sidebar-item > a i,
 body.io-grey-mode #sidebar .sidebar-item ul li a i,
@@ -223,10 +297,41 @@ body:not(.io-black-mode) #sidebar .sidebar-item ul li a i{
  }
  body.io-black-mode .sidebar-nav-inner{
     border-color: transparent;
-    background: var(--ndh-bg) !important;
+    background: var(--ndh-page-bg) !important;
     box-shadow: none;
-    border-right: 1px solid var(--ndh-border-soft);
+    border-right: none;
  }
+body.io-black-mode .sidebar-nav-inner::after{
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 2px;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.16) 0 4px,
+        var(--ndh-page-bg) 4px 12px
+    );
+    pointer-events: none;
+    z-index: 5;
+}
+
+body.io-black-mode .sidebar-nav-inner::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    height: 74px;
+    right: 0;
+    width: 2px;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.10) 0 4px,
+        var(--ndh-page-bg) 4px 12px
+    );
+    pointer-events: none;
+    z-index: 6;
+}
  body.io-black-mode #sidebar .sidebar-item > a,
  body.io-black-mode #sidebar .sidebar-item ul li a{
      color: #c7d3f3 !important;
@@ -238,7 +343,7 @@ body:not(.io-black-mode) #sidebar .sidebar-item ul li a i{
  body.io-black-mode #sidebar .sidebar-item ul,
  body.io-black-mode #sidebar .sidebar-logo,
  body.io-black-mode #sidebar .border-top{
-     background: var(--ndh-bg) !important;
+    background: var(--ndh-page-bg) !important;
  }
 body.io-black-mode .sidebar-popup,
 body.io-black-mode .sidebar-popup.second,
@@ -256,13 +361,13 @@ body.io-black-mode .sidebar-popup::before{
     border-color: transparent var(--ndh-bg) transparent transparent !important;
 }
 body.io-black-mode #sidebar .sidebar-logo{
-    border-bottom-color: rgba(255,255,255,.08);
+    border-bottom-color: #2a2e36;
 }
 body.io-black-mode #sidebar .border-top{
-    border-top-color: rgba(255,255,255,.08) !important;
+    border-top-color: #2a2e36 !important;
 }
 body.io-black-mode #sidebar .sidebar-scroll::before{
-    background: linear-gradient(180deg, transparent, rgba(255,255,255,.1), transparent);
+    display: none;
 }
  body.io-black-mode #sidebar .sidebar-item > a:hover,
  body.io-black-mode #sidebar .sidebar-item.sidebar-show > a,
@@ -295,15 +400,15 @@ body.io-black-mode .sidebar-popup.sidebar-menu-inner ul li a:hover{
 body.io-grey-mode .big-header-banner .page-header,
 body:not(.io-black-mode) .big-header-banner .page-header{
     color: #111827;
-    background: #ffffff !important;
-    border-bottom: 1px solid rgba(17,21,33,.08);
+    background: var(--ndh-page-bg) !important;
+    border-bottom: 1px solid #e6e9ef;
     box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
 }
 
 body.io-black-mode .big-header-banner .page-header{
     color: var(--ndh-text-strong);
-    background: var(--ndh-bg) !important;
-    border-bottom: 1px solid var(--ndh-border-soft);
+    background: var(--ndh-page-bg) !important;
+    border-bottom: 1px solid #2a2e36;
     box-shadow: none;
 }
 body.io-grey-mode .big-header-banner:not(.header-bg) .page-header .navbar-nav>li>a,
@@ -409,19 +514,20 @@ body:not(.io-black-mode) .big-header-banner:not(.header-bg) .header-mini-btn lab
 .io-grey-mode #sidebar .sidebar-scroll,
 .io-grey-mode #sidebar .sidebar-logo,
 .io-grey-mode #sidebar .border-top{
-    background: #ffffff !important;
+    background: var(--ndh-page-bg) !important;
 }
 .io-grey-mode .sidebar-nav-inner{
-    border-right: 1px dashed rgba(17,21,33,.18);
+    border-right: none;
 }
-.io-grey-mode #sidebar .sidebar-scroll::before{
-    top: 10px;
-    bottom: 10px;
-    left: auto;
-    right: 0;
-    width: 0;
-    border-right: 1px dashed rgba(17,21,33,.16);
-    background: none;
+.io-grey-mode #sidebar .sidebar-logo{
+    border-bottom-color: #e6e9ef;
+}
+.io-grey-mode #sidebar .border-top{
+    border-top-color: #e6e9ef !important;
+}
+.io-grey-mode #sidebar .sidebar-scroll::before,
+body:not(.io-black-mode) #sidebar .sidebar-scroll::before{
+    display: none;
 }
 .io-grey-mode #sidebar .sidebar-item > a,
 .io-grey-mode #sidebar .sidebar-item ul li a{
@@ -443,7 +549,7 @@ body:not(.io-black-mode) .big-header-banner:not(.header-bg) .header-mini-btn lab
     color: #214fd3 !important;
 }
 .io-grey-mode .content-header-shell{
-    background: #ffffff !important;
+    background: var(--ndh-page-bg) !important;
     border-bottom: 1px solid rgba(17,21,33,.08);
     box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
 }
@@ -583,6 +689,20 @@ body.io-black-mode footer.main-footer .footer-text a:hover {
   background-image: none;
   background-size: 15px 15px;
   background-color: #ffffff;
+}
+
+body:not(.io-black-mode) .sidebar-grid-surface::before,
+body:not(.io-black-mode) #sidebar .sidebar-logo,
+body:not(.io-black-mode) #sidebar .border-top{
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.92)) !important;
+}
+
+body.io-black-mode .sidebar-grid-surface::before,
+body.io-black-mode #sidebar .sidebar-logo,
+body.io-black-mode #sidebar .border-top{
+    background:
+        linear-gradient(180deg, rgba(27, 29, 31, 0.98), rgba(21, 23, 27, 0.95)) !important;
 }
 
 body:not(.io-black-mode) .iziToast {
