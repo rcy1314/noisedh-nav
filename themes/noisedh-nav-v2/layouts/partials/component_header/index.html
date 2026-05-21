@@ -4016,7 +4016,7 @@
 </style>
 {{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}
 {{ $headerSearchIndex := partialCached "component_header/search_index_data.html" . "header-search-index-data" }}
-{{ $headerSearchIndexJson := jsonify (dict "indent" "") $headerSearchIndex }}
+{{ $headerSearchIndexJson := $headerSearchIndex | jsonify }}
 {{ $headerSearchIndexJs := resources.FromString "generated/header-search-index.js" (printf "window.__HEADER_SEARCH_INDEX__=%s;" $headerSearchIndexJson) | minify | fingerprint }}
 <script>
     window.CONFIG = {
