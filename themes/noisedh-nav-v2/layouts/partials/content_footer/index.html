@@ -370,7 +370,7 @@
             border: 1px solid rgba(18, 21, 33, 0.10);
             box-shadow: 0 6px 12px rgba(103, 121, 165, 0.10);
             transform: translateX(-50%) rotate(-4deg);
-            z-index: 2;
+            z-index: 0;
             pointer-events: none;
         }
         .ai-chat-panel.open {
@@ -462,6 +462,8 @@
             padding: 14px 16px 12px;
             border-bottom: 1px dashed var(--ai-border);
             flex-shrink: 0;
+            position: relative;
+            z-index: 2;
         }
         .ai-chat-header-left {
             display: flex;
@@ -919,6 +921,9 @@
             overflow-x: auto;
             max-width: 100%;
             box-sizing: border-box;
+        }
+        .ai-msg-body.ai-msg-body-streaming {
+            white-space: pre-wrap;
         }
         .ai-msg.ai .ai-msg-body {
             border-top-left-radius: 4px;
@@ -1604,8 +1609,6 @@
     </script>
 
     {{ if default true $.Site.Params.ai.enable }}
-    <!-- Marked.js for Markdown rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
     (function() {
@@ -1947,6 +1950,24 @@
             settingsPanelEl.style.display = 'none';
         }
 
+        function isSettingsPanelOpen() {
+            if (!settingsPanelEl) return false;
+            if (settingsPanelEl.style.display === 'none') return false;
+            try {
+                return window.getComputedStyle(settingsPanelEl).display !== 'none';
+            } catch (e) {
+                return true;
+            }
+        }
+
+        function toggleSettingsPanel() {
+            if (isSettingsPanelOpen()) {
+                closeSettingsPanel();
+                return;
+            }
+            openSettingsPanel();
+        }
+
         function normalizeMaybeNumber(v) {
             if (v === null || v === undefined) return null;
             const s = String(v).trim();
@@ -1964,7 +1985,7 @@
             updateWelcomeNotice();
         }
 
-        if (settingsBtn) settingsBtn.addEventListener('click', openSettingsPanel);
+        if (settingsBtn) settingsBtn.addEventListener('click', toggleSettingsPanel);
         if (settingCancelEl) settingCancelEl.addEventListener('click', closeSettingsPanel);
         if (settingProviderEl) {
             settingProviderEl.addEventListener('change', function() {
@@ -2222,12 +2243,49 @@
 
         // ===== Marked.js Configuration =====
         if (typeof marked !== 'undefined') {
+            const renderer = new marked.Renderer();
+            renderer.html = function(html) {
+                return escapeHtmlFast(html);
+            };
+            renderer.link = function(href, title, text) {
+                const safeHref = safeUrl(href, { allowHash: true, allowMailto: true });
+                const t = title ? (' title="' + escapeHtmlFast(title) + '"') : '';
+                const resolved = safeHref || '#';
+                return '<a href="' + escapeHtmlFast(resolved) + '"' + t + ' target="_blank" rel="noopener noreferrer">' + text + '</a>';
+            };
+            renderer.image = function(href, title, text) {
+                const safeSrc = safeUrl(href, { allowDataImage: true });
+                if (!safeSrc) return '';
+                const t = title ? (' title="' + escapeHtmlFast(title) + '"') : '';
+                const alt = escapeHtmlFast(text || '');
+                return '<img src="' + escapeHtmlFast(safeSrc) + '" alt="' + alt + '"' + t + ' loading="lazy" referrerpolicy="no-referrer" />';
+            };
             marked.setOptions({
                 breaks: true,
                 gfm: true,
                 headerIds: false,
-                mangle: false
+                mangle: false,
+                renderer: renderer
             });
+        }
+
+        function safeUrl(raw, opts) {
+            const options = opts || {};
+            const value = String(raw == null ? '' : raw).trim();
+            if (!value) return '';
+            if (options.allowHash && value.startsWith('#')) return value;
+            if (/^javascript:/i.test(value) || /^vbscript:/i.test(value)) return '';
+            if (options.allowDataImage && /^data:image\//i.test(value)) return value;
+            try {
+                const u = new URL(value, document.baseURI);
+                const protocol = (u.protocol || '').toLowerCase();
+                if (protocol === 'http:' || protocol === 'https:') return u.toString();
+                if (options.allowMailto && protocol === 'mailto:') return u.toString();
+                return '';
+            } catch (e) {
+                if (value.startsWith('/')) return value;
+                return '';
+            }
         }
 
         function renderMarkdown(text) {
@@ -2632,8 +2690,17 @@
         });
 
         // ===== Scroll to bottom =====
-        function scrollToBottom() {
+        function isNearBottom(container, threshold) {
+            if (!container) return true;
+            const t = Number.isFinite(threshold) ? threshold : 120;
+            return (container.scrollHeight - container.scrollTop - container.clientHeight) <= t;
+        }
+
+        function scrollToBottom(force) {
+            const shouldScroll = force || isNearBottom(messagesEl, 140);
+            if (!shouldScroll) return;
             requestAnimationFrame(() => {
+                if (!force && !isNearBottom(messagesEl, 200)) return;
                 messagesEl.scrollTop = messagesEl.scrollHeight;
             });
         }
@@ -2662,11 +2729,7 @@
 
             if (isMarkdown !== false && role === 'ai') {
                 body.innerHTML = renderMarkdown(content);
-                // Make links open in new tab
-                body.querySelectorAll('a').forEach(a => {
-                    a.target = '_blank';
-                    a.rel = 'noopener noreferrer';
-                });
+                sanitizeRenderedContent(body);
             } else {
                 body.textContent = content;
             }
@@ -2685,13 +2748,39 @@
             msgDiv.appendChild(avatar);
             msgDiv.appendChild(bubbleWrap);
             messagesEl.appendChild(msgDiv);
-            scrollToBottom();
+            scrollToBottom(true);
 
             const shouldPersist = persist !== false && !isRestoringChat && (role === 'user' || role === 'ai');
             if (shouldPersist) {
                 upsertUiChatMessage({ id: msgId, role: role, content: String(content == null ? '' : content), isMarkdown: role === 'ai' });
             }
             return body;
+        }
+
+        function sanitizeRenderedContent(root) {
+            if (!root) return;
+            root.querySelectorAll('a').forEach(a => {
+                const href = a.getAttribute('href') || '';
+                const safeHref = safeUrl(href, { allowHash: true, allowMailto: true });
+                if (!safeHref) {
+                    a.removeAttribute('href');
+                } else {
+                    a.setAttribute('href', safeHref);
+                }
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+            });
+            root.querySelectorAll('img').forEach(img => {
+                const src = img.getAttribute('src') || '';
+                const safeSrc = safeUrl(src, { allowDataImage: true });
+                if (!safeSrc) {
+                    img.remove();
+                    return;
+                }
+                img.setAttribute('src', safeSrc);
+                img.setAttribute('loading', 'lazy');
+                img.setAttribute('referrerpolicy', 'no-referrer');
+            });
         }
 
         async function copyTextToClipboard(text) {
@@ -2904,10 +2993,18 @@
             thinkingEl.style.display = 'none';
         }
 
+        let thinkingRenderTimer = 0;
+        let pendingThinkingText = '';
         function updateThinkingProcess(text) {
             if (thinkingProcessEl.style.display !== 'none') {
-                thinkingProcessEl.textContent = text;
-                thinkingProcessEl.scrollTop = thinkingProcessEl.scrollHeight;
+                pendingThinkingText = String(text == null ? '' : text);
+                if (thinkingRenderTimer) return;
+                thinkingRenderTimer = window.setTimeout(function() {
+                    thinkingRenderTimer = 0;
+                    if (thinkingProcessEl.style.display === 'none') return;
+                    thinkingProcessEl.textContent = pendingThinkingText;
+                    thinkingProcessEl.scrollTop = thinkingProcessEl.scrollHeight;
+                }, 120);
             }
         }
 
@@ -3046,18 +3143,17 @@
             function flushStreamRender(forceMarkdown) {
                 if (!msgBody) return;
                 if (forceMarkdown) {
+                    msgBody.classList.remove('ai-msg-body-streaming');
                     msgBody.innerHTML = renderMarkdown(fullContent);
-                    msgBody.querySelectorAll('a').forEach(a => {
-                        a.target = '_blank';
-                        a.rel = 'noopener noreferrer';
-                    });
-                    scrollToBottom();
+                    sanitizeRenderedContent(msgBody);
+                    scrollToBottom(true);
                     lastRenderedContent = fullContent;
                     return;
                 }
                 if (fullContent === lastRenderedContent) return;
-                msgBody.innerHTML = renderStreamingText(fullContent);
-                scrollToBottom();
+                msgBody.classList.add('ai-msg-body-streaming');
+                msgBody.textContent = fullContent;
+                scrollToBottom(false);
                 lastRenderedContent = fullContent;
             }
 
@@ -3113,6 +3209,7 @@
                             if (!msgBody) {
                                 hideThinking();
                                 msgBody = addMessage('ai', '', true);
+                                    msgBody.classList.add('ai-msg-body-streaming');
                                 msgWrapper = msgBody.closest('.ai-msg');
                                 assistantMsgId = (msgWrapper && msgWrapper.dataset) ? (msgWrapper.dataset.msgId || '') : '';
                             }

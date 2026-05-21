@@ -15,7 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
                             hrs < 22 ? `晚上好,欢迎访问 ${siteName}` : `${siteName}提醒您，夜深了，早点休息哦😯`;
     const lbl = document.getElementById('lbl');
     if (lbl) {
-        lbl.innerHTML = `${greet}<div id="date">今天是:${date}</div>`;
+        lbl.textContent = '';
+        lbl.appendChild(document.createTextNode(greet));
+        const dateDiv = document.createElement('div');
+        dateDiv.id = 'date';
+        dateDiv.textContent = '今天是:' + date;
+        lbl.appendChild(dateDiv);
     }
 
     // 网站统计API软编码
@@ -104,6 +109,41 @@ function buildNoCacheUrl(rawUrl) {
     } catch (e) {
         var sep = rawUrl.indexOf('?') >= 0 ? '&' : '?';
         return rawUrl + sep + '_t=' + Date.now();
+    }
+}
+
+function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value == null ? '' : String(value);
+    return div.innerHTML;
+}
+
+function safeExternalHref(rawUrl) {
+    const value = String(rawUrl == null ? '' : rawUrl).trim();
+    if (!value) return '#';
+    if (value.startsWith('#')) return value;
+    try {
+        const u = new URL(value, window.location.href);
+        const protocol = (u.protocol || '').toLowerCase();
+        if (protocol === 'http:' || protocol === 'https:') return u.toString();
+        return '#';
+    } catch (e) {
+        if (value.startsWith('/')) return value;
+        return '#';
+    }
+}
+
+async function fetchWithTimeout(url, options, timeoutMs) {
+    const controller = new AbortController();
+    const ms = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 1500;
+    const timer = setTimeout(function () {
+        try { controller.abort(); } catch (e) {}
+    }, ms);
+    try {
+        const opts = Object.assign({}, options || {}, { signal: controller.signal });
+        return await fetch(url, opts);
+    } finally {
+        clearTimeout(timer);
     }
 }
 
@@ -199,7 +239,27 @@ function displaySites(data) {
 
     data.forEach(site => {
         const listItem = document.createElement('li');
-        listItem.innerHTML = `<strong class="title">${site.title}：</strong><a class="url" href="${site.url}" target="_blank">${site.url}</a>：<span class="description">${site.description || '无描述'}</span>`;
+        const title = document.createElement('strong');
+        title.className = 'title';
+        title.textContent = String((site && site.title) ? site.title : '') + '：';
+
+        const link = document.createElement('a');
+        link.className = 'url';
+        link.href = safeExternalHref(site && site.url);
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = String((site && site.url) ? site.url : '');
+
+        const sep = document.createTextNode('：');
+
+        const desc = document.createElement('span');
+        desc.className = 'description';
+        desc.textContent = String((site && site.description) ? site.description : '无描述');
+
+        listItem.appendChild(title);
+        listItem.appendChild(link);
+        listItem.appendChild(sep);
+        listItem.appendChild(desc);
         siteListElement.appendChild(listItem);
     });
 
@@ -539,7 +599,7 @@ function displaySearchResults(results, searchResults, overlay, resultsHeader) {
             const meta = [result.taxonomy, result.term].filter(Boolean).join(' / ');
             div.innerHTML = `
                 <div class="result-title">${escapeHeaderHtml(result.title || '未命名')}${meta ? `<span style="font-size:11px;opacity:0.65;margin-left:6px;">${escapeHeaderHtml(meta)}</span>` : ''}</div>
-                <div class="result-url"><a href="${escapeHeaderHtml(result.url || '#')}" target="_blank">${escapeHeaderHtml(result.url || '#')}</a></div>
+                <div class="result-url"><a href="${escapeHeaderHtml(safeExternalHref(result.url || '#'))}" target="_blank" rel="noopener noreferrer">${escapeHeaderHtml(result.url || '#')}</a></div>
                 <div class="result-description">${escapeHeaderHtml(result.description || '无描述')}</div>
             `;
             searchResults.appendChild(div);
@@ -564,7 +624,8 @@ try {
 async function fetchAndShowLatestNotification() {
     try {
         const recentSitesApi = window.CONFIG && window.CONFIG.recentSitesApi ? window.CONFIG.recentSitesApi : 'https://extension.noisework.cn/api/notifications';
-        const response = await fetch(buildNoCacheUrl(recentSitesApi), { cache: 'no-store' });
+        const response = await fetchWithTimeout(buildNoCacheUrl(recentSitesApi), { cache: 'no-store' }, 1500);
+        if (!response || !response.ok) return;
         const notifications = await response.json();
 
         const bellIcon = document.getElementById('noisenotification-icon');
@@ -577,7 +638,10 @@ async function fetchAndShowLatestNotification() {
                 return currentTime > latestTime ? current : latest;
             });
 
-            const notificationContent = `🎉站点收录更新通知：<strong>${latestNotification.title}</strong><br><a href="${latestNotification.url}" target="_blank" style="color:#ff9800;text-decoration:underline;">${latestNotification.description}</a>`;
+            const safeTitle = escapeHtml(latestNotification && latestNotification.title);
+            const safeDesc = escapeHtml((latestNotification && latestNotification.description) ? latestNotification.description : (latestNotification && latestNotification.url));
+            const safeHref = safeExternalHref(latestNotification && latestNotification.url);
+            const notificationContent = '🎉站点收录更新通知：<strong>' + safeTitle + '</strong><br><a href="' + escapeHtml(safeHref) + '" target="_blank" rel="noopener noreferrer" style="color:#ff9800;text-decoration:underline;">' + safeDesc + '</a>';
 
             // 首次访问 shownNotifications 为空，必弹
             if (!shownNotifications.includes(notificationContent)) {

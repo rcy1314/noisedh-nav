@@ -38,10 +38,6 @@
     <meta name="baidu-site-verification" content="code-ERzo5lqNbW" />
     <meta name="sogou_site_verification" content="c5kms0qkyL"/>
     <meta name="360-site-verification" content="fcc13eac55051e381be8a06453359bc1" />
-    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     {{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}
     <link rel='stylesheet' id='iconfont-css' href='{{ $.Site.Params.siteurl }}/assets/css/iconfont-3.03029.1.css?v={{ $assetVer }}' type='text/css' media='all'>
     <link rel='stylesheet' id='bootstrap-css' href='{{ $.Site.Params.siteurl }}/assets/css/bootstrap.min-4.3.1.css?v={{ $assetVer }}' type='text/css' media='all'>
@@ -51,9 +47,8 @@
     <link rel='stylesheet' id='sticker-theme-css' href='{{ $.Site.Params.siteurl }}/assets/css/sticker-theme.css?v={{ $assetVer }}' type='text/css' media='all'>
     <link rel='stylesheet' id='APlayer.min-css' href='{{ $.Site.Params.siteurl }}/assets/css/APlayer.min.css?v={{ $assetVer }}' type='text/css' media='all'>
     <link rel="stylesheet" id="fortawesome-css" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/all.min.css?v={{ $assetVer }}" type="text/css">
-    <script defer type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js' id='jquery-js'></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <link rel="stylesheet" id="fortawesome-v4shims-css" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/v4-shims.min.css?v={{ $assetVer }}" type="text/css">
+    <script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/jquery.min.js?v={{ $assetVer }}' id='jquery-js'></script>
     <!-- 添加Service Worker -->
     <script>
         (function() {
