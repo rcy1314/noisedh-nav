@@ -706,6 +706,7 @@
             "*.11166.ydtngcs.com",
             "*.ipy44uh89.5p1rqwpvqx.cc",
             "*.xx1979.com",
+            "*.htmt124shht.vip",
         ];
 
         // 提示文本
@@ -713,6 +714,27 @@
             safe: "✅ 该网址为信任网址，即将跳转",
             danger: "⛔ 该网址处于黑名单，已拦截",
             warn: "⏳请注意您的帐号和财产安全",
+        };
+
+        const escapeRegExp = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        const matchHostnamePattern = (hostname, pattern) => {
+            const host = String(hostname || "").toLowerCase();
+            const p = String(pattern || "").toLowerCase();
+            if (!host || !p) return false;
+            if (p.startsWith("*.")) {
+                const base = p.slice(2);
+                return host === base || host.endsWith(`.${base}`);
+            }
+            return host === p;
+        };
+
+        const matchWildcardText = (text, pattern) => {
+            const t = String(text || "");
+            const p = String(pattern || "");
+            if (!t || !p) return false;
+            const re = new RegExp(escapeRegExp(p).replace(/\\\*/g, ".*"), "i");
+            return re.test(t);
         };
 
         // 容错解码，避免 URI malformed 直接中断
@@ -786,11 +808,17 @@
 
                 // 获取网址的主机名
                 const urlHostname = parsedUrl.hostname;
+                const urlFullKey = `${parsedUrl.host}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
 
                 // 判断网址是否在黑名单中
                 for (let i = 0; i < blacklist.length; i++) {
-                    const blackPattern = new RegExp(blacklist[i].replace(/\*/g, ".*"));
-                    if (urlHostname.match(blackPattern)) {
+                    const item = String(blacklist[i] || "").trim();
+                    if (!item) continue;
+
+                    const isUrlLikePattern = /[/:?#]/.test(item);
+                    const matched = isUrlLikePattern ? matchWildcardText(urlFullKey, item) : matchHostnamePattern(urlHostname, item);
+
+                    if (matched) {
                         // 显示提示信息
                         urlTip.innerHTML = tipText.danger;
                         jumpButton.innerHTML = "禁止跳转";
