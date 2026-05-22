@@ -32,6 +32,9 @@ relativeURLs = true
   about         = "./about"  # 左侧导航栏的"关于导航"页面(./about)
   repository    = "https://noisedh.cn"
 
+[params.bookmarks]
+  title = "Noise导航-Bookmarks"
+  
   # 音乐 配置
   musicServer = "netease"
   musicId = "128460001"

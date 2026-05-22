@@ -1,8 +1,9 @@
 {{- /* Netscape Bookmark File Format */ -}}
 <!DOCTYPE NETSCAPE-Bookmark-file-1>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-<TITLE>Noise导航-Bookmarks</TITLE>
-<H1>Noise导航-Bookmarks</H1>
+{{- $bookmarksTitle := site.Params.bookmarks.title | default (printf "%s-Bookmarks" site.Title) | default "Noise导航-Bookmarks" -}}
+<TITLE>{{ $bookmarksTitle | htmlEscape }}</TITLE>
+<H1>{{ $bookmarksTitle | htmlEscape }}</H1>
 <DL><p>
 {{- $nowTs := div now.Unix 1 -}}
 {{- range .Site.Data -}}
