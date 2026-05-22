@@ -1680,6 +1680,7 @@
         const AI_VISITOR_ID_KEY = 'ndh-ai-visitor-id-v1';
         const AI_CHAT_LOCK_STORAGE_KEY = 'ndh-ai-chat-lock-v1';
         const AI_CHAT_NEXT_ALLOWED_KEY = 'ndh-ai-chat-next-allowed-v1';
+        const AI_RATE_LIMIT_UNTIL_KEY = 'ndh-ai-rate-limit-until-v1';
         const AI_CROSS_TAB_COOLDOWN_MS = 300;
 
         const visitorId = (function() {
@@ -1853,6 +1854,95 @@
             } catch (e) {}
         }
 
+        function readRateLimitUntil() {
+            try {
+                const v = Number(localStorage.getItem(AI_RATE_LIMIT_UNTIL_KEY) || '0');
+                return Number.isFinite(v) ? v : 0;
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function writeRateLimitUntil(ts) {
+            try {
+                localStorage.setItem(AI_RATE_LIMIT_UNTIL_KEY, String(Number(ts) || 0));
+            } catch (e) {}
+        }
+
+        function getRetryAfterMs(resp) {
+            try {
+                const raw = resp && resp.headers ? (resp.headers.get('Retry-After') || '') : '';
+                const v = String(raw || '').trim();
+                if (!v) return 0;
+                if (/^\d+$/.test(v)) return Math.max(0, Number(v) * 1000);
+                const t = Date.parse(v);
+                if (!Number.isFinite(t)) return 0;
+                return Math.max(0, t - Date.now());
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        let rateLimitTimer = 0;
+        function stopRateLimitTimer() {
+            if (!rateLimitTimer) return;
+            clearInterval(rateLimitTimer);
+            rateLimitTimer = 0;
+        }
+
+        function formatSeconds(ms) {
+            const s = Math.ceil(Math.max(0, Number(ms) || 0) / 1000);
+            return s;
+        }
+
+        function applyRateLimitUi() {
+            const now = Date.now();
+            const until = readRateLimitUntil();
+            const remaining = until - now;
+            if (!(remaining > 0)) {
+                stopRateLimitTimer();
+                if (sendBtn && !isLoading) {
+                    sendBtn.disabled = false;
+                    setSendButtonState('idle');
+                }
+                return false;
+            }
+            if (sendBtn && !isLoading) {
+                sendBtn.disabled = true;
+                sendBtn.classList.remove('is-loading');
+                sendBtn.title = '请稍后再试';
+                sendBtn.innerHTML = '<span style="font-size:12px;font-weight:700;">' + formatSeconds(remaining) + 's</span>';
+            }
+            if (!rateLimitTimer) {
+                rateLimitTimer = window.setInterval(function() {
+                    const now2 = Date.now();
+                    const until2 = readRateLimitUntil();
+                    const remain2 = until2 - now2;
+                    if (remain2 <= 0) {
+                        applyRateLimitUi();
+                        return;
+                    }
+                    if (sendBtn && !isLoading) {
+                        sendBtn.disabled = true;
+                        sendBtn.title = '请稍后再试';
+                        sendBtn.innerHTML = '<span style="font-size:12px;font-weight:700;">' + formatSeconds(remain2) + 's</span>';
+                    }
+                }, 250);
+            }
+            return true;
+        }
+
+        function startRateLimitCooldown(ms) {
+            const duration = Math.max(1000, Math.min(10 * 60 * 1000, Number(ms) || 0));
+            const until = Date.now() + duration;
+            writeRateLimitUntil(until);
+            applyRateLimitUi();
+            const sec = formatSeconds(duration);
+            const canSwitch = (aiMode === 'ai' && (AI_CONFIG.enableLocalSearch || AI_CONFIG.enableMcp));
+            const tail = canSwitch ? '你也可以先切到「本地搜索」继续用。' : '';
+            addMessage('ai', '请求过于频繁，请在 ' + sec + ' 秒后再试。' + tail, true);
+        }
+
         function sleepWithSignal(ms, signal) {
             return new Promise(function(resolve, reject) {
                 if (signal && signal.aborted) {
@@ -1957,6 +2047,8 @@
         let isLoading = false;
         let currentAbortController = null;
         let isRestoringChat = false;
+
+        applyRateLimitUi();
         let runtimeDisableToolCalling = false;
         let runtimeNotifiedToolCallingFallback = false;
 
@@ -3491,6 +3583,16 @@
                 });
 
                 if (!resp.ok) {
+                    if (resp.status === 429) {
+                        const retryAfterMs = getRetryAfterMs(resp);
+                        const errText = await resp.text();
+                        const e = new Error('请求过于频繁');
+                        e.code = 'NDH_RATE_LIMIT';
+                        e.status = resp.status;
+                        e.retryAfterMs = retryAfterMs || 15000;
+                        e.detail = errText.substring(0, 400);
+                        throw e;
+                    }
                     const errText = await resp.text();
                     if (useTools && resp.status === 400 && isAutoToolChoiceUnsupportedError(errText)) {
                         const e = new Error('当前服务不支持 Tool Calling');
@@ -3825,6 +3927,13 @@
         async function sendMessage() {
             const text = inputEl.value.trim();
             if (!text || isLoading) return;
+            if (applyRateLimitUi()) {
+                const now = Date.now();
+                const until = readRateLimitUntil();
+                const remain = until - now;
+                addMessage('ai', '请求过于频繁，请在 ' + formatSeconds(remain) + ' 秒后再试。', true);
+                return;
+            }
 
             isLoading = true;
             sendBtn.disabled = false;
@@ -3852,6 +3961,9 @@
                 hideThinking();
                 if (err && (err.name === 'AbortError' || String(err.message || '').toLowerCase().includes('abort'))) {
                     err = null;
+                } else if (err && (err.code === 'NDH_RATE_LIMIT' || err.status === 429)) {
+                    const ms = err.retryAfterMs || 15000;
+                    startRateLimitCooldown(ms);
                 } else if (aiMode === 'ai' && (AI_CONFIG.enableLocalSearch || AI_CONFIG.enableMcp)) {
                     showModeSwitch('AI 服务响应失败: ' + err.message);
                 } else {
@@ -3866,8 +3978,10 @@
             }
 
             isLoading = false;
-            sendBtn.disabled = false;
-            setSendButtonState('idle');
+            if (!applyRateLimitUi()) {
+                sendBtn.disabled = false;
+                setSendButtonState('idle');
+            }
         }
 
         restoreChatHistoryIfAny();

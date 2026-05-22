@@ -856,6 +856,13 @@ function syncHeaderColumnHeights() {
                                 var bodyHeight = Math.max(0, panelsHeight - headHeight - timeHeight - (panelGap * 2) - panelPadding);
                                 body.style.height = bodyHeight + 'px';
                                 body.style.maxHeight = bodyHeight + 'px';
+                                var list = body.querySelector('ol');
+                                if (list) {
+                                    list.style.height = bodyHeight + 'px';
+                                    list.style.maxHeight = bodyHeight + 'px';
+                                    list.style.overflowY = 'auto';
+                                    list.style.overflowX = 'hidden';
+                                }
                             }
                         });
                     }

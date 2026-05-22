@@ -71,12 +71,14 @@ function loadData(data, target) {
   if (Array.isArray(data)) {
     data.forEach((item, index) => {
       const li = document.createElement('li');
-      li.textContent = item.title || 'No title';
       li.setAttribute('data-index', `${index + 1}.`);
       const url = (window.innerWidth > 768) ? item.url : item.mobileUrl || '#';
-      li.addEventListener('click', () => {
-        window.open(url, '_blank');
-      });
+      const a = document.createElement('a');
+      a.textContent = item.title || 'No title';
+      a.href = url || '#';
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      li.appendChild(a);
       list.appendChild(li);
     });
   } else {

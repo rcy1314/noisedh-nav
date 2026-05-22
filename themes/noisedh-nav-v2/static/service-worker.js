@@ -1,4 +1,4 @@
-var cacheName = 'Noise导航-2.6-20260520';
+var cacheName = 'Noise导航-2.7-20260520';
 
 self.addEventListener('install', function(event) {
   event.waitUntil(

@@ -351,7 +351,7 @@
                                             </div>
                                         </div>
                                         <button class="hot-page-refresh refresh-icon" type="button" onclick="refreshData('{{ .id }}')" aria-label="刷新 {{ .title }} 热榜">
-                                            <i class="fas fa-refresh"></i>
+                                            <i class="fas fa-sync-alt"></i>
                                         </button>
                                     </div>
                                     <p class="update-time">数据更新时间: -</p>
@@ -675,6 +675,8 @@
     overflow-y: hidden;
     padding-bottom: 2px;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
   }
 
   .hot-page-tabs::-webkit-scrollbar {
@@ -688,7 +690,7 @@
     flex: 0 0 auto;
     min-height: 38px;
     padding: 6px 12px;
-    border: 1px solid rgba(17, 21, 33, 0.12);
+    border: 0;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.96);
     color: var(--header-top-text);
@@ -697,19 +699,28 @@
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hot-page-tab:hover {
+    background: rgba(143, 184, 255, 0.12);
+  }
+
+  .hot-page-tab:focus,
+  .hot-page-tab:focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 
   .hot-page-tab img {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border-radius: 8px;
     flex: none;
   }
 
   .hot-page-tab.active {
-    border-color: rgba(53, 93, 214, 0.28);
-    background: linear-gradient(180deg, rgba(226, 235, 255, 0.98), rgba(241, 245, 255, 0.98));
+    background: rgba(226, 235, 255, 0.98);
     color: #2447b8;
   }
 
@@ -754,9 +765,9 @@
   }
 
   .hot-page-brand img {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, 0.18);
     flex: none;
   }
@@ -767,7 +778,7 @@
 
   .hot-page-title-group h2 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.94rem;
     line-height: 1.2;
     color: inherit;
   }
@@ -779,7 +790,7 @@
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.12);
     color: rgba(238, 243, 255, 0.86);
-    font-size: 0.74rem;
+    font-size: 0.7rem;
     font-weight: 700;
   }
 
@@ -787,13 +798,28 @@
     position: static;
     top: auto;
     right: auto;
+    width: 32px;
+    height: 32px;
     border: 0;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.92);
+    cursor: pointer;
     flex: none;
+  }
+
+  .hot-page-refresh:focus,
+  .hot-page-refresh:focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 
   .hot-page-panel .update-time {
     margin: 0;
-    color: rgba(239, 242, 255, 0.76);
+    color: rgba(239, 242, 255, 0.92);
     font-size: 0.78rem;
   }
 
@@ -827,6 +853,17 @@
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.08);
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+
+  .header-top.is-page-active .hot-page-shell .hot-page-panels {
+    overflow: hidden;
+  }
+
+  .header-top.is-page-active .hot-page-shell .hot-page-panel-body {
+    overflow: hidden;
   }
 
   .hot-page-panel ol::-webkit-scrollbar {
@@ -846,12 +883,24 @@
     cursor: pointer;
   }
 
+  .hot-page-panel ol li a {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+  }
+
   .hot-page-panel ol li:last-child {
     border-bottom: 0;
   }
 
   .hot-page-panel ol li:hover {
-    opacity: 0.88;
+    opacity: 1;
+    color: rgba(143, 184, 255, 0.96);
+  }
+
+  .hot-page-panel ol li:active {
+    color: rgba(143, 184, 255, 0.96);
   }
 
   .header-top-side::before {
@@ -2754,12 +2803,34 @@
     color: inherit;
   }
 
+  body.io-black-mode .hot-page-panel,
+  body.io-black-mode .hot-page-panel .update-time,
+  body.io-black-mode .hot-page-panel .hot-page-badge,
+  body.io-black-mode .hot-page-panel ol,
+  body.io-black-mode .hot-page-panel li,
+  body.io-black-mode .hot-page-panel h2 {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
   body:not(.io-black-mode) .hot-page-intro {
     background: rgba(255, 255, 255, 0.98);
   }
 
   body:not(.io-black-mode) .hot-page-tab {
     background: rgba(255, 255, 255, 0.98);
+  }
+
+  body:not(.io-black-mode) .hot-page-tab:hover {
+    background: rgba(226, 235, 255, 0.96);
+    color: #2447b8;
+    box-shadow:
+      0 12px 22px rgba(71, 90, 148, 0.16),
+      0 0 0 1px rgba(43, 88, 214, 0.12);
+  }
+
+  body:not(.io-black-mode) .hot-page-badge {
+    background: rgba(43, 88, 214, 0.1);
+    color: rgba(19, 32, 63, 0.72);
   }
 
   body:not(.io-black-mode) .hot-page-panel {
@@ -2771,6 +2842,14 @@
 
   body:not(.io-black-mode) .hot-page-panel ol {
     background: rgba(43, 88, 214, 0.06);
+  }
+
+  body:not(.io-black-mode) .hot-page-panel ol li a:hover {
+    color: #ff8a00;
+  }
+
+  body:not(.io-black-mode) .hot-page-panel ol li a:active {
+    color: #ff8a00;
   }
 
   body.io-grey-mode .flex-item,
@@ -2816,6 +2895,18 @@
       linear-gradient(180deg, rgba(44, 46, 47, 0.82), rgba(27, 29, 31, 0.92)),
       var(--ndh-bg);
     box-shadow: none;
+  }
+
+  body.io-black-mode .hot-page-panel ol li a {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  body.io-black-mode .hot-page-panel ol li a:hover {
+    color: #ff8a00;
+  }
+
+  body.io-black-mode .hot-page-panel ol li a:active {
+    color: #ff8a00;
   }
 
   @media (min-width: 768px) {
@@ -3013,6 +3104,11 @@
 
   body.io-black-mode .hot-page-tab.active {
     border-color: rgba(143, 184, 255, 0.22);
+    background: rgba(143, 184, 255, 0.14);
+    color: var(--ndh-text-strong);
+  }
+
+  body.io-black-mode .hot-page-tab:hover {
     background: rgba(143, 184, 255, 0.14);
     color: var(--ndh-text-strong);
   }
