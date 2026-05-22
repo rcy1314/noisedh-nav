@@ -15,6 +15,16 @@ relativeURLs = true
   disableJS = false    # 启用 JS 压缩
   minifyOutput = true  # 压缩输出
 
+[outputFormats]
+  [outputFormats.bookmarks]
+    mediaType = "text/html"
+    baseName = "bookmarks"
+    isPlainText = true
+    notAlternative = true
+
+[outputs]
+  home = ["HTML", "RSS", "bookmarks"]
+
 # 网站参数配置
 [params]
   author        = "Noise导航"
@@ -129,7 +139,7 @@ gameUrl = "https://www.noisework.cn/e/fcgame/index.html"
 
 rssApiUrl = "https://rssserversub.fly.dev/rss"
 
-exportBookmarksUrl = "https://你的后端地址/api/export-bookmarks"
+exportBookmarksUrl = "./bookmarks.html"
 
 
 # 头部收录通知路由recentSitesApi、网址统计路由statisticsApi、后端服务地址serverUrl

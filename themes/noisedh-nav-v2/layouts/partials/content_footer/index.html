@@ -34,7 +34,7 @@
             </a>
             {{ with $.Site.Params.footer.toggleMenu }}
                 {{ range . }}
-                    <a href="{{ if and (isset . "url") (ne .url "") }}{{ .url }}{{ else if and (isset . "key") (eq .key "exportBookmarks") }}{{ $.Site.Params.header.exportBookmarksUrl }}{{ else }}javascript:void(0);{{ end }}" class="btn rounded-circle kefu m-1" {{ if .target }}target="{{ .target }}"{{ end }} data-toggle="tooltip" data-placement="left" title="{{ .title }}">
+                    <a href="{{ if and (isset . "url") (ne .url "") }}{{ .url }}{{ else if and (isset . "key") (eq .key "exportBookmarks") }}{{ $.Site.Params.header.exportBookmarksUrl }}{{ else }}javascript:void(0);{{ end }}" class="btn rounded-circle kefu m-1" {{ if and (isset . "key") (eq .key "exportBookmarks") }}data-action="download-bookmarks" download="bookmarks.html"{{ end }}{{ if .target }}target="{{ .target }}"{{ end }} data-toggle="tooltip" data-placement="left" title="{{ .title }}">
                         <i class="{{ .icon }}"></i>
                     </a>
                 {{ end }}
@@ -1605,6 +1605,44 @@
                 toggleSection.classList.toggle('show');
                 toggleButton.classList.toggle('active');
             });
+
+            // 书签下载按钮处理
+            const bookmarkDownloadLinks = document.querySelectorAll('a[data-action="download-bookmarks"], a[download="bookmarks.html"]');
+            (bookmarkDownloadLinks || []).forEach(function(linkEl) {
+                if (!linkEl) return;
+                linkEl.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const hrefRaw = linkEl.getAttribute('href') || '';
+                    if (!hrefRaw || hrefRaw === '#' || hrefRaw.startsWith('javascript:')) return;
+                    let href = hrefRaw;
+                    try {
+                        href = new URL(hrefRaw, document.baseURI).toString();
+                    } catch (err) {}
+                    const filename = (linkEl.getAttribute('download') || 'bookmarks.html').trim() || 'bookmarks.html';
+                    try {
+                        const resp = await fetch(href, { cache: 'no-store' });
+                        if (!resp.ok) throw new Error('Bad response');
+                        const text = await resp.text();
+                        const blob = new Blob([text], { type: 'application/octet-stream' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+                    } catch (err) {
+                        const fallbackA = document.createElement('a');
+                        fallbackA.href = href;
+                        fallbackA.download = filename;
+                        document.body.appendChild(fallbackA);
+                        fallbackA.click();
+                        fallbackA.remove();
+                    }
+                });
+            });
         });
     </script>
 
@@ -1919,6 +1957,8 @@
         let isLoading = false;
         let currentAbortController = null;
         let isRestoringChat = false;
+        let runtimeDisableToolCalling = false;
+        let runtimeNotifiedToolCallingFallback = false;
 
         const PROVIDER_PRESETS = {
             openai: { apiUrl: 'https://api.openai.com/v1/chat/completions', model: '' },
@@ -2014,6 +2054,29 @@
             hasAI = recomputeHasAI();
             aiMode = hasAI ? 'ai' : 'local';
             updateWelcomeNotice();
+        }
+
+        function updateModeBadge() {
+            const badge = document.getElementById('aiModeBadge');
+            if (!badge) return;
+            const textNode = Array.from(badge.childNodes).find(n => n.nodeType === 3);
+            if (textNode) {
+                const label = AI_CONFIG.searchMode === 'mcp' ? 'MCP' : (AI_CONFIG.searchMode === 'local' ? 'LOCAL' : 'AUTO');
+                textNode.textContent = label;
+            }
+        }
+
+        const modeBadge = document.getElementById('aiModeBadge');
+        if (modeBadge) {
+            modeBadge.addEventListener('click', function() {
+                const modes = ['auto', 'local', 'mcp'];
+                const currentIndex = modes.indexOf(AI_CONFIG.searchMode);
+                const nextIndex = (currentIndex + 1) % modes.length;
+                AI_CONFIG.searchMode = modes[nextIndex];
+                updateModeBadge();
+                const label = AI_CONFIG.searchMode === 'mcp' ? 'MCP' : (AI_CONFIG.searchMode === 'local' ? 'LOCAL' : 'AUTO');
+                addMessage('ai', '✅ 已切换搜索模式为：' + label, true);
+            });
         }
 
         if (settingsBtn) settingsBtn.addEventListener('click', toggleSettingsPanel);
@@ -2197,12 +2260,96 @@
                     return;
                 }
 
+                async function ensureSearchIndexScript() {
+                    try {
+                        const existingAfter = coerceSearchIndexPayload(window.__HEADER_SEARCH_INDEX__);
+                        if (Array.isArray(existingAfter) && existingAfter.length) return existingAfter;
+                    } catch (e) {}
+
+                    const scriptUrl = (window.CONFIG && window.CONFIG.searchIndexScriptUrl) ? String(window.CONFIG.searchIndexScriptUrl) : 'search-index.js';
+                    const existingScript = document.getElementById('header-search-index-js');
+
+                    function readNow() {
+                        try {
+                            const nowIndex = coerceSearchIndexPayload(window.__HEADER_SEARCH_INDEX__);
+                            return (Array.isArray(nowIndex) && nowIndex.length) ? nowIndex : [];
+                        } catch (e) {
+                            return [];
+                        }
+                    }
+
+                    if (existingScript) {
+                        const existingIndex = readNow();
+                        if (existingIndex.length) return existingIndex;
+                        return await new Promise(function(resolve) {
+                            let done = false;
+                            const t = window.setTimeout(function() {
+                                if (done) return;
+                                done = true;
+                                resolve([]);
+                            }, 2500);
+                            function finish() {
+                                if (done) return;
+                                done = true;
+                                clearTimeout(t);
+                                resolve(readNow());
+                            }
+                            function onError() {
+                                if (done) return;
+                                done = true;
+                                clearTimeout(t);
+                                resolve([]);
+                            }
+                            existingScript.addEventListener('load', finish, { once: true });
+                            existingScript.addEventListener('error', onError, { once: true });
+                        });
+                    }
+
+                    return await new Promise(function(resolve) {
+                        let done = false;
+                        const t = window.setTimeout(function() {
+                            if (done) return;
+                            done = true;
+                            resolve([]);
+                        }, 2500);
+                        const script = document.createElement('script');
+                        script.id = 'header-search-index-js';
+                        script.src = scriptUrl;
+                        script.async = false;
+                        script.onload = function() {
+                            if (done) return;
+                            done = true;
+                            clearTimeout(t);
+                            resolve(readNow());
+                        };
+                        script.onerror = function() {
+                            if (done) return;
+                            done = true;
+                            clearTimeout(t);
+                            resolve([]);
+                        };
+                        document.head.appendChild(script);
+                    });
+                }
+
+                const scriptIndex = await ensureSearchIndexScript();
+                if (Array.isArray(scriptIndex) && scriptIndex.length) {
+                    searchIndex = scriptIndex;
+                    searchIndexLoaded = true;
+                    if (window.__AI_SEARCH_INDEX__) {
+                        window.__AI_SEARCH_INDEX__.searchIndex = searchIndex;
+                        window.__AI_SEARCH_INDEX__.loaded = true;
+                    }
+                    console.log('[AI Search] 复用脚本搜索索引，共 ' + searchIndex.length + ' 条记录');
+                    return;
+                }
+
                 const origin = window.location.origin;
                 const pathname = window.location.pathname;
                 
                 // Build list of paths to try
                 const paths = [
-                    AI_CONFIG.localSearchIndex,
+                    (window.CONFIG && window.CONFIG.searchIndexUrl) ? String(window.CONFIG.searchIndexUrl) : AI_CONFIG.localSearchIndex,
                     origin + '/docs/search-index.json',
                     origin + '/search-index.json',
                     origin + '/docs/index.searchindex.json',
@@ -2219,7 +2366,15 @@
                 let resp = null;
                 for (const p of paths) {
                     try {
-                        resp = await fetch(p);
+                        const controller = new AbortController();
+                        const timeoutId = window.setTimeout(function() {
+                            try { controller.abort(); } catch (e) {}
+                        }, 2500);
+                        try {
+                            resp = await fetch(p, { cache: 'no-store', signal: controller.signal });
+                        } finally {
+                            clearTimeout(timeoutId);
+                        }
                         if (resp.ok) {
                             console.log('[AI Search] 索引加载成功:', p);
                             break;
@@ -2319,11 +2474,170 @@
             }
         }
 
+        function renderMarkdownLite(rawText) {
+            const input = String(rawText == null ? '' : rawText).replace(/\r\n/g, '\n');
+            const lines = input.split('\n');
+            let i = 0;
+            let inCode = false;
+            let codeLines = [];
+            const out = [];
+
+            function linkifyTextChunk(chunk) {
+                const raw = String(chunk == null ? '' : chunk);
+                const re = /https?:\/\/[^\s)]+/g;
+                let last = 0;
+                let m = null;
+                let html = '';
+                while ((m = re.exec(raw)) !== null) {
+                    const start = m.index;
+                    const end = m.index + m[0].length;
+                    html += escapeHtmlFast(raw.slice(last, start));
+                    let url = m[0];
+                    while (url && /[.,;:!?）)\]]$/.test(url)) url = url.slice(0, -1);
+                    const safeHref = safeUrl(url, { allowHash: false, allowMailto: true });
+                    if (safeHref) html += '<a href="' + escapeHtmlFast(safeHref) + '" target="_blank" rel="noopener noreferrer">' + escapeHtmlFast(url) + '</a>';
+                    else html += escapeHtmlFast(m[0]);
+                    last = end;
+                }
+                html += escapeHtmlFast(raw.slice(last));
+                return html;
+            }
+
+            function inlineParse(raw) {
+                const text = String(raw == null ? '' : raw);
+                const re = /`https?:\/\/[^\s`]+`|\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*|https?:\/\/[^\s)]+/g;
+                let last = 0;
+                let m = null;
+                let html = '';
+                while ((m = re.exec(text)) !== null) {
+                    html += linkifyTextChunk(text.slice(last, m.index));
+                    const token = m[0];
+                    if (token.startsWith('`http')) {
+                        const url = token.slice(1, -1);
+                        const safeHref = safeUrl(url, { allowHash: false, allowMailto: true });
+                        if (safeHref) html += '<a href="' + escapeHtmlFast(safeHref) + '" target="_blank" rel="noopener noreferrer">' + escapeHtmlFast(url) + '</a>';
+                        else html += '<code>' + escapeHtmlFast(url) + '</code>';
+                    } else if (token.startsWith('http')) {
+                        let url = token;
+                        while (url && /[.,;:!?）)\]]$/.test(url)) url = url.slice(0, -1);
+                        const safeHref = safeUrl(url, { allowHash: false, allowMailto: true });
+                        if (safeHref) html += '<a href="' + escapeHtmlFast(safeHref) + '" target="_blank" rel="noopener noreferrer">' + escapeHtmlFast(url) + '</a>';
+                        else html += escapeHtmlFast(token);
+                    } else if (token.startsWith('[')) {
+                        const label = m[1] || '';
+                        const hrefRaw = m[2] || '';
+                        const safeHref = safeUrl(hrefRaw, { allowHash: true, allowMailto: true });
+                        if (safeHref) html += '<a href="' + escapeHtmlFast(safeHref) + '" target="_blank" rel="noopener noreferrer">' + escapeHtmlFast(label) + '</a>';
+                        else html += escapeHtmlFast(label);
+                    } else if (token.startsWith('`')) {
+                        const code = m[3] || token.slice(1, -1);
+                        html += '<code>' + escapeHtmlFast(code) + '</code>';
+                    } else if (token.startsWith('**')) {
+                        const strong = m[4] || token.slice(2, -2);
+                        html += '<strong>' + escapeHtmlFast(strong) + '</strong>';
+                    } else {
+                        html += escapeHtmlFast(token);
+                    }
+                    last = m.index + token.length;
+                }
+                html += linkifyTextChunk(text.slice(last));
+                return html;
+            }
+
+            function flushCodeBlock() {
+                const content = codeLines.join('\n');
+                out.push('<pre><code>' + escapeHtmlFast(content) + '</code></pre>');
+                codeLines = [];
+            }
+
+            while (i < lines.length) {
+                const line = lines[i];
+
+                if (inCode) {
+                    if (/^```/.test(line)) {
+                        inCode = false;
+                        flushCodeBlock();
+                        i++;
+                        continue;
+                    }
+                    codeLines.push(line);
+                    i++;
+                    continue;
+                }
+
+                if (/^```/.test(line)) {
+                    inCode = true;
+                    codeLines = [];
+                    i++;
+                    continue;
+                }
+
+                if (!line.trim()) {
+                    i++;
+                    continue;
+                }
+
+                const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+                if (headingMatch) {
+                    const level = headingMatch[1].length;
+                    out.push('<h' + level + '>' + inlineParse(headingMatch[2]) + '</h' + level + '>');
+                    i++;
+                    continue;
+                }
+
+                const ulMatch = line.match(/^\s*[-*+]\s+(.+)$/);
+                const olMatch = line.match(/^\s*\d+\.\s+(.+)$/);
+                if (ulMatch) {
+                    const items = [];
+                    while (i < lines.length) {
+                        const m2 = lines[i].match(/^\s*[-*+]\s+(.+)$/);
+                        if (!m2) break;
+                        items.push('<li>' + inlineParse(m2[1]) + '</li>');
+                        i++;
+                    }
+                    out.push('<ul>' + items.join('') + '</ul>');
+                    continue;
+                }
+                if (olMatch) {
+                    const items = [];
+                    while (i < lines.length) {
+                        const m2 = lines[i].match(/^\s*\d+\.\s+(.+)$/);
+                        if (!m2) break;
+                        items.push('<li>' + inlineParse(m2[1]) + '</li>');
+                        i++;
+                    }
+                    out.push('<ol>' + items.join('') + '</ol>');
+                    continue;
+                }
+
+                const paraLines = [];
+                while (i < lines.length) {
+                    const cur = lines[i];
+                    if (!cur.trim()) break;
+                    if (/^```/.test(cur)) break;
+                    if (/^(#{1,6})\s+/.test(cur)) break;
+                    if (/^\s*[-*+]\s+/.test(cur)) break;
+                    if (/^\s*\d+\.\s+/.test(cur)) break;
+                    paraLines.push(cur);
+                    i++;
+                }
+                const paraHtml = paraLines.map(inlineParse).join('<br>');
+                out.push('<p>' + paraHtml + '</p>');
+            }
+
+            if (inCode) {
+                inCode = false;
+                flushCodeBlock();
+            }
+
+            return out.join('\n');
+        }
+
         function renderMarkdown(text) {
             if (typeof marked !== 'undefined') {
                 try { return marked.parse(text); } catch(e) { return escapeHtml(text); }
             }
-            return escapeHtml(text).replace(/\n/g, '<br>');
+            return renderMarkdownLite(text);
         }
 
         function escapeHtmlFast(str) {
@@ -2654,6 +2968,7 @@
 
         // ===== Clear Chat =====
         clearBtn.addEventListener('click', function() {
+            stopCurrentRequest();
             chatHistory = [];
             uiChatHistory = [];
             clearStoredChatHistory();
@@ -2701,6 +3016,7 @@
                 if (currentAbortController) currentAbortController.abort();
             } catch (e) {}
             hideThinking();
+            setSendButtonState('idle');
         }
 
         sendBtn.addEventListener('click', function() {
@@ -3022,10 +3338,16 @@
 
         function hideThinking() {
             thinkingEl.style.display = 'none';
+            if (thinkingRenderTimer) {
+                clearTimeout(thinkingRenderTimer);
+                thinkingRenderTimer = 0;
+            }
         }
 
         let thinkingRenderTimer = 0;
         let pendingThinkingText = '';
+        let lastThinkingRenderedLength = 0;
+        let thinkingProcessTextNode = null;
         function updateThinkingProcess(text) {
             if (thinkingProcessEl.style.display !== 'none') {
                 pendingThinkingText = String(text == null ? '' : text);
@@ -3033,7 +3355,20 @@
                 thinkingRenderTimer = window.setTimeout(function() {
                     thinkingRenderTimer = 0;
                     if (thinkingProcessEl.style.display === 'none') return;
-                    thinkingProcessEl.textContent = pendingThinkingText;
+                    if (!thinkingProcessTextNode || thinkingProcessTextNode.parentNode !== thinkingProcessEl) {
+                        thinkingProcessEl.textContent = '';
+                        thinkingProcessTextNode = document.createTextNode('');
+                        thinkingProcessEl.appendChild(thinkingProcessTextNode);
+                        lastThinkingRenderedLength = 0;
+                    }
+                    const nextText = pendingThinkingText;
+                    if (nextText.length < lastThinkingRenderedLength) {
+                        thinkingProcessTextNode.data = nextText;
+                        lastThinkingRenderedLength = nextText.length;
+                    } else if (nextText.length > lastThinkingRenderedLength) {
+                        thinkingProcessTextNode.appendData(nextText.slice(lastThinkingRenderedLength));
+                        lastThinkingRenderedLength = nextText.length;
+                    }
                     thinkingProcessEl.scrollTop = thinkingProcessEl.scrollHeight;
                 }, 120);
             }
@@ -3099,13 +3434,26 @@
         async function aiChat(userMessage, abortSignal) {
             chatHistory.push({ role: 'user', content: userMessage });
 
-            const messages = [
-                { role: 'system', content: AI_CONFIG.systemPrompt },
-                ...chatHistory.slice(-20)  // Keep last 20 messages for context
-            ];
+            const headers = { 'Content-Type': 'application/json' };
+            if (AI_CONFIG.apiKey) headers['Authorization'] = 'Bearer ' + AI_CONFIG.apiKey;
+
+            if (!abortSignal) {
+                currentAbortController = new AbortController();
+                abortSignal = currentAbortController.signal;
+            }
+
+            function isAutoToolChoiceUnsupportedError(errText) {
+                const t = String(errText || '').toLowerCase();
+                return t.includes('enable-auto-tool-choice') ||
+                    t.includes('tool-call-parser') ||
+                    t.includes('auto tool choice requires') ||
+                    t.includes('"auto" tool choice requires') ||
+                    t.includes('tool choice requires');
+            }
 
             // Build tools if MCP is enabled
-            const tools = AI_CONFIG.enableMcp ? [{
+            const allowToolCalling = AI_CONFIG.enableMcp && !runtimeDisableToolCalling;
+            const tools = allowToolCalling ? [{
                 type: 'function',
                 function: {
                     name: 'search_sites',
@@ -3122,163 +3470,286 @@
                 }
             }] : [];
 
-            const requestBody = {
-                model: AI_CONFIG.model,
-                messages: messages,
-                max_tokens: AI_CONFIG.maxTokens,
-                temperature: AI_CONFIG.temperature,
-                stream: true
-            };
+            async function processSingleApiCall(messages, useTools) {
+                const requestBody = {
+                    model: AI_CONFIG.model,
+                    messages: messages,
+                    max_tokens: AI_CONFIG.maxTokens,
+                    temperature: AI_CONFIG.temperature,
+                    stream: true
+                };
 
-            if (tools.length > 0) {
-                requestBody.tools = tools;
-                requestBody.tool_choice = 'auto';
-            }
-
-            const headers = { 'Content-Type': 'application/json' };
-            if (AI_CONFIG.apiKey) headers['Authorization'] = 'Bearer ' + AI_CONFIG.apiKey;
-
-            if (!abortSignal) {
-                currentAbortController = new AbortController();
-                abortSignal = currentAbortController.signal;
-            }
-            const resp = await fetch(AI_CONFIG.apiUrl, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(requestBody),
-                signal: abortSignal
-            });
-
-            if (!resp.ok) {
-                const errText = await resp.text();
-                if ((resp.status === 401 || resp.status === 403) && !AI_CONFIG.apiKey) {
-                    throw new Error('鉴权失败 (' + resp.status + ')：该服务商可能需要 API Key。请在设置中补充 Key 后重试。');
+                if (useTools && tools.length > 0) {
+                    requestBody.tools = tools;
                 }
-                throw new Error('API 请求失败 (' + resp.status + '): ' + errText.substring(0, 200));
+
+                const resp = await fetch(AI_CONFIG.apiUrl, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(requestBody),
+                    signal: abortSignal
+                });
+
+                if (!resp.ok) {
+                    const errText = await resp.text();
+                    if (useTools && resp.status === 400 && isAutoToolChoiceUnsupportedError(errText)) {
+                        const e = new Error('当前服务不支持 Tool Calling');
+                        e.code = 'NDH_TOOL_CALLING_UNSUPPORTED';
+                        e.status = resp.status;
+                        e.detail = errText.substring(0, 400);
+                        throw e;
+                    }
+                    if ((resp.status === 401 || resp.status === 403) && !AI_CONFIG.apiKey) {
+                        throw new Error('鉴权失败 (' + resp.status + ')：该服务商可能需要 API Key。请在设置中补充 Key 后重试。');
+                    }
+                    throw new Error('API 请求失败 (' + resp.status + '): ' + errText.substring(0, 200));
+                }
+
+                const reader = resp.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let fullContent = '';
+                let thinkingContent = '';
+                let localToolCalls = {};
+                let msgBody = null;
+                let msgWrapper = null;
+                let isThinking = false;
+                let streamRenderTimer = 0;
+                let lastRenderedContentLength = 0;
+                let streamTextNode = null;
+                let assistantMsgId = '';
+
+                function flushStreamRender(forceMarkdown) {
+                    if (!msgBody) return;
+                    if (forceMarkdown) {
+                        msgBody.classList.remove('ai-msg-body-streaming');
+                        msgBody.innerHTML = renderMarkdown(fullContent);
+                        sanitizeRenderedContent(msgBody);
+                        scrollToBottom(true);
+                        lastRenderedContentLength = fullContent.length;
+                        streamTextNode = null;
+                        return;
+                    }
+                    if (fullContent.length === lastRenderedContentLength) return;
+                    msgBody.classList.add('ai-msg-body-streaming');
+                    if (!streamTextNode || streamTextNode.parentNode !== msgBody) {
+                        msgBody.textContent = '';
+                        streamTextNode = document.createTextNode('');
+                        msgBody.appendChild(streamTextNode);
+                        lastRenderedContentLength = 0;
+                    }
+                    if (fullContent.length < lastRenderedContentLength) {
+                        streamTextNode.data = fullContent;
+                        lastRenderedContentLength = fullContent.length;
+                    } else if (fullContent.length > lastRenderedContentLength) {
+                        streamTextNode.appendData(fullContent.slice(lastRenderedContentLength));
+                        lastRenderedContentLength = fullContent.length;
+                    }
+                    scrollToBottom(false);
+                }
+
+                showThinking(AI_CONFIG.enableThinking);
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (!trimmed || !trimmed.startsWith('data: ')) continue;
+                        const data = trimmed.slice(6);
+                        if (data === '[DONE]') continue;
+
+                        try {
+                            const json = JSON.parse(data);
+                            const delta = json.choices && json.choices[0] && json.choices[0].delta;
+                            if (!delta) continue;
+
+                            if (useTools) {
+                                if (delta.reasoning_content || delta.reasoning) {
+                                    const thinkText = delta.reasoning_content || delta.reasoning || '';
+                                    thinkingContent += thinkText;
+                                    if (AI_CONFIG.enableThinking) {
+                                        updateThinkingProcess(thinkingContent);
+                                    }
+                                }
+                                if (delta.tool_calls) {
+                                    for (const tc of delta.tool_calls) {
+                                        const idx = tc.index;
+                                        if (!localToolCalls[idx]) {
+                                            localToolCalls[idx] = { id: '', name: '', arguments: '' };
+                                        }
+                                        if (tc.id) localToolCalls[idx].id = tc.id;
+                                        if (tc.function) {
+                                            if (tc.function.name) localToolCalls[idx].name += tc.function.name;
+                                            if (tc.function.arguments) localToolCalls[idx].arguments += tc.function.arguments;
+                                        }
+                                    }
+                                }
+                                if (delta.content) {
+                                    fullContent += delta.content;
+                                    if (!msgBody) {
+                                        hideThinking();
+                                        msgBody = addMessage('ai', '', true);
+                                        msgBody.classList.add('ai-msg-body-streaming');
+                                        msgWrapper = msgBody.closest('.ai-msg');
+                                        assistantMsgId = (msgWrapper && msgWrapper.dataset) ? (msgWrapper.dataset.msgId || '') : '';
+                                    }
+                                    if (!streamRenderTimer) {
+                                        streamRenderTimer = window.setTimeout(function() {
+                                            streamRenderTimer = 0;
+                                            flushStreamRender(false);
+                                        }, 80);
+                                    }
+                                }
+                            } else {
+                                if (delta.reasoning_content || delta.reasoning) {
+                                    const thinkText = delta.reasoning_content || delta.reasoning || '';
+                                    thinkingContent += thinkText;
+                                    if (AI_CONFIG.enableThinking) {
+                                        updateThinkingProcess(thinkingContent);
+                                    }
+                                }
+                                if (delta.content) {
+                                    isThinking = false;
+                                    fullContent += delta.content;
+                                    if (!msgBody) {
+                                        hideThinking();
+                                        msgBody = addMessage('ai', '', true);
+                                        msgBody.classList.add('ai-msg-body-streaming');
+                                        msgWrapper = msgBody.closest('.ai-msg');
+                                        assistantMsgId = (msgWrapper && msgWrapper.dataset) ? (msgWrapper.dataset.msgId || '') : '';
+                                    }
+                                    if (streamRenderTimer) continue;
+                                    streamRenderTimer = window.setTimeout(function() {
+                                        streamRenderTimer = 0;
+                                        flushStreamRender(false);
+                                    }, 80);
+                                }
+                            }
+                        } catch(e) {
+                        }
+                    }
+                }
+
+                if (streamRenderTimer) {
+                    clearTimeout(streamRenderTimer);
+                    streamRenderTimer = 0;
+                }
+                if (!msgBody && fullContent) {
+                    hideThinking();
+                    msgBody = addMessage('ai', '', true);
+                    msgWrapper = msgBody.closest('.ai-msg');
+                    assistantMsgId = (msgWrapper && msgWrapper.dataset) ? (msgWrapper.dataset.msgId || '') : '';
+                }
+                if (msgBody && fullContent) {
+                    flushStreamRender(true);
+                    if (assistantMsgId) {
+                        upsertUiChatMessage({ id: assistantMsgId, role: 'ai', content: fullContent, isMarkdown: true });
+                        const copyBtn = msgWrapper ? msgWrapper.querySelector('.ai-msg-copy') : null;
+                        if (copyBtn) copyBtn.dataset.copy = fullContent;
+                    }
+                }
+
+                if (fullContent) {
+                    chatHistory.push({ role: 'assistant', content: fullContent });
+                }
+
+                return { toolCalls: localToolCalls, fullContent };
             }
 
-            // Stream processing
-            const reader = resp.body.getReader();
-            const decoder = new TextDecoder();
-            let buffer = '';
-            let fullContent = '';
-            let thinkingContent = '';
-            let toolCalls = {};
-            let msgBody = null;
-            let msgWrapper = null;
-            let isThinking = false;
-            let streamRenderTimer = 0;
-            let lastRenderedContent = '';
-            let assistantMsgId = '';
+            let firstMessages = [
+                { role: 'system', content: AI_CONFIG.systemPrompt },
+                ...chatHistory.slice(-20)
+            ];
 
-            function flushStreamRender(forceMarkdown) {
-                if (!msgBody) return;
-                if (forceMarkdown) {
-                    msgBody.classList.remove('ai-msg-body-streaming');
-                    msgBody.innerHTML = renderMarkdown(fullContent);
-                    sanitizeRenderedContent(msgBody);
-                    scrollToBottom(true);
-                    lastRenderedContent = fullContent;
-                    return;
+            if (AI_CONFIG.enableLocalSearch || AI_CONFIG.enableMcp) {
+                try {
+                    if (abortSignal && abortSignal.aborted) throw new DOMException('Aborted', 'AbortError');
+                    const pre = await unifiedSearch(userMessage);
+                    const preResults = (pre && pre.results) ? pre.results : [];
+                    const preSource = (pre && pre.source) ? pre.source : 'none';
+                    if (preResults && preResults.length > 0) {
+                        addSearchResults(preResults, userMessage, preSource);
+                        const maxResultsForAi = Math.min(preResults.length, 100);
+                        const compressedResults = preResults.slice(0, maxResultsForAi).map(item => ({
+                            title: item.title,
+                            description: item.description,
+                            url: item.url,
+                            taxonomy: item.taxonomy
+                        }));
+                        const messagesWithSearch = [
+                            { role: 'system', content: AI_CONFIG.systemPrompt },
+                            ...chatHistory.slice(-20),
+                            { role: 'system', content: '站内搜索结果（JSON，最多100条）：' + JSON.stringify(compressedResults) }
+                        ];
+                        await processSingleApiCall(messagesWithSearch, false);
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            async function fallbackSearchThenAnswer() {
+                let searchResults = [];
+                let source = 'none';
+                try {
+                    const r = await unifiedSearch(userMessage);
+                    searchResults = r.results || [];
+                    source = r.source || 'none';
+                } catch (e) {}
+
+                if (searchResults.length > 0) {
+                    addSearchResults(searchResults, userMessage, source);
                 }
-                if (fullContent === lastRenderedContent) return;
-                msgBody.classList.add('ai-msg-body-streaming');
-                msgBody.textContent = fullContent;
-                scrollToBottom(false);
-                lastRenderedContent = fullContent;
+
+                const maxResultsForAi = Math.min(searchResults.length, 100);
+                const compressedResults = searchResults.slice(0, maxResultsForAi).map(item => ({
+                    title: item.title,
+                    description: item.description,
+                    url: item.url,
+                    taxonomy: item.taxonomy
+                }));
+
+                const finalMessages = [
+                    { role: 'system', content: AI_CONFIG.systemPrompt },
+                    ...chatHistory.slice(-20)
+                ];
+                if (compressedResults.length > 0) {
+                    finalMessages.push({ role: 'system', content: '站内搜索结果（JSON，最多100条）：' + JSON.stringify(compressedResults) });
+                }
+                await processSingleApiCall(finalMessages, false);
+            }
+
+            if (!tools.length) {
+                await fallbackSearchThenAnswer();
+                return;
             }
 
             showThinking(AI_CONFIG.enableThinking);
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                buffer = lines.pop() || '';
-
-                for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (!trimmed || !trimmed.startsWith('data: ')) continue;
-                    const data = trimmed.slice(6);
-                    if (data === '[DONE]') continue;
-
-                    try {
-                        const json = JSON.parse(data);
-                        const delta = json.choices && json.choices[0] && json.choices[0].delta;
-                        if (!delta) continue;
-
-                        // Handle reasoning/thinking content (DeepSeek style)
-                        if (delta.reasoning_content || delta.reasoning) {
-                            const thinkText = delta.reasoning_content || delta.reasoning || '';
-                            thinkingContent += thinkText;
-                            if (AI_CONFIG.enableThinking) {
-                                updateThinkingProcess(thinkingContent);
-                            }
-                        }
-
-                        // Handle tool calls
-                        if (delta.tool_calls) {
-                            for (const tc of delta.tool_calls) {
-                                const idx = tc.index;
-                                if (!toolCalls[idx]) {
-                                    toolCalls[idx] = { id: '', name: '', arguments: '' };
-                                }
-                                if (tc.id) toolCalls[idx].id = tc.id;
-                                if (tc.function) {
-                                    if (tc.function.name) toolCalls[idx].name += tc.function.name;
-                                    if (tc.function.arguments) toolCalls[idx].arguments += tc.function.arguments;
-                                }
-                            }
-                        }
-
-                        // Handle regular content
-                        if (delta.content) {
-                            isThinking = false;
-                            fullContent += delta.content;
-                            if (!msgBody) {
-                                hideThinking();
-                                msgBody = addMessage('ai', '', true);
-                                    msgBody.classList.add('ai-msg-body-streaming');
-                                msgWrapper = msgBody.closest('.ai-msg');
-                                assistantMsgId = (msgWrapper && msgWrapper.dataset) ? (msgWrapper.dataset.msgId || '') : '';
-                            }
-                            if (streamRenderTimer) continue;
-                            streamRenderTimer = window.setTimeout(function() {
-                                streamRenderTimer = 0;
-                                flushStreamRender(false);
-                            }, 80);
-                        }
-                    } catch(e) {
-                        // Skip unparseable chunks
+            let firstResult = null;
+            try {
+                firstResult = await processSingleApiCall(firstMessages, true);
+            } catch (err) {
+                if (err && err.code === 'NDH_TOOL_CALLING_UNSUPPORTED') {
+                    runtimeDisableToolCalling = true;
+                    if (!runtimeNotifiedToolCallingFallback) {
+                        runtimeNotifiedToolCallingFallback = true;
+                        addMessage('ai', '当前 AI 服务不支持工具调用，已自动降级为「先站内搜索出卡片，再让 AI 总结」。如需工具调用，请换支持 tools 的 OpenAI 兼容接口。', true, false);
                     }
+                    await fallbackSearchThenAnswer();
+                    return;
                 }
+                throw err;
             }
 
-            if (streamRenderTimer) {
-                clearTimeout(streamRenderTimer);
-                streamRenderTimer = 0;
-            }
-            if (msgBody && fullContent) {
-                flushStreamRender(true);
-                if (assistantMsgId) {
-                    upsertUiChatMessage({ id: assistantMsgId, role: 'ai', content: fullContent, isMarkdown: true });
-                    const copyBtn = msgWrapper ? msgWrapper.querySelector('.ai-msg-copy') : null;
-                    if (copyBtn) copyBtn.dataset.copy = fullContent;
-                }
-            }
+            const toolCallList = Object.values(firstResult.toolCalls).filter(tc => tc.name);
 
-            // Process tool calls if any
-            const toolCallList = Object.values(toolCalls).filter(tc => tc.name);
             if (toolCallList.length > 0) {
                 hideThinking();
-                if (msgWrapper) {
-                    msgWrapper.remove();
-                    msgBody = null;
-                    msgWrapper = null;
-                    fullContent = '';
-                }
                 for (const tc of toolCallList) {
                     if (tc.name === 'search_sites') {
                         try {
@@ -3288,11 +3759,17 @@
 
                             if (searchResults.length > 0) {
                                 addSearchResults(searchResults, query, source);
-                            } else {
-                                addMessage('ai', '未找到相关结果，请尝试其他关键词。', true);
                             }
 
-                            const toolResult = JSON.stringify(searchResults.slice(0, 10));
+                            const maxResultsForAi = Math.min(searchResults.length, 100);
+                            const compressedResults = searchResults.slice(0, maxResultsForAi).map(item => ({
+                                title: item.title,
+                                description: item.description,
+                                url: item.url,
+                                taxonomy: item.taxonomy
+                            }));
+                            const toolResult = JSON.stringify(compressedResults);
+
                             chatHistory.push({
                                 role: 'assistant',
                                 content: null,
@@ -3307,22 +3784,23 @@
                                 tool_call_id: tc.id,
                                 content: toolResult
                             });
+
+                            let secondMessages = [
+                                { role: 'system', content: AI_CONFIG.systemPrompt },
+                                ...chatHistory.slice(-20)
+                            ];
+
+                            await processSingleApiCall(secondMessages, false);
                         } catch(err) {
                             addError('搜索失败: ' + err.message);
                         }
                     }
                 }
-                return;
-            }
-
-            // Save assistant response to history
-            if (fullContent) {
-                chatHistory.push({ role: 'assistant', content: fullContent });
-            }
-
-            hideThinking();
-            if (!msgBody && !fullContent) {
-                addMessage('ai', '我暂时无法回答，请稍后再试。', true);
+            } else {
+                if (!firstResult.fullContent) {
+                    hideThinking();
+                    addMessage('ai', '我暂时无法回答，请稍后再试。', true);
+                }
             }
         }
 
@@ -3423,9 +3901,10 @@
                 </span>
                 <span class="ai-chat-title">{{ default "AI 问答" $.Site.Params.ai.panelHeaderTitle }}</span>
                 {{ if or (default true $.Site.Params.ai.enableMcp) (default true $.Site.Params.ai.enableLocalSearch) }}
-                <span class="ai-mcp-badge" title="已连接站内搜索">
+                <span class="ai-mcp-badge" id="aiModeBadge" title="点击切换搜索模式（AUTO/LOCAL/MCP）" style="cursor:pointer;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    {{ if default true $.Site.Params.ai.enableMcp }}MCP{{ else }}SEARCH{{ end }}
+                    {{ $searchMode := default "auto" $.Site.Params.ai.searchMode }}
+                    {{ if eq $searchMode "mcp" }}MCP{{ else if eq $searchMode "local" }}LOCAL{{ else }}AUTO{{ end }}
                 </span>
                 {{ end }}
             </div>

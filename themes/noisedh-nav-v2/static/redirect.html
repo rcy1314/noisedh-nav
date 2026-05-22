@@ -757,9 +757,25 @@
         // 获取跳转网址
         const getJumpUrl = () => {
             try {
-                // 解析 URL 参数
-                const urlParams = new URLSearchParams(window.location.search);
-                const encodedUrl = urlParams.get("url");
+                let encodedUrl = "";
+                const querySearch = window.location.search || "";
+
+                try {
+                    const urlParams = new URLSearchParams(querySearch);
+                    encodedUrl = urlParams.get("url") || "";
+                } catch (e) {}
+
+                if (!encodedUrl) {
+                    const rawMatch = querySearch.match(/(?:\?|&)url=([\s\S]*)/);
+                    const rawTail = (rawMatch && rawMatch[1]) ? rawMatch[1] : "";
+                    if (rawTail) encodedUrl = rawTail;
+                }
+
+                if (!encodedUrl) {
+                    const hash = window.location.hash || "";
+                    if (hash) encodedUrl = hash.replace(/^#\/?/, "");
+                }
+
                 if (!encodedUrl) {
                     throw new Error("No URL parameter provided");
                 }

@@ -1,0 +1,44 @@
+{{- /* Netscape Bookmark File Format */ -}}
+<!DOCTYPE NETSCAPE-Bookmark-file-1>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<TITLE>Noise导航-Bookmarks</TITLE>
+<H1>Noise导航-Bookmarks</H1>
+<DL><p>
+{{- $nowTs := div now.Unix 1 -}}
+{{- range .Site.Data -}}
+  {{- if reflect.IsSlice . -}}
+    {{- range . -}}
+      {{- if and (isset . "taxonomy") (or (isset . "links") (isset . "list")) -}}
+        {{- $taxonomyTitle := .taxonomy -}}
+        {{- $hasLinks := or (and (isset . "links") (gt (len .links) 0)) (and (isset . "list") (gt (len .list) 0)) -}}
+        {{- if and $taxonomyTitle $hasLinks -}}
+    <DT><H3 ADD_DATE="{{ $nowTs }}">{{ $taxonomyTitle | htmlEscape }}</H3>
+    <DL><p>
+          {{- with .links -}}
+          {{- range . -}}
+            {{- if .url -}}
+    <DT><A HREF="{{ .url | htmlEscape }}"{{ if .logo }} ICON_URI="{{ .logo | htmlEscape }}"{{ end }}>{{ .title | htmlEscape }}</A>{{ if .description }}
+    <DD>{{ .description | htmlEscape }}</DD>{{ end }}
+            {{- end -}}
+          {{- end -}}
+          {{- end -}}
+          {{- range .list -}}
+            {{- $termTitle := .term -}}
+            {{- $validLinks := where (default (slice) .links) "url" "!=" nil -}}
+            {{- if and $termTitle (gt (len $validLinks) 0) -}}
+        <DT><H3 ADD_DATE="{{ $nowTs }}">{{ $termTitle | htmlEscape }}</H3>
+        <DL><p>
+              {{- range $validLinks -}}
+        <DT><A HREF="{{ .url | htmlEscape }}"{{ if .logo }} ICON_URI="{{ .logo | htmlEscape }}"{{ end }}>{{ .title | htmlEscape }}</A>{{ if .description }}
+        <DD>{{ .description | htmlEscape }}</DD>{{ end }}
+              {{- end -}}
+        </DL><p>
+            {{- end -}}
+          {{- end -}}
+    </DL><p>
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+</DL><p>
