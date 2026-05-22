@@ -35,7 +35,7 @@
     <meta name="site-version" content="{{ now.Unix }}">
     <link rel="shortcut icon" href="{{ $.Site.Params.images.favicon }}">
     <meta name="keywords" content="{{ .Site.Title }}">
-    <meta name="baidu-site-verification" content="code-ERzo5lqNbW" />
+    <meta name="baidu-site-verification" content="{{ .Site.Params.seo.baiduSiteVer | default "code-ERzo5lqNbW" }}" />
     <meta name="sogou_site_verification" content="c5kms0qkyL"/>
     <meta name="360-site-verification" content="fcc13eac55051e381be8a06453359bc1" />
     {{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}

@@ -32,9 +32,6 @@ relativeURLs = true
   about         = "./about"  # 左侧导航栏的"关于导航"页面(./about)
   repository    = "https://noisedh.cn"
 
-[params.bookmarks]
-  title = "Noise导航-Bookmarks"
-  
   # 音乐 配置
   musicServer = "netease"
   musicId = "128460001"
@@ -57,12 +54,13 @@ relativeURLs = true
   nightMode     = false  # 默认站点为深色(夜间)模式
   cardListCollapseLimit = 24  # 超过该数量显示“查看更多网址”按钮
 
-
+# 书签配置
+[params.bookmarks]
+  title = "Noise导航-Bookmarks"
 
 # SEO 配置
 [params.seo]
   baiduhmid     = '009396af5ea4d210f55b120d1f1465d8'  # 百度统计 hm.src 的 ID
-  baiduSiteVer  = 'codeva-cCAOSG8MBO'  # 百度HTML标签验证(baidu-site-verification)
   tj51laid      = '3KPnWbkdUF6PmFfg'  # 51.LA 网站统计
   tj51lack      = '3KPnWbkdUF6PmFfg'
 
