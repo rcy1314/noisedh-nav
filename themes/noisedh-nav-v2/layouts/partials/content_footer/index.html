@@ -1639,9 +1639,22 @@
 
         const AI_SETTINGS_STORAGE_KEY = 'ndh-ai-provider-settings-v1';
         const AI_CHAT_HISTORY_STORAGE_KEY = 'ndh-ai-chat-history-v1';
+        const AI_VISITOR_ID_KEY = 'ndh-ai-visitor-id-v1';
         const AI_CHAT_LOCK_STORAGE_KEY = 'ndh-ai-chat-lock-v1';
         const AI_CHAT_NEXT_ALLOWED_KEY = 'ndh-ai-chat-next-allowed-v1';
         const AI_CROSS_TAB_COOLDOWN_MS = 300;
+
+        const visitorId = (function() {
+            try {
+                const existing = localStorage.getItem(AI_VISITOR_ID_KEY);
+                if (existing) return existing;
+                const created = 'v_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+                localStorage.setItem(AI_VISITOR_ID_KEY, created);
+                return created;
+            } catch (e) {
+                return 'v_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+            }
+        })();
 
         const clientId = (function() {
             try {
@@ -1682,9 +1695,24 @@
             try { localStorage.removeItem(AI_SETTINGS_STORAGE_KEY); } catch (e) {}
         }
 
+        function getChatHistoryStorageKey() {
+            return AI_CHAT_HISTORY_STORAGE_KEY + '::' + visitorId;
+        }
+
         function readStoredChatHistory() {
             try {
-                const raw = localStorage.getItem(AI_CHAT_HISTORY_STORAGE_KEY);
+                const key = getChatHistoryStorageKey();
+                let raw = localStorage.getItem(key);
+                if (!raw) {
+                    const legacyLocal = localStorage.getItem(AI_CHAT_HISTORY_STORAGE_KEY);
+                    const legacySession = sessionStorage.getItem(AI_CHAT_HISTORY_STORAGE_KEY);
+                    raw = legacyLocal || legacySession || '';
+                    if (raw) {
+                        try { localStorage.setItem(key, raw); } catch (e) {}
+                        try { localStorage.removeItem(AI_CHAT_HISTORY_STORAGE_KEY); } catch (e) {}
+                        try { sessionStorage.removeItem(AI_CHAT_HISTORY_STORAGE_KEY); } catch (e) {}
+                    }
+                }
                 const parsed = safeParseJson(raw);
                 if (!Array.isArray(parsed)) return [];
                 return parsed.filter(m => m && typeof m === 'object' && (m.role === 'user' || m.role === 'ai') && typeof m.content === 'string')
@@ -1702,12 +1730,15 @@
 
         function writeStoredChatHistory(list) {
             try {
-                localStorage.setItem(AI_CHAT_HISTORY_STORAGE_KEY, JSON.stringify(Array.isArray(list) ? list : []));
+                const key = getChatHistoryStorageKey();
+                localStorage.setItem(key, JSON.stringify(Array.isArray(list) ? list : []));
             } catch (e) {}
         }
 
         function clearStoredChatHistory() {
+            try { localStorage.removeItem(getChatHistoryStorageKey()); } catch (e) {}
             try { localStorage.removeItem(AI_CHAT_HISTORY_STORAGE_KEY); } catch (e) {}
+            try { sessionStorage.removeItem(AI_CHAT_HISTORY_STORAGE_KEY); } catch (e) {}
         }
 
         let uiChatHistory = readStoredChatHistory();
