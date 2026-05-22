@@ -11,19 +11,19 @@
     {{- range . -}}
       {{- if and (isset . "taxonomy") (or (isset . "links") (isset . "list")) -}}
         {{- $taxonomyTitle := .taxonomy -}}
-        {{- $hasLinks := or (and (isset . "links") (gt (len .links) 0)) (and (isset . "list") (gt (len .list) 0)) -}}
+        {{- $topLinks := default (slice) .links -}}
+        {{- $termList := default (slice) .list -}}
+        {{- $hasLinks := or (gt (len $topLinks) 0) (gt (len $termList) 0) -}}
         {{- if and $taxonomyTitle $hasLinks -}}
     <DT><H3 ADD_DATE="{{ $nowTs }}">{{ $taxonomyTitle | htmlEscape }}</H3>
     <DL><p>
-          {{- with .links -}}
-          {{- range . -}}
+          {{- range $topLinks -}}
             {{- if .url -}}
     <DT><A HREF="{{ .url | htmlEscape }}"{{ if .logo }} ICON_URI="{{ .logo | htmlEscape }}"{{ end }}>{{ .title | htmlEscape }}</A>{{ if .description }}
     <DD>{{ .description | htmlEscape }}</DD>{{ end }}
             {{- end -}}
           {{- end -}}
-          {{- end -}}
-          {{- range .list -}}
+          {{- range $termList -}}
             {{- $termTitle := .term -}}
             {{- $validLinks := where (default (slice) .links) "url" "!=" nil -}}
             {{- if and $termTitle (gt (len $validLinks) 0) -}}
