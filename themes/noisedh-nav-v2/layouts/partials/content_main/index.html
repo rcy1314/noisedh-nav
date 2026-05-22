@@ -540,8 +540,9 @@ body.io-black-mode .large-text {
             color: rgba(238, 243, 255, 0.92);
         }
     </style>
-    {{ $defaultLogo := $.Site.Params.defaultLogo }}
-    {{ $logosPath := $.Site.Params.logosPath }}
+    {{ $defaultLogoRaw := $.Site.Params.defaultLogo | default "assets/images/favicon5.png" }}
+    {{ $defaultLogo := cond (or (hasPrefix $defaultLogoRaw "http") (hasPrefix $defaultLogoRaw "data:")) $defaultLogoRaw (relURL $defaultLogoRaw) }}
+    {{ $logosPathRaw := $.Site.Params.logosPath | default "assets/images/logos" }}
     <link rel="preload" as="image" href="{{ $defaultLogo }}">
 
     {{ range $i, $cat := .Site.Data.webstack }}
@@ -559,7 +560,16 @@ body.io-black-mode .large-text {
                 {{ range $j, $sub := $cat.list }}
                     <div class="row card-list" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 (print $cat.taxonomy $sub.term) }}" data-initial-hidden="{{ if ne $j 0 }}1{{ else }}0{{ end }}">
                         {{ range $k, $link := $sub.links }}
-                        {{ $customLogo := cond (hasPrefix $link.logo "http") $link.logo (print $logosPath "/" $link.logo) }}
+                        {{ $customLogo := "" }}
+                        {{ if $link.logo }}
+                            {{ if or (hasPrefix $link.logo "http") (hasPrefix $link.logo "data:") }}
+                                {{ $customLogo = $link.logo }}
+                            {{ else if hasPrefix $link.logo "/" }}
+                                {{ $customLogo = relURL $link.logo }}
+                            {{ else }}
+                                {{ $customLogo = relURL (print $logosPathRaw "/" $link.logo) }}
+                            {{ end }}
+                        {{ end }}
                         {{ $domain := replaceRE "^https?://([^/]+).*" "$1" $link.url }}
                         <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
                             <div class="url-body default">
@@ -606,7 +616,16 @@ body.io-black-mode .large-text {
                 {{ range $j, $sub := $cat.list }}
                     <div class="row card-list">
                         {{ range $sub.links }}
-                        {{ $customLogo := cond (hasPrefix .logo "http") .logo (print $logosPath "/" .logo) }}
+                        {{ $customLogo := "" }}
+                        {{ if .logo }}
+                            {{ if or (hasPrefix .logo "http") (hasPrefix .logo "data:") }}
+                                {{ $customLogo = .logo }}
+                            {{ else if hasPrefix .logo "/" }}
+                                {{ $customLogo = relURL .logo }}
+                            {{ else }}
+                                {{ $customLogo = relURL (print $logosPathRaw "/" .logo) }}
+                            {{ end }}
+                        {{ end }}
                         {{ $domain := replaceRE "^https?://([^/]+).*" "$1" .url }}
                         <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
                             <div class="url-body default">
@@ -652,7 +671,16 @@ body.io-black-mode .large-text {
             {{ else }}
                 <div class="row card-list">
                     {{ range $cat.links }}
-                    {{ $customLogo := cond (hasPrefix .logo "http") .logo (print $logosPath "/" .logo) }}
+                    {{ $customLogo := "" }}
+                    {{ if .logo }}
+                        {{ if or (hasPrefix .logo "http") (hasPrefix .logo "data:") }}
+                            {{ $customLogo = .logo }}
+                        {{ else if hasPrefix .logo "/" }}
+                            {{ $customLogo = relURL .logo }}
+                        {{ else }}
+                            {{ $customLogo = relURL (print $logosPathRaw "/" .logo) }}
+                        {{ end }}
+                    {{ end }}
                     {{ $domain := replaceRE "^https?://([^/]+).*" "$1" .url }}
                     <div class="url-card col-6 col-sm-6 col-md-4 col-xl-5a col-xxl-6a">
                         <div class="url-body default">
