@@ -5,12 +5,15 @@
 {{- $leaveTip := replace $leaveTipTpl "{site}" $siteName -}}
 {{- $logo := .Site.Params.redirect.logo | default "assets/images/favicon5.png" -}}
 {{- $favicon := .Site.Params.redirect.favicon | default "assets/images/favicon4.png" -}}
+{{- $logoEsc := $logo | htmlEscape -}}
+{{- $faviconEsc := $favicon | htmlEscape -}}
 {{- $logoSrc := $logo -}}
 {{- $faviconSrc := $favicon -}}
 {{- $html := $raw -}}
-{{- $html = replace $html "assets/images/favicon4.png" $favicon -}}
+{{- $html = replace $html "assets/images/favicon4.png" $faviconEsc -}}
 {{- $html = replace $html "<title>安全中心 | NOISE导航</title>" (printf "<title>%s | %s</title>" $siteTip $siteName) -}}
-{{- $html = replace $html "assets/images/favicon5.png" $logo -}}
+{{- $html = replace $html "<link rel=\"preload\" as=\"image\" href=\"assets/images/favicon5.png\" data-preload=\"redirect-logo\" />" (printf "<link rel=\"preload\" as=\"image\" href=\"%s\" data-preload=\"redirect-logo\" />" $logoEsc) -}}
+{{- $html = replace $html "data-logo-src=\"assets/images/favicon5.png\"" (printf "data-logo-src=\"%s\"" $logoEsc) -}}
 {{- $html = replace $html "alt=\"NOISE导航 Logo\"" (printf "alt=\"%s Logo\"" $siteName) -}}
 {{- $html = replace $html "<span class=\"site-name\">NOISE导航</span>" (printf "<span class=\"site-name\">%s</span>" $siteName) -}}
 {{- $html = replace $html "<span class=\"site-tip\">安全中心</span>" (printf "<span class=\"site-tip\">%s</span>" $siteTip) -}}

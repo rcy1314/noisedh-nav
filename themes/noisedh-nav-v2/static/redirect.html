@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="assets/images/favicon4.png" type="image/png" />
+    <link rel="preload" as="image" href="assets/images/favicon5.png" data-preload="redirect-logo" />
     <title>安全中心 | NOISE导航</title>
     <style>
         * {
@@ -641,7 +642,7 @@
     <div class="shell">
         <header>
             <div class="logo">
-                <img src="assets/images/favicon5.png" alt="NOISE导航 Logo" />
+                <img src="assets/images/favicon5.png" data-logo-src="assets/images/favicon5.png" alt="NOISE导航 Logo" width="98" height="98" decoding="async" fetchpriority="high" loading="eager" />
             </div>
             <div class="title">
                 <span class="site-name">NOISE导航</span>
@@ -674,6 +675,28 @@
         <a class="icp" href="https://www.noisedh.cn" target="_blank">收录值得珍藏的网站</a>
     </footer>
     <script>
+        (() => {
+            const logoImg = document.querySelector("header .logo img");
+            if (!logoImg) return;
+            const desired = (logoImg.getAttribute("data-logo-src") || "").trim();
+            if (!desired) return;
+            const current = (logoImg.getAttribute("src") || "").trim();
+            if (desired === current) return;
+            const isSafeSrc = (value) => {
+                if (!value) return false;
+                if (value.startsWith("http://") || value.startsWith("https://")) return true;
+                if (value.startsWith("data:image/")) return true;
+                if (value.startsWith("/")) return true;
+                return !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(value);
+            };
+            if (!isSafeSrc(desired)) return;
+            const preload = new Image();
+            preload.onload = () => {
+                logoImg.src = desired;
+            };
+            preload.src = desired;
+        })();
+
         // 跳转网址
         let jumpLink;
         let interval;
@@ -706,6 +729,8 @@
             "*.11166.ydtngcs.com",
             "*.ipy44uh89.5p1rqwpvqx.cc",
             "*.xx1979.com",
+            "*.55732.xzyzsl.com",
+            "*.xzyzsl.com",
             "*.htmt124shht.vip",
         ];
 
