@@ -28,7 +28,7 @@
 
 ![截图2](https://cdn.jsdelivr.net/gh/rcy1314/phototc@main/uPic/screenshot1.png)
 
-![截图1](https:/cdn.jsdelivr.net/gh/rcy1314/phototc@main/uPic/screenshot4.png)
+![截图1](https://jsd.cdn.noisework.cn/gh/rcy1314/phototc@main/uPic/screenshot4.png)
 
 ![screenshot3](https://cdn.jsdelivr.net/gh/rcy1314/phototc@main/uPic/screenshot3.png)
 
