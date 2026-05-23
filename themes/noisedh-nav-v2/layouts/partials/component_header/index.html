@@ -3929,6 +3929,44 @@
       overflow: visible;
     }
 
+    .header-top.is-page-active .header-page-region #waline.page,
+    .header-top.is-page-active .header-page-region #waline.page.active {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #waline .hot-page-shell {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #waline .hot-page-panels {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #waline .hot-page-panel {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #waline .hot-page-panel-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #waline .hot-page-panel ol {
+      height: 100%;
+      max-height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .header-top.is-page-active .header-page-region .embed-container,
     .header-top.is-page-active .header-page-region .transparent-embed {
       height: clamp(420px, 72vh, 680px);
