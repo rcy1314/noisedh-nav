@@ -61,6 +61,7 @@ relativeURLs = true
 # SEO 配置
 [params.seo]
   baiduhmid     = '009396af5ea4d210f55b120d1f1465d8'  # 百度统计 hm.src 的 ID
+  enable51la    = false
   tj51laid      = '3KPnWbkdUF6PmFfg'  # 51.LA 网站统计
   tj51lack      = '3KPnWbkdUF6PmFfg'
 

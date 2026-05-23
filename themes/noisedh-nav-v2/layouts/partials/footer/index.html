@@ -1,3 +1,7 @@
+{{- $tj51Enable := .Site.Params.seo.enable51la | default false -}}
+{{- $tj51laid := .Site.Params.seo.tj51laid | default "" -}}
+{{- $tj51lack := .Site.Params.seo.tj51lack | default "" -}}
+{{- if and $tj51Enable (ne $tj51laid "") (ne $tj51lack "") -}}
 <script>
     window.addEventListener('load', function () {
         const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname);
@@ -10,13 +14,14 @@
         script.src = '//sdk.51.la/js-sdk-pro.min.js';
         script.onload = function () {
             if (window.LA && typeof window.LA.init === 'function') {
-                window.LA.init({id:"3KPnWbkdUF6PmFfg",ck:"3KPnWbkdUF6PmFfg"});
+                window.LA.init({id:"{{ $tj51laid }}",ck:"{{ $tj51lack }}"});
             }
         };
 
         document.head.appendChild(script);
     });
 </script>
+{{- end -}}
 {{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}
 <script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/jquery.ui.touch-punch.min-0.2.2.js?v={{ $assetVer }}' id='jqueryui-touch-js'></script>
 
