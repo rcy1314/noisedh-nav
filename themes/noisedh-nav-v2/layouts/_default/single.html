@@ -446,10 +446,11 @@
                                                     {{ end }}
                                                 {{ end }}
                                             {{ end }}
-                                            {{ $tags := .GetTerms "tags" }}
+                                            {{ $tags := .Params.tags | default (slice) }}
                                             {{ if gt (len $tags) 0 }}
-                                                {{ range $tags }}
-                                                    <a class="post-badge post-badge-tag" href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a>
+                                                {{ range first 6 $tags }}
+                                                    {{ $tag := . }}
+                                                    <a class="post-badge post-badge-tag" href="{{ (printf "/tags/%s/" (urlize $tag)) | relURL }}">#{{ $tag }}</a>
                                                 {{ end }}
                                             {{ end }}
                                         </div>

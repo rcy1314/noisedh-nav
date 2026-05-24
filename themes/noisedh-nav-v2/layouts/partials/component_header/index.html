@@ -346,10 +346,10 @@
                                                         {{ if and $sec (ne $sec "posts") }}
                                                             <span class="archive-badge">{{ $sec }}</span>
                                                         {{ end }}
-                                                        {{ $tags := .GetTerms "tags" }}
+                                                        {{ $tags := .Params.tags | default (slice) }}
                                                         {{ if gt (len $tags) 0 }}
                                                             {{ range first 3 $tags }}
-                                                                <span class="archive-badge archive-badge-tag">#{{ .LinkTitle }}</span>
+                                                                <span class="archive-badge archive-badge-tag">#{{ . }}</span>
                                                             {{ end }}
                                                             {{ if gt (len $tags) 3 }}
                                                                 <span class="archive-badge archive-badge-tag">+{{ sub (len $tags) 3 }}</span>
@@ -389,10 +389,10 @@
                                                     {{ if and $sec (ne $sec "posts") }}
                                                         <span class="archive-badge">{{ $sec }}</span>
                                                     {{ end }}
-                                                    {{ $tags := .GetTerms "tags" }}
+                                                    {{ $tags := .Params.tags | default (slice) }}
                                                     {{ if gt (len $tags) 0 }}
                                                         {{ range first 6 $tags }}
-                                                            <span class="archive-badge archive-badge-tag">#{{ .LinkTitle }}</span>
+                                                            <span class="archive-badge archive-badge-tag">#{{ . }}</span>
                                                         {{ end }}
                                                     {{ end }}
                                                 </div>
