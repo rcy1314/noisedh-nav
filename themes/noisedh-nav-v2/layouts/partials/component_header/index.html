@@ -13,7 +13,6 @@
         {{ $recentSitesTitle := .Site.Params.header.recentSitesTitle | default .Site.Params.recentSitesTitle | default "最近收录的站点" }}
         {{ $rssmergeUrl := .Site.Params.header.rssmergeUrl | default .Site.Params.rssmergeUrl }}
         {{ $talkUrl := .Site.Params.header.talkUrl | default .Site.Params.talkUrl }}
-        {{ $gameUrl := .Site.Params.header.gameUrl | default .Site.Params.gameUrl }}
         {{ $rssApiUrl := .Site.Params.header.rssApiUrl | default .Site.Params.rssApiUrl }}
         {{ $recentSitesApi := .Site.Params.header.recentSitesApi | default .Site.Params.recentSitesApi }}
         {{ $statisticsApi := .Site.Params.header.statisticsApi | default .Site.Params.statisticsApi }}
@@ -62,8 +61,6 @@
                                 <button class="nav-button{{ if eq .key "default" }} active{{ end }}" onclick="showPage('{{ .key }}')">
                                     {{ if eq .icon "waline" }}
                                         <svg xmlns="http://www.w3.org/2000/svg" width='24' height='24' fill='#ffffff' viewBox="0 0 16 16"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"></path></svg>
-                                    {{ else if eq .icon "game" }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill='#ffffff' width='24' height='24' viewBox="0 0 56 56"><path d="M 25.9257 28.5390 L 25.9257 16.1172 L 22.4335 16.1172 C 18.5663 16.1172 16.5272 13.6094 16.5272 11.1719 C 16.5272 8.6406 18.4023 7.1406 20.9101 7.1406 C 23.7929 7.1406 26.0429 9.3672 26.0429 13.0937 L 26.0429 16.1172 L 29.9570 16.1172 L 29.9570 13.0937 C 29.9570 9.3672 32.2070 7.1406 35.0897 7.1406 C 37.5976 7.1406 39.4960 8.6406 39.4960 11.1719 C 39.4960 13.6094 37.3866 16.1172 33.5663 16.1172 L 30.0741 16.1172 L 30.0741 28.5390 L 46.5976 28.5390 C 49.1524 28.5390 50.5352 27.5547 50.5352 25.0468 L 50.5352 19.6094 C 50.5352 17.1250 49.1524 16.1172 46.5976 16.1172 L 41.1366 16.1172 C 42.5897 14.8047 43.4570 13.0234 43.4570 11.0078 C 43.4570 6.4844 39.8710 3.2266 35.3241 3.2266 C 31.9492 3.2266 29.2070 5.1015 28.0116 8.4297 C 26.8163 5.1015 24.0507 3.2266 20.6757 3.2266 C 16.1523 3.2266 12.5429 6.4844 12.5429 11.0078 C 12.5429 13.0234 13.3866 14.8047 14.8632 16.1172 L 9.4023 16.1172 C 6.9882 16.1172 5.4648 17.1250 5.4648 19.6094 L 5.4648 25.0468 C 5.4648 27.5547 6.8710 28.5390 9.4023 28.5390 Z M 25.9257 52.7734 L 25.9257 31.0468 L 8.8163 31.0468 L 8.8163 46.8203 C 8.8163 50.7344 11.1132 52.7734 15.0272 52.7734 Z M 30.0741 31.0468 L 30.0741 52.7734 L 40.9726 52.7734 C 44.8866 52.7734 47.1835 50.7344 47.1835 46.8203 L 47.1835 31.0468 Z"></path></svg>
                                     {{ else if eq .icon "rss" }}
                                         <svg xmlns="http://www.w3.org/2000/svg" width='24' height='24' fill='#ffffff' viewBox="0 0 16 16"><path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2m0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2m.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"></path></svg>
                                     {{ else }}
@@ -312,10 +309,97 @@
                                     </div>
                                 </div>
                             </div>
-                        {{ else if eq .key "game" }}
-                            <div class="page-shell">
-                                <div class="embed-container transparent-embed">
-                                <iframe src="{{ $gameUrl }}" class="embedded-page-frame" loading="lazy" frameborder="0" allowtransparency="true"></iframe>
+                        {{ else if eq .key "guidang" }}
+                            {{ $postsSection := $.Site.GetPage "section" "posts" }}
+                            {{ $pages := (slice) }}
+                            {{ if $postsSection }}
+                                {{ $pages = $postsSection.RegularPages.ByDate.Reverse }}
+                            {{ end }}
+                            <div class="page-shell archive-page-shell" data-archive-view="index">
+                                <div class="archive-header">
+                                    <button class="archive-back" type="button" aria-label="返回归档">返回</button>
+                                    <div class="archive-title">
+                                        <span class="archive-title-home">文章归档</span>
+                                        <span class="archive-title-article" data-archive-article-title></span>
+                                    </div>
+                                    <div class="archive-count" data-archive-count>{{ len $pages }} 篇</div>
+                                </div>
+                                <div class="archive-scroll">
+                                    <div class="archive-index" data-archive-index>
+                                    {{ if gt (len $pages) 0 }}
+                                        <div class="archive-list">
+                                            {{ range $pages }}
+                                                <a class="archive-item" href="{{ .RelPermalink }}" data-archive-id="{{ md5 .RelPermalink }}" data-archive-url="{{ .RelPermalink }}">
+                                                    <div class="archive-item-title">{{ .Title }}</div>
+                                                    <div class="archive-item-meta">
+                                                        {{ $publishDateParam := .Params.date }}
+                                                        {{ $lastmodParam := .Params.lastmod }}
+                                                        {{ with $publishDateParam }}
+                                                            <span class="archive-badge">{{ (time .).Format "2006-01-02" }}</span>
+                                                            {{ with $lastmodParam }}
+                                                                {{ if gt (time .).Unix (time $publishDateParam).Unix }}
+                                                                    <span class="archive-badge archive-badge-update">更新 {{ (time .).Format "2006-01-02" }}</span>
+                                                                {{ end }}
+                                                            {{ end }}
+                                                        {{ end }}
+                                                        {{ $sec := default (default "" .Type) .Section }}
+                                                        {{ if and $sec (ne $sec "posts") }}
+                                                            <span class="archive-badge">{{ $sec }}</span>
+                                                        {{ end }}
+                                                        {{ $tags := .GetTerms "tags" }}
+                                                        {{ if gt (len $tags) 0 }}
+                                                            {{ range first 3 $tags }}
+                                                                <span class="archive-badge archive-badge-tag">#{{ .LinkTitle }}</span>
+                                                            {{ end }}
+                                                            {{ if gt (len $tags) 3 }}
+                                                                <span class="archive-badge archive-badge-tag">+{{ sub (len $tags) 3 }}</span>
+                                                            {{ end }}
+                                                        {{ end }}
+                                                    </div>
+                                                    {{ $summary := (.Summary | plainify | chomp) }}
+                                                    {{ if $summary }}
+                                                        <div class="archive-item-summary">{{ $summary | truncate 140 }}</div>
+                                                    {{ end }}
+                                                </a>
+                                            {{ end }}
+                                        </div>
+                                    {{ else }}
+                                        <div class="archive-empty">暂无文章，把 Markdown 放到 content/posts/ 下即可在这里显示。</div>
+                                    {{ end }}
+                                    </div>
+                                    <div class="archive-article-view" data-archive-article-view></div>
+                                </div>
+                                <div class="archive-templates" hidden>
+                                    {{ range $pages }}
+                                        <template data-archive-id="{{ md5 .RelPermalink }}" data-archive-url="{{ .RelPermalink }}">
+                                            <div class="archive-article">
+                                                <div class="archive-article-title">{{ .Title }}</div>
+                                                <div class="archive-article-meta">
+                                                    {{ $publishDateParam := .Params.date }}
+                                                    {{ $lastmodParam := .Params.lastmod }}
+                                                    {{ with $publishDateParam }}
+                                                        <span class="archive-badge">{{ (time .).Format "2006-01-02" }}</span>
+                                                        {{ with $lastmodParam }}
+                                                            {{ if gt (time .).Unix (time $publishDateParam).Unix }}
+                                                                <span class="archive-badge archive-badge-update">更新 {{ (time .).Format "2006-01-02" }}</span>
+                                                            {{ end }}
+                                                        {{ end }}
+                                                    {{ end }}
+                                                    {{ $sec := default (default "" .Type) .Section }}
+                                                    {{ if and $sec (ne $sec "posts") }}
+                                                        <span class="archive-badge">{{ $sec }}</span>
+                                                    {{ end }}
+                                                    {{ $tags := .GetTerms "tags" }}
+                                                    {{ if gt (len $tags) 0 }}
+                                                        {{ range first 6 $tags }}
+                                                            <span class="archive-badge archive-badge-tag">#{{ .LinkTitle }}</span>
+                                                        {{ end }}
+                                                    {{ end }}
+                                                </div>
+                                                <div class="archive-article-body">{{ .Content }}</div>
+                                            </div>
+                                        </template>
+                                    {{ end }}
                                 </div>
                             </div>
                         {{ else if eq .key "waline" }}
@@ -632,6 +716,441 @@
     height: auto;
     min-height: 0;
     max-height: 220px;
+  }
+
+  .archive-page-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px 10px 12px;
+    border-radius: 18px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: rgba(255, 253, 242, 0.88);
+    background-image:
+      linear-gradient(0deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.00) 32%),
+      repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.014), rgba(0, 0, 0, 0.014) 1px, transparent 1px, transparent 10px),
+      repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.010), rgba(0, 0, 0, 0.010) 1px, transparent 1px, transparent 12px);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.10);
+    overflow: hidden;
+  }
+
+  body.io-black-mode .archive-page-shell {
+    background-color: rgba(20, 20, 20, 0.94);
+    background-image:
+      linear-gradient(0deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.00) 32%),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.022) 1px, transparent 1px, transparent 12px),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.016), rgba(255, 255, 255, 0.016) 1px, transparent 1px, transparent 14px);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  }
+
+  .archive-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px 10px;
+    border-bottom: 1px dashed rgba(27, 41, 82, 0.18);
+  }
+
+  body.io-black-mode .archive-header {
+    border-bottom-color: rgba(255, 255, 255, 0.14);
+  }
+
+  .archive-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: rgba(255, 255, 255, 0.92);
+    color: rgba(19, 32, 63, 0.92);
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  body.io-black-mode .archive-back {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .archive-page-shell[data-archive-view="index"] .archive-back {
+    display: none;
+  }
+
+  .archive-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1.2;
+    padding: 7px 12px;
+    border-radius: 12px;
+    background: rgba(255, 201, 56, 0.70);
+    color: #1f1f1f;
+  }
+
+  body.io-black-mode .archive-title {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .archive-title-article {
+    display: none;
+    max-width: 42vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .archive-page-shell[data-archive-view="article"] .archive-title-home {
+    display: none;
+  }
+
+  .archive-page-shell[data-archive-view="article"] .archive-title-article {
+    display: inline;
+  }
+
+  .archive-count {
+    font-size: 0.84rem;
+    color: rgba(19, 32, 63, 0.74);
+    padding-right: 4px;
+    white-space: nowrap;
+  }
+
+  body.io-black-mode .archive-count {
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .archive-page-shell[data-archive-view="article"] .archive-count {
+    display: none;
+  }
+
+  .archive-scroll {
+    min-height: 0;
+    flex: 1 1 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px 8px 2px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    scrollbar-gutter: stable;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .archive-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  .archive-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .archive-page-shell[data-archive-view="article"] [data-archive-index] {
+    display: none;
+  }
+
+  .archive-article-view {
+    display: none;
+    min-height: 0;
+  }
+
+  .archive-page-shell[data-archive-view="article"] .archive-article-view {
+    display: block;
+  }
+
+  .archive-article-title {
+    font-weight: 900;
+    font-size: 1.06rem;
+    line-height: 1.22;
+    margin: 2px 0 10px;
+    color: rgba(19, 32, 63, 0.96);
+  }
+
+  body.io-black-mode .archive-article-title {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .archive-article-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 0 0 12px;
+  }
+
+  .archive-article-body {
+    color: rgba(19, 32, 63, 0.88);
+    line-height: 1.7;
+    font-size: 0.96rem;
+    overflow-wrap: anywhere;
+  }
+
+  body.io-black-mode .archive-article-body {
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  .archive-article-body h1,
+  .archive-article-body h2,
+  .archive-article-body h3,
+  .archive-article-body h4 {
+    margin: 18px 0 10px;
+    line-height: 1.28;
+    color: rgba(19, 32, 63, 0.96);
+  }
+
+  body.io-black-mode .archive-article-body h1,
+  body.io-black-mode .archive-article-body h2,
+  body.io-black-mode .archive-article-body h3,
+  body.io-black-mode .archive-article-body h4 {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .archive-article-body p {
+    margin: 0 0 12px;
+  }
+
+  .archive-article-view .archive-article-body a {
+    color: #2856d8;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(40, 86, 216, 0.35);
+    pointer-events: auto;
+  }
+
+  body.io-black-mode .archive-article-view .archive-article-body a {
+    color: #9fc7e3;
+    border-bottom-color: rgba(159, 199, 227, 0.35);
+    pointer-events: auto;
+  }
+
+  .archive-article-view .archive-article-body a:hover {
+    border-bottom-style: solid;
+  }
+
+  .archive-article-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.10);
+    margin: 10px auto 14px;
+    display: block;
+  }
+
+  body.io-black-mode .archive-article-body img {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
+  }
+
+  .archive-article-body pre {
+    margin: 10px 0 14px;
+    padding: 12px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: rgba(255, 255, 255, 0.72);
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
+  }
+
+  .archive-article-body pre::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.io-black-mode .archive-article-body pre {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .archive-article-body code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.92em;
+  }
+
+  .archive-article-body pre > code {
+    display: block;
+    padding-right: 40px;
+  }
+
+  .ndh-code-copy {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: rgba(255, 255, 255, 0.62);
+    color: rgba(19, 32, 63, 0.76);
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body.io-black-mode .ndh-code-copy {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .ndh-code-copy svg {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+  }
+
+  .ndh-code-copy:active {
+    transform: scale(0.96);
+  }
+
+  .ndh-code-copy.copied {
+    border-color: rgba(40, 86, 216, 0.28);
+    background: rgba(40, 86, 216, 0.10);
+    color: rgba(34, 68, 165, 0.92);
+  }
+
+  body.io-black-mode .ndh-code-copy.copied {
+    border-color: rgba(159, 199, 227, 0.22);
+    background: rgba(159, 199, 227, 0.12);
+    color: rgba(219, 237, 248, 0.92);
+  }
+
+  .archive-article-body blockquote {
+    margin: 10px 0 14px;
+    padding: 10px 12px;
+    border-left: 4px solid rgba(40, 86, 216, 0.36);
+    background: rgba(143, 184, 255, 0.10);
+    border-radius: 14px;
+  }
+
+  body.io-black-mode .archive-article-body blockquote {
+    border-left-color: rgba(159, 199, 227, 0.34);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .archive-item {
+    display: block;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    padding: 12px 12px 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  body.io-black-mode .archive-item {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  .archive-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+  }
+
+  body.io-black-mode .archive-item:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.65);
+  }
+
+  .archive-item-title {
+    font-weight: 800;
+    font-size: 0.98rem;
+    line-height: 1.28;
+    color: rgba(19, 32, 63, 0.96);
+    margin-bottom: 6px;
+  }
+
+  body.io-black-mode .archive-item-title {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .archive-item-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .archive-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: rgba(255, 255, 255, 0.48);
+    color: rgba(19, 32, 63, 0.74);
+    font-size: 0.78rem;
+  }
+
+  body.io-black-mode .archive-badge {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .archive-badge-tag {
+    border-color: rgba(40, 86, 216, 0.18);
+    background: rgba(40, 86, 216, 0.08);
+    color: rgba(34, 68, 165, 0.92);
+  }
+
+  body.io-black-mode .archive-badge-tag {
+    border-color: rgba(159, 199, 227, 0.22);
+    background: rgba(159, 199, 227, 0.12);
+    color: rgba(219, 237, 248, 0.92);
+  }
+
+  .archive-badge-update {
+    border-color: rgba(241, 150, 0, 0.22);
+    background: rgba(241, 150, 0, 0.10);
+    color: rgba(160, 92, 0, 0.92);
+  }
+
+  body.io-black-mode .archive-badge-update {
+    border-color: rgba(255, 201, 56, 0.26);
+    background: rgba(255, 201, 56, 0.14);
+    color: rgba(255, 232, 170, 0.92);
+  }
+
+  .archive-item-summary {
+    font-size: 0.9rem;
+    line-height: 1.62;
+    color: rgba(19, 32, 63, 0.74);
+  }
+
+  body.io-black-mode .archive-item-summary {
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .archive-empty {
+    padding: 6px 2px 0;
+    color: rgba(19, 32, 63, 0.74);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  body.io-black-mode .archive-empty {
+    color: rgba(255, 255, 255, 0.72);
   }
 
   .hot-page-shell {
@@ -3934,6 +4453,80 @@
       height: 100%;
       max-height: 100%;
       overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #guidang.page,
+    .header-top.is-page-active .header-page-region #guidang.page.active {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #guidang .archive-page-shell {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #time.page,
+    .header-top.is-page-active .header-page-region #time.page.active {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-page-shell {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-component-card {
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-clock {
+      gap: 10px;
+      padding: 4px 4px 8px;
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-component-card::before,
+    .header-top.is-page-active .header-page-region #time .time-component-card::after {
+      top: 8px;
+      width: 48px;
+      height: 14px;
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-meta {
+      padding: 8px 10px;
+      border-radius: 16px;
+      gap: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-chip {
+      padding: 5px 9px;
+      font-size: 0.72rem;
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-row {
+      gap: clamp(8px, 2vw, 12px);
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-digit {
+      width: clamp(52px, 16vw, 78px);
+      height: clamp(70px, 20vw, 98px);
+      border-radius: 14px;
+    }
+
+    .header-top.is-page-active .header-page-region #time .time-digit .base {
+      font-size: clamp(46px, 14vw, 74px);
     }
 
     .header-top.is-page-active .header-page-region #waline .hot-page-shell {

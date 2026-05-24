@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文章归档 | {{ .Site.Title }}</title>
+  {{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}
+  <link rel="icon" href="{{ "/assets/images/favicon4.png" | relURL }}">
+  <style>
+    :root {
+      --ndh-page-bg: #ffffff;
+      --ndh-text: #1f1f1f;
+      --ndh-text-soft: rgba(31, 31, 31, 0.74);
+      --ndh-border: rgba(0, 0, 0, 0.10);
+      --ndh-shadow: 0 18px 44px rgba(0, 0, 0, 0.10);
+      --ndh-paper: #fffdf2;
+      --ndh-paper-grid-a: rgba(0, 0, 0, 0.014);
+      --ndh-paper-grid-b: rgba(0, 0, 0, 0.010);
+      --ndh-accent: #2856d8;
+      --ndh-accent-2: rgba(255, 201, 56, 0.70);
+      --ndh-chip: rgba(255, 255, 255, 0.64);
+      --ndh-chip-shadow: 0 12px 26px rgba(0, 0, 0, 0.14);
+      --ndh-radius: 18px;
+      --ndh-card-radius: 16px;
+    }
+
+    body.ndh-dark {
+      --ndh-page-bg: #18191c;
+      --ndh-text: rgba(255, 255, 255, 0.92);
+      --ndh-text-soft: rgba(255, 255, 255, 0.72);
+      --ndh-border: rgba(255, 255, 255, 0.14);
+      --ndh-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+      --ndh-paper: rgba(20, 20, 20, 0.94);
+      --ndh-paper-grid-a: rgba(255, 255, 255, 0.022);
+      --ndh-paper-grid-b: rgba(255, 255, 255, 0.016);
+      --ndh-accent: #9fc7e3;
+      --ndh-accent-2: rgba(255, 255, 255, 0.10);
+      --ndh-chip: rgba(255, 255, 255, 0.08);
+      --ndh-chip-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--ndh-page-bg);
+      color: var(--ndh-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+    }
+
+    a {
+      color: var(--ndh-accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .shell {
+      padding: 16px;
+    }
+
+    .paper {
+      position: relative;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 18px 18px 14px;
+      border-radius: var(--ndh-radius);
+      border: 1px solid var(--ndh-border);
+      box-shadow: var(--ndh-shadow);
+      background-color: var(--ndh-paper);
+      background-image:
+        linear-gradient(0deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.00) 32%),
+        repeating-linear-gradient(90deg, var(--ndh-paper-grid-a), var(--ndh-paper-grid-a) 1px, transparent 1px, transparent 10px),
+        repeating-linear-gradient(0deg, var(--ndh-paper-grid-b), var(--ndh-paper-grid-b) 1px, transparent 1px, transparent 12px);
+      overflow: hidden;
+    }
+
+    .paper::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-2.6deg);
+      width: 132px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--ndh-chip);
+      border: 1px solid var(--ndh-border);
+      box-shadow: var(--ndh-chip-shadow);
+      pointer-events: none;
+    }
+
+    .paper::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 0 54px 54px;
+      border-color: transparent transparent var(--ndh-border) transparent;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 6px 12px;
+      border-bottom: 1px dashed rgba(0, 0, 0, 0.14);
+    }
+
+    body.ndh-dark .header {
+      border-bottom-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-size: 1.12rem;
+      line-height: 1.2;
+      font-weight: 800;
+      padding: 7px 12px;
+      border-radius: 12px;
+      background: var(--ndh-accent-2);
+      color: var(--ndh-text);
+    }
+
+    body.ndh-dark .title {
+      color: var(--ndh-text);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .meta {
+      font-size: 0.86rem;
+      color: var(--ndh-text-soft);
+      padding-right: 6px;
+      white-space: nowrap;
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 14px 6px 8px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .card {
+      border-radius: var(--ndh-card-radius);
+      border: 1px solid var(--ndh-border);
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+      padding: 12px 12px 10px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    body.ndh-dark .card {
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+    }
+
+    body.ndh-dark .card:hover {
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.65);
+    }
+
+    .card-title {
+      margin: 0 0 6px;
+      font-size: 1.02rem;
+      line-height: 1.28;
+      font-weight: 800;
+    }
+
+    .card-title a {
+      color: var(--ndh-text);
+      text-decoration: none;
+    }
+
+    body.ndh-dark .card-title a {
+      color: var(--ndh-text);
+    }
+
+    .card-sub {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--ndh-text-soft);
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--ndh-border);
+      background: rgba(255, 255, 255, 0.48);
+      color: var(--ndh-text-soft);
+    }
+
+    body.ndh-dark .badge {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ndh-text-soft);
+    }
+
+    .summary {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--ndh-text-soft);
+    }
+
+    .empty {
+      padding: 18px 6px 10px;
+      color: var(--ndh-text-soft);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    @media (min-width: 860px) {
+      .list {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="paper">
+      {{ $pages := .RegularPages.ByDate.Reverse }}
+      <div class="header">
+        <h1 class="title">文章归档</h1>
+        <div class="meta">{{ len $pages }} 篇</div>
+      </div>
+
+      {{ if gt (len $pages) 0 }}
+      <ul class="list">
+        {{ range $pages }}
+          <li class="card">
+            <h2 class="card-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            <div class="card-sub">
+              {{ with .Params.date }}<span class="badge">{{ (time .).Format "2006-01-02" }}</span>{{ end }}
+              {{ with .Section }}<span class="badge">{{ . }}</span>{{ end }}
+            </div>
+            {{ $summary := (.Summary | plainify | chomp) }}
+            {{ if $summary }}
+              <p class="summary">{{ $summary | truncate 120 }}</p>
+            {{ end }}
+          </li>
+        {{ end }}
+      </ul>
+      {{ else }}
+      <div class="empty">暂无文章。把 Markdown 放到 content/posts/ 下即可在这里显示。</div>
+      {{ end }}
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function applyNight(night) {
+        var isNight = night === '1' || night === 1 || night === true;
+        document.body.classList.toggle('ndh-dark', !!isNight);
+      }
+
+      try {
+        var night = localStorage.getItem('night');
+        if (night === '0' || night === '1') applyNight(night);
+      } catch (e) {}
+
+      window.addEventListener('message', function (event) {
+        try {
+          if (!event || !event.data) return;
+          if (event.origin !== window.location.origin) return;
+          if (event.data.type !== 'ndh:theme') return;
+          applyNight(event.data.night);
+        } catch (e) {}
+      });
+    })();
+  </script>
+</body>
+</html>

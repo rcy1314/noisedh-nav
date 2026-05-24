@@ -126,7 +126,7 @@ tabs = [
   { key = "time", icon = "fa-clock-o", label = "时间" },
   { key = "talk", icon = "fa-commenting-o", label = "说说" },
   { key = "waline", icon = "waline", label = "热榜" },
-  { key = "game", icon = "game", label = "休闲" },
+  { key = "guidang", icon = "fa-archive", label = "归档" },
   { key = "rssmerge", icon = "rss", label = "信息流" },
 
   # 自定义页，除了默认页面和热榜页面，其它所有 tab 都可以通过下面示例增加
@@ -137,7 +137,6 @@ tabs = [
 # 导航内页tab地址配置
 rssmergeUrl = "rssfollow.html"
 talkUrl = "./talk/note.html"
-gameUrl = "https://www.noisework.cn/e/fcgame/index.html"
 
 rssApiUrl = "https://rssserversub.fly.dev/rss"
 

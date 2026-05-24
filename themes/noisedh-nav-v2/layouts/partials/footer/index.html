@@ -11,7 +11,7 @@
         script.defer = true;
         script.charset = 'UTF-8';
         script.id = 'LA_COLLECT';
-        script.src = '//sdk.51.la/js-sdk-pro.min.js';
+        script.src = 'https://sdk.51.la/js-sdk-pro.min.js';
         script.onload = function () {
             if (window.LA && typeof window.LA.init === 'function') {
                 window.LA.init({id:"{{ $tj51laid }}",ck:"{{ $tj51lack }}"});
@@ -357,111 +357,5 @@
         border-left-color: var(--ndh-tooltip-bg);
     }
 </style>
-
-
-<!-- 弹窗提示 -->	
-    <!--link rel="stylesheet" href="assets/css/tc.css" />
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-
-    <body>
-    <div class="layer"></div>
-    <div id="globalAd">
-        <div id='hero-img' style="background-color: #1a95ff;background: linear-gradient(to left, #5dadf3 0, #4583ca 100%);">
-        </div>
-        <div id='profile-img'>
-            <img src="https://cdn.jsdelivr.net/gh/rcy1314/tuchuang@main/NV/image.700l662bj680.jpg" />
-        </div>
-        <div id='content'>
-            <p style="font-size: 16px;font-weight: bold;">公告</p>
-            <p></p>
-            <p>Noise导航站正在完成静态化</p>
-            <p>收录来源于我的各个网站及频道</p>
-            <p>欢迎联系我提出建议及网站投稿</p>
-            <p>主域名：www.noisedh.cn</p>
-            <p>Netlify:noisedh.netlify.app</p>
-            <a onclick="closeGlobalAd();" class="btn btn-default" rel='nofollow'>我已了解</a>
-            <a href="http://www.noisedh.cn" onclick="redirectUrlToActive();" class="btn btn-default" rel='nofollow'>点击访问</a>
-        </div>
-    </div>
-
-    <script>
-        jQuery.cookie = function(name, value, options) {
-            if(typeof value != 'undefined') {
-                options = options || {};
-                if(value === null) {
-                    value = '';
-                    options.expires = -1;
-                }
-                var expires = '';
-                if(options.expires && (typeof options.expires == 'number' || options.expires.toUTCString)) {
-                    var date;
-                    if(typeof options.expires == 'number') {
-                        date = new Date();
-                        var totalTime = 24 * 3600;
-                        var hour = date.getHours();
-                        var minutes = date.getMinutes();
-                        var seconds = date.getSeconds();
-                        var pastTime = 3600 * hour + 60 * minutes + seconds;
-                        var leftTime = totalTime - pastTime;
-                        date.setTime(date.getTime() + (options.expires * leftTime * 1000));
-                    } else {
-                        date = options.expires;
-                    }
-                    expires = '; expires=' + date.toUTCString();
-                }
-                var path = options.path ? '; path=' + (options.path) : '';
-                var domain = options.domain ? '; domain=' + (options.domain) : '';
-                var secure = options.secure ? '; secure' : '';
-                document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
-            } else {
-                var cookieValue = null;
-                if(document.cookie && document.cookie != '') {
-                    var cookies = document.cookie.split(';');
-                    for(var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        if(cookie.substring(0, name.length + 1) == (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-        };
-        $(function() {
-            var COOKIE_NAME = "erdangjiade";
-            if($.cookie(COOKIE_NAME)) {
-                $(".layer").hide();
-                $("#globalAd").hide();
-            } else {
-                var erdangjiadeH = $(window).height();
-                var erdangjiadeW = $(window).width();
-                $(".layer").show();
-                $("#globalAd").css({
-                    'top': erdangjiadeH / 2 - $("#globalAd").height() / 2,
-                    'left': erdangjiadeW / 2 - $("#globalAd").width() / 2
-                });
-                $("#globalAd").slideDown(300, function() {
-                    setTimeout("closeGloableAd()", '300000');
-                });
-                $.cookie(COOKIE_NAME, "erdangjiade", {
-                    path: '/',
-                    expires: 1
-                });
-            }
-        });
-
-        function closeGlobalAd() {
-            $('#globalAd').hide();
-            $('.layer').hide();
-
-        }
-
-        function redirectUrlToActive() {
-            $('#globalAd').hide();
-            $('.layer').hide();
-        }
-    </script>
-   <!- 弹窗结束 -->
 </body>
 </html>
