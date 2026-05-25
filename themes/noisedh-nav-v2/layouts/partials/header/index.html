@@ -3,7 +3,8 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https://sdk.51.la https://cdn.jsdelivr.net https://cdn.staticfile.org https://busuanzi.ibruce.info; connect-src 'self' https:; font-src 'self' https: data:; media-src 'self' https:; worker-src 'self' blob:;">
+    <!-- Content-Security-Policy (CSP)：限制页面脚本/样式/图片等资源的加载来源（默认仅允许同源），用于降低 XSS 等风险 -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https://sdk.51.la https://cdn.jsdelivr.net https://cdn.staticfile.org https://busuanzi.ibruce.info; connect-src 'self' https:; font-src 'self' https: data:; media-src 'self' https:; worker-src 'self' blob:;"> -->
     <meta name="google-adsense-account" content="{{ .Site.Params.seo.googleAdsenseAccount }}">
     <meta name="description" content="{{ .Site.Params.description }}">
     <meta name="keywords" content="{{ .Site.Params.keywords }}">
