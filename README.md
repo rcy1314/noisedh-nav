@@ -9,11 +9,13 @@
 ## 特征
 
 - 个性化多组件自定义配置，站点头部组件可手动更换及调整
+- 内置搜索、收录统计、一键下载为浏览器书签
 - 全新的loading载入效果，带有自定义文本果冻动画
 - 友好的seo及meta配置，修改config.toml即可
 - 带有二级分类横向页签的展示及更多网址的展示折叠
 - 全新带有AI一键分析推荐分类的扩展，随时随地收藏你的网址
 - 强大的后端API，多种部署方式，支持Docker一键部署
+- 后端带有轻量化后台管理，支持一键站点配置、失效检测、网站管理智能添加
 
 ## 文档目录
 
@@ -28,7 +30,38 @@
 
 ![截图2](https://cdn.jsdelivr.net/gh/rcy1314/phototc@main/uPic/screenshot1.png)
 
+## 文章（归档页）字段规范
+
+归档页会读取文章 Front Matter 与 Hugo 计算字段，用于展示时间与标签等元信息。建议统一使用 YAML/TOML Front Matter。
+
+### 可选（均非必填）
+
+- `title`：文章标题；未填写时 Hugo 会自动用文件名生成标题
+- `date`：发布时间（建议带时区，例如 `2026-05-24T20:00:00+08:00`）；未填写时归档/文章页不会显示发布时间
+- `draft`：是否草稿（`true/false`）；未填写时默认 `false`
+
+### 推荐
+
+- `lastmod`：更新时间（更新后请同步改这个字段；当同时填写 `date` 且 `lastmod > date` 时显示“更新”徽章）
+- `tags`：标签数组（归档页展示为 `#tag` 徽章）
+
+YAML 示例：
+
+```
+---
+title: "示例文章"
+date: 2026-05-24T20:00:00+08:00
+lastmod: 2026-05-25T10:30:00+08:00
+tags: ["hugo", "导航", "主题"]
+draft: false
+---
+```
+
 ![截图1](https://jsd.cdn.noisework.cn/gh/rcy1314/phototc@main/uPic/screenshot4.png)
+
+![1779806908604](https://cdn.jsdelivr.net/gh/rcy1314/phototc@main/uPic/1779806908604.png)
+
+后端后台入口：/admin 密码为自定义设置的api token
 
 ![screenshot3](https://cdn.jsdelivr.net/gh/rcy1314/phototc@main/uPic/screenshot3.png)
 
