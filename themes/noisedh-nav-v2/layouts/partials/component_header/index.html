@@ -171,8 +171,7 @@
                                     server="{{ $.Site.Params.musicServer }}"
                                     type="playlist"
                                     fixed="false"
-                                    autoplay="false"
-                                    api="https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r"
+                                    api="{{ $.Site.Params.musicApi | default "https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&auth=:auth&r=:r" }}"
                                     id="{{ $.Site.Params.musicId }}"></meting-js>
                             </div>
                         </div>
@@ -230,6 +229,8 @@
                             <iframe src='{{ printf "%s?id=%s" (( $.Site.Params.bilibili.iframeUrl | default "bilibili.html") | relURL) ($.Site.Params.bilibili.mediaId | default "") }}'
                                 class="bilibili-frame"
                                 allowtransparency="true"
+                                allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                                allowfullscreen
                                 loading="{{ $.Site.Params.bilibili.iframeLoading | default "lazy" }}"></iframe>
                         </div>
                     </div>
@@ -4936,6 +4937,108 @@
               observer.disconnect();
             }
           }, 6000);
+        });
+      })();
+
+      (function initPlayerApiFallback() {
+        var stages = document.querySelectorAll('.player-stage');
+        if (!stages.length) return;
+
+        var apis = [];
+        var preferredApi = '{{ $.Site.Params.musicApi | default "" }}';
+        if (preferredApi) apis.push(preferredApi);
+        apis.push(
+          'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&auth=:auth&r=:r',
+          'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r'
+        );
+        apis = apis.filter(function (value, index, arr) {
+          return !!value && arr.indexOf(value) === index;
+        });
+
+        function buildApiUrl(pattern, attrs) {
+          var url = String(pattern || '');
+          url = url.replace(/:server/g, encodeURIComponent(attrs.server || ''));
+          url = url.replace(/:type/g, encodeURIComponent(attrs.type || ''));
+          url = url.replace(/:id/g, encodeURIComponent(attrs.id || ''));
+          url = url.replace(/:auth/g, encodeURIComponent(attrs.auth || ''));
+          url = url.replace(/:r/g, encodeURIComponent(String(Date.now())));
+          return url;
+        }
+
+        function isValidTrackList(payload) {
+          return Array.isArray(payload) && payload.length > 0;
+        }
+
+        function cloneMetingWithApi(meting, apiPattern) {
+          var next = document.createElement('meting-js');
+          meting.getAttributeNames().forEach(function (name) {
+            if (name === 'api') return;
+            next.setAttribute(name, meting.getAttribute(name));
+          });
+          next.setAttribute('api', apiPattern);
+          meting.parentNode.replaceChild(next, meting);
+          return next;
+        }
+
+        function setStatus(stage, text) {
+          var el = stage.querySelector('.player-stage-placeholder-status');
+          if (!el) return;
+          el.textContent = text;
+        }
+
+        function detectFirstAvailableApi(attrMap, startIndex) {
+          var index = typeof startIndex === 'number' ? startIndex : 0;
+          function tryNext() {
+            if (index >= apis.length) return Promise.reject(new Error('no api available'));
+            var apiPattern = apis[index];
+            index += 1;
+            var requestUrl = buildApiUrl(apiPattern, attrMap);
+            return fetch(requestUrl)
+              .then(function (res) { return res.text(); })
+              .then(function (text) {
+                var data = null;
+                try { data = JSON.parse(text); } catch (e) {}
+                if (!isValidTrackList(data)) throw new Error('invalid api payload');
+                return apiPattern;
+              })
+              .catch(function () {
+                return tryNext();
+              });
+          }
+          return tryNext();
+        }
+
+        stages.forEach(function (stage) {
+          var meting = stage.querySelector('meting-js');
+          if (!meting) return;
+
+          setStatus(stage, '加载中…');
+
+          window.setTimeout(function () {
+            if (stage.querySelector('.aplayer')) return;
+
+            var attrMap = {};
+            meting.getAttributeNames().forEach(function (name) {
+              attrMap[name] = meting.getAttribute(name);
+            });
+
+            var startIndex = 0;
+            var currentApi = attrMap.api;
+            if (currentApi) {
+              var currentIndex = apis.indexOf(currentApi);
+              if (currentIndex >= 0) startIndex = currentIndex;
+            }
+
+            detectFirstAvailableApi(attrMap, startIndex)
+              .then(function (apiPattern) {
+                if (currentApi !== apiPattern) {
+                  meting = cloneMetingWithApi(meting, apiPattern);
+                }
+              })
+              .catch(function () {
+                setStatus(stage, '加载失败');
+              });
+          }, 1800);
         });
       })();
     });
