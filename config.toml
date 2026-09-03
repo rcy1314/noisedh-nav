@@ -53,6 +53,7 @@ relativeURLs = true
   defaultLogo   = "assets/images/favicon5.png"  # logo图片资源不存在或者错误时, 默认显示的logo; 该参数如为空,将会一直加载对应的logo,直至成功
   nightMode     = false  # 默认站点为深色(夜间)模式
   cardListCollapseLimit = 24  # 超过该数量显示“查看更多网址”按钮
+  directLinkNofollow = false  # 直达按钮链接是否添加 rel="nofollow"：true=加(不传递权重)，false=不加(dofollow，传递权重)。默认关闭
 
 # 书签配置
 [params.bookmarks]

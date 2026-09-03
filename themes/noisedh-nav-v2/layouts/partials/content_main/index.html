@@ -603,7 +603,7 @@ body.io-black-mode .large-text {
                                 </a>
                                 <a href="{{ $link.url | safeURL }}"
                                    class="togo text-center text-muted is-views"
-                                   title="直达" rel="nofollow"
+                                   title="直达"{{ if $.Site.Params.directLinkNofollow }} rel="nofollow"{{ end }}
                                    target="_blank">
                                     <i class="iconfont icon-wailian"></i>
                                 </a>
@@ -659,7 +659,7 @@ body.io-black-mode .large-text {
                                 </a>
                                 <a href="{{ .url | safeURL }}"
                                    class="togo text-center text-muted is-views"
-                                   title="直达" rel="nofollow"
+                                   title="直达"{{ if $.Site.Params.directLinkNofollow }} rel="nofollow"{{ end }}
                                    target="_blank">
                                     <i class="iconfont icon-wailian"></i>
                                 </a>
@@ -714,7 +714,7 @@ body.io-black-mode .large-text {
                             </a>
                             <a href="{{ .url | safeURL }}"
                                class="togo text-center text-muted is-views"
-                               title="直达" rel="nofollow"
+                               title="直达"{{ if $.Site.Params.directLinkNofollow }} rel="nofollow"{{ end }}
                                target="_blank">
                                 <i class="iconfont icon-wailian"></i>
                             </a>

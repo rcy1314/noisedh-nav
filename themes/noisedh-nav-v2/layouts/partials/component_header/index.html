@@ -171,7 +171,7 @@
                                     server="{{ $.Site.Params.musicServer }}"
                                     type="playlist"
                                     fixed="false"
-                                    api="{{ $.Site.Params.musicApi | default "https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&auth=:auth&r=:r" }}"
+                                    api="{{ $.Site.Params.musicApi | default "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r" }}"
                                     id="{{ $.Site.Params.musicId }}"></meting-js>
                             </div>
                         </div>
@@ -4948,8 +4948,8 @@
         var preferredApi = '{{ $.Site.Params.musicApi | default "" }}';
         if (preferredApi) apis.push(preferredApi);
         apis.push(
-          'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&auth=:auth&r=:r',
-          'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r'
+          'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r',
+          'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&auth=:auth&r=:r'
         );
         apis = apis.filter(function (value, index, arr) {
           return !!value && arr.indexOf(value) === index;
