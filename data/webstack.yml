@@ -313,6 +313,12 @@
           logo: https://www.wszyk.cn/wp-content/uploads/2021/12/wszyk_favicon.ico
           url: https://www.wszyk.cn/
           description: 专注于海外精品设计资源、各种最新插件，模板、笔刷、样机、素材、教程等资源，提供海外平面资源收集整理。包含PPT、PSD、AI、设计元素，样机文件、UI元素，等等。
+    - term: UI组件
+      links:
+        - title: useLayouts
+          logo: https://uselayouts.com/favicon.ico
+          url: https://uselayouts.com
+          description: 免费开源的 React 动画组件库，帮助快速构建精致交互界面
     - term: 字幕配音·AI合成
       links:
         - title: 智影
