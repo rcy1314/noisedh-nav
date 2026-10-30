@@ -88,6 +88,15 @@ relativeURLs = true
   busuanzi  = true  # 启用不蒜子统计
   enableForceReloadTip = true #强制刷新提示弹窗开关
 
+  # 访问量统计
+  # 统计服务：Vercount（busuanzi 开源替代，接口稳定，元素 ID 完全兼容）
+  # 注意：切换统计服务后数据从 0 开始重新累计（原 busuanzi 数据库不互通）
+  statsProvider = "vercount"  # vercount | busuanzi | custom
+  statsScriptUrl = ""         # statsProvider = "custom" 时填写脚本地址
+  statsInitialPv = 128650         # 初始访问量基数：最终显示 = 该值 + 实际累计PV
+  statsPvLabel = "总访问量"    # 文案：总访问量 / 累计浏览 / 浏览次数 ...
+  statsPvSuffix = "次"        # 数字后缀单位
+
 # 右下角折叠菜单
   toggleMenu = [
   { url = "https://www.noisework.cn/lianxi/weixin.png", icon = "far fa-comment-dots", title = "联系我", target = "_blank" },

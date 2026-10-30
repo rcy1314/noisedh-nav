@@ -4157,8 +4157,113 @@
         <div class="footer-inner">
             <div class="footer-text gradient-text">{{ replace $.Site.Params.footer.copyright "{year}" now.Year | markdownify }}</div>
             {{ if $.Site.Params.footer.busuanzi }}
-            <center class="gradient-text"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></center>
-            <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            {{- $statsProvider  := default "vercount" $.Site.Params.footer.statsProvider -}}
+            {{- $statsScriptUrl := default "" $.Site.Params.footer.statsScriptUrl -}}
+            {{- $statsInitialPv := default 0 $.Site.Params.footer.statsInitialPv -}}
+            {{- $statsPvLabel   := default "总访问量" $.Site.Params.footer.statsPvLabel -}}
+            {{- $statsPvSuffix  := default "次" $.Site.Params.footer.statsPvSuffix -}}
+            {{- /* 解析统计脚本地址 */ -}}
+            {{- $src := "" -}}
+            {{- if eq $statsProvider "vercount" -}}
+                {{- $src = "https://cn.vercount.one/js" -}}
+            {{- else if eq $statsProvider "busuanzi" -}}
+                {{- $src = "https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" -}}
+            {{- else if and (eq $statsProvider "custom") (ne $statsScriptUrl "") -}}
+                {{- $src = $statsScriptUrl -}}
+            {{- end -}}
+            <div class="footer-stats gradient-text" id="footerStats">
+                {{- if ne $src "" }}
+                <span id="busuanzi_container_site_pv" class="footer-stat footer-stat-pv" title="{{ $statsPvLabel }}" data-initial="{{ $statsInitialPv }}" style="display:none;">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    <span class="footer-stat-label">{{ $statsPvLabel }}</span>
+                    <b id="busuanzi_value_site_pv" class="footer-stat-value">0</b>
+                    <span class="footer-stat-unit">{{ $statsPvSuffix }}</span>
+                </span>
+                {{- else }}
+                <span class="footer-stat footer-stat-pv" title="{{ $statsPvLabel }}">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    <span class="footer-stat-label">{{ $statsPvLabel }}</span>
+                    <b id="footerStaticPv" class="footer-stat-value">0</b>
+                    <span class="footer-stat-unit">{{ $statsPvSuffix }}</span>
+                </span>
+                {{- end }}
+            </div>
+            <style>
+                .footer-stats { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; font-size: 0.85em; }
+                .footer-stat { display: inline-flex; align-items: center; gap: 4px; }
+                .footer-stat i { font-size: 0.95em; opacity: 0.75; }
+                .footer-stat-value { font-weight: 700; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+                .footer-stat-unit { opacity: 0.7; }
+            </style>
+            <script>
+            (function(){
+                var INITIAL_PV = {{ int $statsInitialPv }};
+                var SCRIPT_URL = {{ $src | jsonify | safeJS }};
+                var TIMEOUT_MS = 8000;
+                var loaded = false;
+                var timer = null;
+
+                // 千分位格式化
+                function fmt(n) {
+                    n = Math.max(0, Math.floor(Number(n) || 0));
+                    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                }
+
+                // 把 busuanzi/vercount 写入的原始数字叠加初始基数并格式化
+                function applyOffset() {
+                    var el = document.getElementById('busuanzi_value_site_pv');
+                    if (!el) return;
+                    var raw = String(el.textContent || el.innerHTML || '').replace(/[^\d]/g, '');
+                    if (raw === '') return;
+                    el.textContent = fmt(Number(raw) + INITIAL_PV);
+                }
+
+                function onScriptLoaded() {
+                    loaded = true;
+                    if (timer) clearTimeout(timer);
+                    // 统计脚本异步回填数值，轮询等待后叠加基数
+                    var tries = 0;
+                    var iv = setInterval(function(){
+                        tries++;
+                        var el = document.getElementById('busuanzi_value_site_pv');
+                        var raw = el ? String(el.textContent || '').replace(/[^\d]/g, '') : '';
+                        if (raw !== '' && raw !== '0') {
+                            applyOffset();
+                            clearInterval(iv);
+                        } else if (tries > 50) {
+                            // 2.5s 内仍未拿到数据（脚本可用但接口失败）
+                            if (raw !== '') applyOffset();
+                            clearInterval(iv);
+                        }
+                    }, 50);
+                }
+
+                function loadScript(src, cb) {
+                    var s = document.createElement('script');
+                    s.type = 'text/javascript';
+                    s.async = true;
+                    s.src = src;
+                    s.referrerPolicy = 'no-referrer-when-downgrade';
+                    s.onload = cb || null;
+                    s.onerror = function(){ if (timer) clearTimeout(timer); };
+                    (document.head || document.getElementsByTagName('head')[0]).appendChild(s);
+                }
+
+                if (SCRIPT_URL) {
+                    loadScript(SCRIPT_URL, onScriptLoaded);
+                    // 超时兜底：脚本未加载则不显示，避免残缺
+                    timer = setTimeout(function(){
+                        if (!loaded) {
+                            var el = document.getElementById('busuanzi_container_site_pv');
+                            if (el) el.style.display = 'none';
+                        }
+                    }, TIMEOUT_MS);
+                } else {
+                    var st = document.getElementById('footerStaticPv');
+                    if (st) st.textContent = fmt(INITIAL_PV);
+                }
+            })();
+            </script>
             {{ end }}
         </div>
     </footer>
