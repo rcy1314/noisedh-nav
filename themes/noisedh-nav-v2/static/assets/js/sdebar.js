@@ -12,7 +12,8 @@ $(function() {
         if (localStorage.getItem('darkMode') === 'true') {
             $body.addClass('io-black-mode');
         }
-        switch_mode && switch_mode();
+        // switch_mode 只存在于旧版 webstackpro 脚本中，未定义时直接引用会抛 ReferenceError
+        if (typeof switch_mode === 'function') switch_mode();
     });
 
     // 返回顶部

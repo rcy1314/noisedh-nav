@@ -119,11 +119,12 @@
 
         .control-button {
             position: fixed;
-            top: 45%;
-            width: 46px;
-            height: 46px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
             padding: 0;
-            border-radius: 14px;
+            border-radius: 11px;
             border: 1px solid rgba(255, 255, 255, 0.14);
             background: linear-gradient(180deg, rgba(52, 62, 84, 0.92), rgba(13, 17, 30, 0.92));
             color: rgba(242, 246, 255, 0.92);
@@ -132,7 +133,6 @@
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transform: none;
             transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
             z-index: 10;
             pointer-events: none;
@@ -145,22 +145,22 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
         }
 
         .control-button svg {
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             fill: rgba(242, 246, 255, 0.92);
         }
 
         .prev-button {
-            left: 20px;
+            left: 8px;
         }
 
         .next-button {
-            right: 20px;
+            right: 8px;
         }
 
         body:hover .control-button {
@@ -170,7 +170,7 @@
         }
 
         .control-button:active {
-            transform: translateY(1px);
+            transform: translateY(calc(-50% + 1px));
             filter: brightness(0.98);
         }
 
@@ -190,7 +190,7 @@
 </head>
 
 <body>
-    <iframe name="player" onload="iframeLoaded()" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
+    <iframe name="player" allowfullscreen allow="autoplay; fullscreen; picture-in-picture; encrypted-media"></iframe>
 
     <button class="control-button prev-button" onclick="playPreviousVideo()" aria-label="上一条">
         <span aria-hidden="true">
@@ -215,16 +215,39 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const mediaId = urlParams.get('id');
+        // 默认不自动播放：自动播放会触发浏览器的静音策略，表现为“播放器没声音”。
+        // 只有显式传入 autoplay=1 才自动播放并在结束后切换下一个。
+        const autoplayEnabled = urlParams.get('autoplay') === '1';
+        const proxyBase = String(urlParams.get('proxy') || '').replace(/\/+$/, '');
         const playerFrame = document.querySelector('iframe');
         const messageBox = document.getElementById('centerMessage');
         const messageText = messageBox ? messageBox.querySelector('.message-text') : null;
+
+        // 兜底片单：任何一个取数通道都不可用时，播这里，保证播放器永远有内容。
+        // 取自媒体库 3271958393 的收藏（已通过 /x/web-interface/view 校验可播放），
+        // 旧的 BV1eJ411D7q9 等条目已失效（62002 稿件不可见），会显示"无法正常播放"。
+        const FALLBACK_BVIDS = [
+            'BV1S7Nw6TEp6', 'BV1vh5665EA3', 'BV1URRiBXEyk', 'BV1XxX1B2E8L',
+            'BV1q8411u7os', 'BV1Q5sNzyE9J', 'BV1pHHxzSECc', 'BV1Ro4yzKE5G',
+            'BV15jHpz4Et4', 'BV18V4y1M7PM', 'BV1ki4y1g7H7', 'BV1Nh41117hy',
+            'BV19f421Q7dV', 'BV1wupvzCEG5', 'BV1mmahzYESC', 'BV1dqHqzMEEe',
+            'BV1faYrz7EPy', 'BV1XZarziEMG', 'BV1evEWzHExR', 'BV1E3a1zsEGJ',
+            'BV1TpazzXEmb', 'BV1GKu4ziEfJ', 'BV1ezKSzhER8', 'BV1mG3jzBEbm',
+            'BV1n2jqzeECP', 'BV1M4gDzPECu', 'BV1TNK3z3Ea1', 'BV1K2421T7Ue',
+            'BV1Sz421D7Ef', 'BV14Q4y1w7mg', 'BV1bk4y1X7iA', 'BV11D9VY9EsA',
+            'BV1Ce4y1X76m', 'BV1vj411V7Hx', 'BV1mvmiYrEaZ', 'BV18HGQzVECP',
+            'BV1LcoKYdEr3', 'BV1JuojYcEfA', 'BV1F8L8zuEP1', 'BV1xmVszeER4'
+        ];
+        const FETCH_TIMEOUT = 7000;
 
         let showMessage = true;
         let playedVideos = [];
         let currentVideoIndex = -1;
         let timerId = null;
         let cachedBvids = [];
+        let loadingGuard = null;
         const cacheKey = mediaId ? `ndh_bili_fav_${mediaId}` : '';
+        const FALLBACK_KEY = 'ndh_bili_fallback';
 
         function readCache() {
             if (!cacheKey) return null;
@@ -249,6 +272,17 @@
             }
         }
 
+        function readFallback() {
+            try {
+                const raw = localStorage.getItem(FALLBACK_KEY);
+                if (!raw) return FALLBACK_BVIDS.slice();
+                const list = JSON.parse(raw);
+                return Array.isArray(list) && list.length ? list.filter(Boolean) : FALLBACK_BVIDS.slice();
+            } catch (e) {
+                return FALLBACK_BVIDS.slice();
+            }
+        }
+
         function setMessage(visible, text) {
             if (!messageBox) return;
             messageBox.style.display = visible && showMessage ? 'block' : 'none';
@@ -261,23 +295,85 @@
         }
 
         function iframeLoaded() {
+            if (!playerFrame) return;
+            // onload 也会在 about:blank 时触发，只有真正加载了播放器才收起提示
+            if (!playerFrame.src || playerFrame.src.indexOf('player.bilibili.com') === -1) return;
+            if (loadingGuard) {
+                clearTimeout(loadingGuard);
+                loadingGuard = null;
+            }
             setMessage(false);
         }
 
-        function fetchAllOrigins(url) {
-            return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { cache: 'no-store' })
+        if (playerFrame) {
+            playerFrame.addEventListener('load', iframeLoaded);
+        }
+
+        function fetchJson(url, timeout) {
+            const controller = typeof AbortController === 'function' ? new AbortController() : null;
+            const ms = timeout || FETCH_TIMEOUT;
+            const timer = controller ? setTimeout(() => controller.abort(), ms) : null;
+            const opts = controller ? { cache: 'no-store', signal: controller.signal } : { cache: 'no-store' };
+            return fetch(url, opts)
                 .then(response => {
-                    if (!response.ok) throw new Error('request_failed');
+                    if (!response.ok) throw new Error('http_' + response.status);
                     return response.json();
                 })
-                .then(data => JSON.parse(data.contents));
+                .then(data => {
+                    if (timer) clearTimeout(timer);
+                    return data;
+                })
+                .catch(err => {
+                    if (timer) clearTimeout(timer);
+                    throw err;
+                });
+        }
+
+        // 同时向多个通道发起请求，谁先成功用谁；全部失败才进入兜底
+        function fetchFirst(urls, transform) {
+            const tasks = urls.filter(Boolean).map(url =>
+                fetchJson(url).then(data => {
+                    const value = transform ? transform(data) : data;
+                    if (!value) throw new Error('empty');
+                    return value;
+                })
+            );
+            if (!tasks.length) return Promise.reject(new Error('no_source'));
+            if (typeof Promise.any === 'function') {
+                return Promise.any(tasks);
+            }
+            return new Promise((resolve, reject) => {
+                let failed = 0;
+                tasks.forEach(task => task.then(resolve).catch(() => {
+                    failed += 1;
+                    if (failed === tasks.length) reject(new Error('all_failed'));
+                }));
+            });
+        }
+
+        function favSources() {
+            const api = `https://api.bilibili.com/x/v3/fav/resource/ids?media_id=${encodeURIComponent(mediaId)}`;
+            const list = [];
+            if (proxyBase) list.push(`${proxyBase}/fav?media_id=${encodeURIComponent(mediaId)}`);
+            list.push(`https://api.allorigins.win/raw?url=${encodeURIComponent(api)}`);
+            // 直连 api.bilibili.com 不会有 CORS 头，浏览器必然失败，因此不做尝试
+            return list;
+        }
+
+        function viewSources(bvid) {
+            const api = `https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(bvid)}`;
+            const list = [];
+            if (proxyBase) list.push(`${proxyBase}/view?bvid=${encodeURIComponent(bvid)}`);
+            list.push(`https://api.allorigins.win/raw?url=${encodeURIComponent(api)}`);
+            return list;
         }
 
         function extractBvids(payload) {
             if (!payload || !payload.data) return [];
-            if (Array.isArray(payload.data)) return payload.data.map(item => item && item.bvid).filter(Boolean);
-            if (payload.data.medias && Array.isArray(payload.data.medias)) return payload.data.medias.map(item => item && item.bvid).filter(Boolean);
-            if (payload.data.list && Array.isArray(payload.data.list)) return payload.data.list.map(item => item && item.bvid).filter(Boolean);
+            const data = payload.data;
+            if (Array.isArray(data)) return data.map(item => item && (item.bvid || item.bv_id)).filter(Boolean);
+            if (data.medias && Array.isArray(data.medias)) return data.medias.map(item => item && (item.bvid || item.bv_id)).filter(Boolean);
+            if (data.list && Array.isArray(data.list)) return data.list.map(item => item && (item.bvid || item.bv_id)).filter(Boolean);
             return [];
         }
 
@@ -286,26 +382,36 @@
                 clearTimeout(timerId);
                 timerId = null;
             }
-            fetchAllOrigins(`https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(bvid)}`)
-                .then(videoData => {
-                    const duration = videoData && videoData.data && typeof videoData.data.duration === 'number' ? videoData.data.duration : 600;
+            fetchFirst(viewSources(bvid), data => {
+                const duration = data && data.data && typeof data.data.duration === 'number' ? data.data.duration : 0;
+                return duration || 600;
+            })
+                .then(duration => {
                     const ms = Math.min(Math.max((duration + 6) * 1000, 60000), 30 * 60 * 1000);
-                    timerId = setTimeout(() => {
-                        playRandomVideo();
-                    }, ms);
+                    timerId = setTimeout(playRandomVideo, ms);
                 })
                 .catch(() => {
-                    timerId = setTimeout(() => {
-                        playRandomVideo();
-                    }, 10 * 60 * 1000);
+                    timerId = setTimeout(playRandomVideo, 10 * 60 * 1000);
                 });
         }
 
         function playBvid(bvid) {
             if (!playerFrame) return;
+            if (timerId) {
+                clearTimeout(timerId);
+                timerId = null;
+            }
+            if (loadingGuard) clearTimeout(loadingGuard);
             setMessage(true, '正在载入视频…');
-            playerFrame.src = `https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${encodeURIComponent(bvid)}&as_wide=1&high_quality=1&danmaku=0`;
-            scheduleNext(bvid);
+            playerFrame.src = `https://player.bilibili.com/player.html?isOutside=true&bvid=${encodeURIComponent(bvid)}&p=1&autoplay=${autoplayEnabled ? 1 : 0}&high_quality=1&danmaku=0`;
+            // 播放器被墙/超时时给一句可操作的提示，而不是一直转圈
+            loadingGuard = setTimeout(() => {
+                loadingGuard = null;
+                setMessage(true, '播放器加载较慢，可点右侧按钮换一个视频');
+            }, 15000);
+            if (autoplayEnabled) {
+                scheduleNext(bvid);
+            }
         }
 
         function playPreviousVideo() {
@@ -314,57 +420,60 @@
             playBvid(playedVideos[currentVideoIndex]);
         }
 
+        function pickFrom(list) {
+            let candidates = list.filter(bvid => !playedVideos.includes(bvid));
+            if (!candidates.length) {
+                playedVideos = [];
+                currentVideoIndex = -1;
+                candidates = list.slice();
+            }
+            const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+            playedVideos.push(chosen);
+            currentVideoIndex = playedVideos.length - 1;
+            playBvid(chosen);
+        }
+
         function playRandomVideo() {
             if (!mediaId) {
-                setMessage(true, '缺少参数：id（mediaId）');
+                playFallbackList('缺少参数：id（mediaId），先播放内置片单');
                 return;
             }
 
             if (!cachedBvids.length) {
                 const fromCache = readCache();
-                if (fromCache && fromCache.length) {
-                    cachedBvids = fromCache;
-                }
+                if (fromCache && fromCache.length) cachedBvids = fromCache;
             }
 
             if (cachedBvids.length) {
-                let candidates = cachedBvids.filter(bvid => !playedVideos.includes(bvid));
-                if (!candidates.length) {
-                    playedVideos = [];
-                    currentVideoIndex = -1;
-                    candidates = cachedBvids.slice();
-                }
-                const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-                playedVideos.push(chosen);
-                currentVideoIndex = playedVideos.length - 1;
-                playBvid(chosen);
+                pickFrom(cachedBvids);
                 return;
             }
 
             setMessage(true, '正在获取收藏列表…');
 
-            fetchAllOrigins(`https://api.bilibili.com/x/v3/fav/resource/ids?media_id=${encodeURIComponent(mediaId)}`)
-                .then(data => {
-                    const bvids = extractBvids(data);
-                    if (!bvids.length) throw new Error('empty');
+            fetchFirst(favSources(), data => {
+                const bvids = extractBvids(data);
+                if (!bvids.length) throw new Error('empty');
+                return bvids;
+            })
+                .then(bvids => {
                     cachedBvids = bvids.slice();
                     writeCache(cachedBvids);
-                    let candidates = bvids.filter(bvid => !playedVideos.includes(bvid));
-                    if (!candidates.length) {
-                        playedVideos = [];
-                        currentVideoIndex = -1;
-                        candidates = bvids.slice();
-                        candidates = bvids.slice();
-                    }
-
-                    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-                    playedVideos.push(chosen);
-                    currentVideoIndex = playedVideos.length - 1;
-                    playBvid(chosen);
+                    pickFrom(cachedBvids);
                 })
                 .catch(() => {
-                    setMessage(true, '加载失败，请刷新或更换网络/地区');
+                    playFallbackList();
                 });
+        }
+
+        function playFallbackList(note) {
+            const list = readFallback();
+            if (!list.length) {
+                setMessage(true, '加载失败，请刷新或更换网络/地区');
+                return;
+            }
+            if (note) setMessage(true, note);
+            pickFrom(list);
         }
 
         playRandomVideo();
