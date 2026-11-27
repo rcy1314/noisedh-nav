@@ -10,6 +10,7 @@
 
 - 个性化多组件自定义配置，站点头部组件可手动更换及调整
 - 内置搜索、收录统计、一键下载为浏览器书签
+- 「热门站点」按全站访客的累计点击量自动排序，首屏固定展示数量
 - 全新的loading载入效果，带有自定义文本果冻动画
 - 友好的seo及meta配置，修改config.toml即可
 - 带有二级分类横向页签的展示及更多网址的展示折叠
@@ -29,6 +30,93 @@
 ------
 
 ![截图2](https://cdn.jsdelivr.net/gh/rcy1314/phototc@main/uPic/screenshot1.png)
+
+## 热门站点（全站点击排行）
+
+首页第一个分类「热门站点」不依赖手写顺序，而是按**所有访客的累计点击量**排序：所有访客看到同一顺序，首屏固定展示 12 张卡片，其余卡片通过「查看更多网址」展开。
+
+- 点击统计：卡片主链接和「直达」按钮都会上报，服务端累加后存到 `hot_site_clicks.json`，重启后保留。
+- 固定数量、分类名、默认补位网址都在 `config.toml` 的 `[params.hotSites]` 中配置。
+- 分类为空（或不足 `limit`）时填充顺序：`defaults` → 点击量 → 全站随机；随机结果每次刷新会变，直到有站点积累点击量。
+- 前端先用本机缓存立即渲染，再拉服务端计数覆盖；接口超时或不可用不影响页面。
+
+### 配置
+
+```toml
+[params.hotSites]
+  enable = true
+  taxonomy = "热门站点"        # data/webstack.yml 中对应的一级分类名
+  limit = 12                   # 首屏固定展示的卡片数
+  storageKey = "noisedh_site_clicks_v1"  # 本机排行缓存键前缀
+  # apiBase = "https://your-serverUrl"  # 可选：覆盖 [params] 的 serverUrl
+  defaults = []                # 补位网址，例：["https://tg.noisework.cn"]
+```
+
+接口地址默认取 `[params]` 的 `serverUrl`，`apiBase` 可单独覆盖。修改 `data/webstack.yml` 的分类名时，`taxonomy` 要同步改。
+
+改完配置或模板后需重新执行 `hugo --minify` 并发布 `docs/`；改动后端路由后需重启/重新部署 yaml-server，否则页面会一直拿不到排行（GET 返回空数组或 404）。
+
+### 点击排行 API
+
+由 `extension/yaml-server` 提供，挂载在 `/api/hot-sites`，公开读写，无需 Token；已开启 CORS，站点可直接跨域调用。
+
+#### 读取排行
+
+```http
+GET /api/hot-sites?limit=12
+```
+
+- `limit`：1–100，默认 12。
+- 响应头：`Cache-Control: public, max-age=20`。
+- 响应示例：
+
+```json
+{
+  "updatedAt": "2026-11-27T15:00:00.000Z",
+  "total": 42,
+  "sites": [
+    { "url": "https://tophub.today", "count": 128 },
+    { "url": "https://note.noisework.cn", "count": 97 }
+  ]
+}
+```
+
+`updatedAt` 为最近一次落盘时间，尚未产生点击时为 `null`；`total` 是已记录的 URL 总数。
+
+#### 上报点击
+
+```http
+POST /api/hot-sites/click
+Content-Type: application/json
+
+{ "url": "https://tophub.today" }
+```
+
+- 成功：`204 No Content`。
+- URL 非法（非 `http/https`、超过 2048 字符、带账号密码）：`400 {"error":"invalid_url"}`。
+- 同一 IP 对同一 URL 3 秒内重复点击只记 1 次；每 IP 每分钟最多 120 次，超出返回 `429 {"error":"too_many_requests"}`。
+- 内存累加 + 1 秒防抖原子落盘；最多保留 2000 个 URL，超出按点击次数从低到高淘汰。
+
+#### 持久化
+
+```bash
+-e HOT_SITES_DATA_FILE=/app/data/hot_site_clicks.json
+-v /path/to/data:/app/data
+```
+
+不设置时计数文件写在 `extension/yaml-server/hot_site_clicks.json`；容器重建会丢失，生产环境建议挂卷。
+
+#### curl 示例
+
+```bash
+curl -s "https://your-serverUrl/api/hot-sites?limit=5"
+
+curl -s -X POST "https://your-serverUrl/api/hot-sites/click" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://tophub.today"}'
+```
+
+该接口无鉴权，公网部署建议在反向代理层按 IP 限流，避免被刷计数。
 
 ## 文章（归档页）字段规范
 

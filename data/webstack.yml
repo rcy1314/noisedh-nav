@@ -1,4 +1,7 @@
 ---
+- taxonomy: 热门站点
+  icon: fas fa-fire
+  links:
 - taxonomy: 常用推荐
   icon: far fa-star
   links:

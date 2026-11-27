@@ -245,6 +245,122 @@ body.io-black-mode .large-text {
         body.io-black-mode .category-title i {
              color: var(--ndh-accent);
         }
+        .hot-sites-hint {
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0;
+            color: #6b4e00;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px dashed rgba(18, 21, 33, 0.28);
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        body.io-black-mode .hot-sites-hint {
+            color: #ffd479;
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+        .latest-sort-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            margin-left: 6px;
+            padding: 0;
+            color: #ffffff;
+            background: #375fe6;
+            border: 1.5px solid #121521;
+            border-radius: 8px;
+            box-shadow: 1.5px 1.5px 0 #121521;
+            cursor: pointer;
+            vertical-align: middle;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, color 0.16s ease;
+        }
+        .latest-sort-btn[hidden] {
+            display: none;
+        }
+        .latest-sort-btn .latest-sort-icon {
+            display: block;
+            transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.3, 1.2);
+        }
+        .latest-sort-btn.is-active .latest-sort-icon {
+            transform: rotate(180deg);
+        }
+        .latest-sort-btn:hover {
+            color: #ffffff;
+            background: #2f53d0;
+            transform: translate(-1px, -1px);
+            box-shadow: 2.5px 2.5px 0 #121521;
+        }
+        .latest-sort-btn:active {
+            transform: translate(0, 0);
+            box-shadow: 1px 1px 0 #121521;
+        }
+        .latest-sort-btn.is-active {
+            color: #ffffff;
+        }
+        .latest-sort-btn.is-active:hover {
+            background: #2f53d0;
+        }
+        .latest-sort-btn:focus-visible {
+            outline: 2px solid #375fe6;
+            outline-offset: 2px;
+        }
+        body.io-black-mode .latest-sort-btn {
+            color: var(--ndh-text-strong);
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.45);
+            box-shadow: 1.5px 1.5px 0 rgba(255, 255, 255, 0.2);
+        }
+        body.io-black-mode .latest-sort-btn:hover {
+            color: #141929;
+            background: var(--ndh-accent);
+            border-color: var(--ndh-accent);
+            box-shadow: 2.5px 2.5px 0 rgba(255, 255, 255, 0.2);
+        }
+        /* 悬停提示：锚定在分类标题左侧，由 CSS 控制显隐，避免依赖 JS 计算坐标 */
+        .latest-sort-tip {
+            position: absolute;
+            left: 0;
+            right: auto;
+            bottom: calc(100% + 8px);
+            z-index: 60;
+            width: max-content;
+            max-width: min(280px, calc(100vw - 40px));
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(18, 21, 33, 0.16);
+            background: #f7f8fc;
+            color: #182039;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.4;
+            text-align: left;
+            white-space: normal;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(4px) rotate(2deg);
+            transition: opacity 0.12s ease, transform 0.12s ease;
+            box-shadow: 0 8px 20px rgba(17, 21, 33, 0.16);
+        }
+        .latest-sort-btn:hover + .latest-sort-tip,
+        .latest-sort-btn:focus-visible + .latest-sort-tip {
+            opacity: 1;
+            transform: translateY(0) rotate(2deg);
+        }
+        body.io-black-mode .latest-sort-tip {
+            background: #121521;
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+            transform: translateY(4px) rotate(0deg);
+        }
+        body.io-black-mode .latest-sort-btn:hover + .latest-sort-tip,
+        body.io-black-mode .latest-sort-btn:focus-visible + .latest-sort-tip {
+            transform: translateY(0) rotate(0deg);
+        }
         body.io-black-mode .category-title::before {
             background: rgba(143, 184, 255, 0.18);
             border-color: rgba(255, 255, 255, 0.08);
@@ -545,11 +661,38 @@ body.io-black-mode .large-text {
     {{ $logosPathRaw := $.Site.Params.logosPath | default "assets/images/logos" }}
     <link rel="preload" as="image" href="{{ $defaultLogo }}">
 
+    {{ $hotCfg := .Site.Params.hotSites }}
+    {{ $hotEnabled := true }}
+    {{ $hotTaxonomy := "热门站点" }}
+    {{ $hotLimit := 12 }}
+    {{ $hotStorageKey := "noisedh_site_clicks_v1" }}
+    {{ $hotApi := .Site.Params.serverUrl }}
+    {{ $hotDefaults := slice }}
+    {{ with $hotCfg }}
+        {{ if eq (printf "%v" .enable) "false" }}{{ $hotEnabled = false }}{{ end }}
+        {{ with .taxonomy }}{{ $hotTaxonomy = . }}{{ end }}
+        {{ with .limit }}{{ if gt (int .) 0 }}{{ $hotLimit = int . }}{{ end }}{{ end }}
+        {{ with .storageKey }}{{ $hotStorageKey = . }}{{ end }}
+        {{ with .apiBase }}{{ $hotApi = . }}{{ end }}
+        {{ with .defaults }}{{ $hotDefaults = . }}{{ end }}
+    {{ end }}
+    {{ $collapseLimit := default 24 .Site.Params.cardListCollapseLimit }}
+    {{ $sortDefault := "default" }}
+    {{ $sortStorageKey := "noisedh_latest_sort_v1" }}
+    {{ with .Site.Params.siteSort }}
+        {{ with .defaultOrder }}{{ $sortDefault = . }}{{ end }}
+        {{ with .storageKey }}{{ $sortStorageKey = . }}{{ end }}
+    {{ end }}
+    {{ if ne $sortDefault "latest" }}{{ $sortDefault = "default" }}{{ end }}
+
     {{ range $i, $cat := .Site.Data.webstack }}
-        <div class="category-block mb-4" id="{{ if (and (isset $cat "list") (gt (len (default (slice) $cat.list)) 0)) }}{{ range first 1 $cat.list }}{{ md5 .term }}{{ end }}{{ else }}{{ md5 $cat.taxonomy }}{{ end }}">
+        {{ $isHot := and $hotEnabled (eq $cat.taxonomy $hotTaxonomy) }}
+        <div class="category-block mb-4{{ if $isHot }} hot-sites-block{{ end }}"{{ if $isHot }} data-hot-sites="true" data-hot-limit="{{ $hotLimit }}" data-hot-storage-key="{{ $hotStorageKey }}" data-hot-api="{{ $hotApi }}" data-hot-defaults='{{ $hotDefaults | jsonify }}'{{ end }} data-sort-key="{{ $cat.taxonomy }}" data-sort-storage-key="{{ $sortStorageKey }}" id="{{ if (and (isset $cat "list") (gt (len (default (slice) $cat.list)) 0)) }}{{ range first 1 $cat.list }}{{ md5 .term }}{{ end }}{{ else }}{{ md5 $cat.taxonomy }}{{ end }}">
             <div class="category-title">
                 {{ if $cat.icon }}<i class="{{ $cat.icon }} icon-fw icon-lg"></i>{{ end }}
                 {{ $cat.taxonomy }}
+                {{ if not $isHot }}<button type="button" class="latest-sort-btn" data-sort-toggle data-default-order="{{ $sortDefault }}" hidden aria-label="切换正序 / 最新在前" aria-pressed="false"><svg class="latest-sort-icon" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false"><path d="M10 16.2V4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M5.6 8.8 10 4.4l4.4 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="latest-sort-tip" role="tooltip">切换正序 / 最新在前</span>{{ end }}
+                {{ if $isHot }}<span class="hot-sites-hint" title="按全站访客的累计点击量排序">按点击量排序</span>{{ end }}
             </div>
             {{ if and (isset $cat "list") (gt (len (default (slice) $cat.list)) 1) }}
                 <div class="subcat-tabs">
@@ -558,7 +701,7 @@ body.io-black-mode .large-text {
                     {{ end }}
                 </div>
                 {{ range $j, $sub := $cat.list }}
-                    <div class="row card-list" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 (print $cat.taxonomy $sub.term) }}" data-initial-hidden="{{ if ne $j 0 }}1{{ else }}0{{ end }}">
+                    <div class="row card-list" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 (print $cat.taxonomy $sub.term) }}" data-initial-hidden="{{ if ne $j 0 }}1{{ else }}0{{ end }}" data-collapse-limit="{{ $collapseLimit }}">
                         {{ range $k, $link := $sub.links }}
                         {{ $customLogo := "" }}
                         {{ if $link.logo }}
@@ -614,7 +757,7 @@ body.io-black-mode .large-text {
                 {{ end }}
             {{ else if and (isset $cat "list") (eq (len (default (slice) $cat.list)) 1) }}
                 {{ range $j, $sub := $cat.list }}
-                    <div class="row card-list">
+                    <div class="row card-list" data-collapse-limit="{{ $collapseLimit }}">
                         {{ range $sub.links }}
                         {{ $customLogo := "" }}
                         {{ if .logo }}
@@ -669,7 +812,7 @@ body.io-black-mode .large-text {
                     </div>
                 {{ end }}
             {{ else }}
-                <div class="row card-list">
+                <div class="row card-list" data-collapse-limit="{{ $collapseLimit }}">
                     {{ range $cat.links }}
                     {{ $customLogo := "" }}
                     {{ if .logo }}
@@ -740,6 +883,8 @@ body.io-black-mode .large-text {
         </div>
     </div>
 </div>
+{{ if $hotEnabled }}<script src="{{ "assets/js/hot-sites.js" | relURL }}"></script>{{ end }}
+<script src="{{ "assets/js/latest-sort.js" | relURL }}"></script>
 <script>
 // 优化：图片懒加载和切换时预加载，提升切换流畅度
 document.addEventListener('DOMContentLoaded', function() {
@@ -765,7 +910,12 @@ document.addEventListener('DOMContentLoaded', function() {
         list.style.display = 'none';
     });
 
-    const COLLAPSE_LIMIT = Number('{{ default 24 .Site.Params.cardListCollapseLimit }}') || 24;
+    const DEFAULT_COLLAPSE_LIMIT = Number('{{ default 24 .Site.Params.cardListCollapseLimit }}') || 24;
+    function resolveCollapseLimit(list) {
+        const raw = list && list.dataset ? list.dataset.collapseLimit : '';
+        const parsed = Number(raw);
+        return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : DEFAULT_COLLAPSE_LIMIT;
+    }
     let collapseSeq = 0;
     function renderToggleButton(toggleBtn, expanded) {
         const label = expanded ? '收起网址列表' : '查看更多网址';
@@ -795,14 +945,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function initCardListCollapse() {
         document.querySelectorAll('.row.card-list').forEach(list => {
             if (list.dataset.collapseId) return;
+            const limit = resolveCollapseLimit(list);
             const cards = Array.from(list.children).filter(item => item.classList && item.classList.contains('url-card'));
-            if (cards.length <= COLLAPSE_LIMIT) return;
+            if (cards.length <= limit) return;
             collapseSeq += 1;
             const collapseId = 'card-list-collapse-' + collapseSeq;
             list.dataset.collapseId = collapseId;
             list.classList.add('card-list-collapsible');
             cards.forEach((card, idx) => {
-                if (idx >= COLLAPSE_LIMIT) {
+                if (idx >= limit) {
                     card.classList.add('is-collapsed-item');
                 }
             });
@@ -1389,6 +1540,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // 判断“加载成功但实际是空白”的图标：1x1 像素、全透明或近乎全透明
+    function imageLooksBlank(img) {
+        const w = img.naturalWidth || 0;
+        const h = img.naturalHeight || 0;
+        if (w < 8 || h < 8) return true;
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.min(w, 32);
+            canvas.height = Math.min(h, 32);
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return false;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            const total = data.length / 4;
+            let opaque = 0;
+            let white = 0;
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i + 3] > 16) {
+                    opaque += 1;
+                    if (data[i] > 244 && data[i + 1] > 244 && data[i + 2] > 244) white += 1;
+                }
+            }
+            if (opaque / total < 0.02) return true;
+            return white / total > 0.98;
+        } catch (e) {
+            return false; // 跨域图片会污染画布，无法判断时按“有内容”处理
+        }
+    }
+
     function loadImage(img) {
         if (img._loaded || img._loading) return;
         setDefaultLogoIfNeeded(img);
@@ -1424,6 +1604,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             img.onload = function() {
+                if (imageLooksBlank(img)) {
+                    tryNext();
+                    return;
+                }
                 img._loaded = true;
                 img.removeAttribute('data-src');
                 cleanup();
@@ -1435,6 +1619,9 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         tryNext();
     }
+
+    // 供动态插入的卡片（如热门站点自动补位）复用同一套 logo 回退逻辑
+    window.__navLoadImage = loadImage;
 
     function loadImagePromise(img) {
         return new Promise((resolve) => {

@@ -98,6 +98,26 @@
 - `MCP_SCAN_MAX_DEPTH`：扫描目录最大深度（默认 6）
 - `MCP_SCAN_MAX_FILES`：最多扫描文件数（默认 5000）
 
+可选（热门站点点击计数）：
+
+- `HOT_SITES_DATA_FILE`：点击计数 JSON 路径（默认 `yaml-server/hot_site_clicks.json`；容器部署请挂载持久化目录）
+
+## 热门站点点击排行 API
+
+用于首页「热门站点」分类的全站点击排序，公开接口、无需 Token：
+
+- `GET /api/hot-sites?limit=12`：按累计点击量降序返回站点，`limit` 默认 12、最大 100
+  - 响应示例：`{"updatedAt":"2026-11-27T13:20:00.000Z","total":36,"sites":[{"url":"https://example.com","count":42}]}`
+  - 响应头 `Cache-Control: public, max-age=20`
+- `POST /api/hot-sites/click`：上报一次点击，请求体 `{"url":"https://example.com"}`
+  - 成功 204；URL 非法 400；同一 IP 对同一 URL 3 秒内重复、或单 IP 每分钟超过 120 次返回 429
+
+说明：
+
+- 计数在内存中累加，1 秒防抖后以「写临时文件 + rename」方式原子落盘，服务重启自动恢复
+- 最多跟踪 2000 个 URL，超出后按点击量从低到高淘汰
+- 生产环境务必为计数 JSON 挂载持久化卷，否则容器重建后计数归零
+
 ## MCP（供 AI 客户端接入）
 
 本服务支持以 HTTP（统一使用 `/mcp` 端点，推荐）或 stdio 方式提供 MCP，便于接入不同 AI 客户端进行自然语言搜索/翻页。
@@ -457,7 +477,7 @@ curl -X POST "http://localhost:8990/api/invalid-links/check" \
 
 ```bash
 cd /Library/Github/noisedh/extension/yaml-server
-IMAGE_TAG=v2.1 IMAGE_NAME=noise233/nav-manage PUSH=1 NO_CACHE=1 sh ./buildx.sh
+IMAGE_TAG=v2.2 IMAGE_NAME=noise233/nav-manage PUSH=1 NO_CACHE=1 sh ./buildx.sh
 ```
 
 不带 Hugo 的轻量版

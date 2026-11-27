@@ -55,6 +55,21 @@ relativeURLs = true
   cardListCollapseLimit = 24  # 超过该数量显示“查看更多网址”按钮
   directLinkNofollow = false  # 直达按钮链接是否添加 rel="nofollow"：true=加(不传递权重)，false=不加(dofollow，传递权重)。默认关闭
 
+  # 热门站点（原「常用推荐」）：按全站点击量排序，并固定首屏展示数量
+  [params.hotSites]
+    enable = true
+    taxonomy = "热门站点"        # data/webstack.yml 中对应的一级分类名
+    limit = 12                   # 首屏固定展示的卡片数，其余通过「查看更多网址」展开
+    storageKey = "noisedh_site_clicks_v1"  # 本机排行缓存键前缀（用于接口超时兜底）
+    # apiBase = "https://extension.noisework.cn"  # 可选：覆盖 [params] 的 serverUrl
+    # 热门站点为空（或不足 limit）时，优先展示这些网址；仍然不足则从全站随机补足
+    defaults = []  # 例：["https://tg.noisework.cn", "https://note.noisework.cn"]
+
+  # 首页分类排序按钮：默认按什么顺序展示
+  [params.siteSort]
+    defaultOrder = "default"   # default=收录顺序（正序），latest=最新收录在前（倒序）
+    storageKey = "noisedh_latest_sort_v1"  # 本机记忆用户手动切换的状态
+
 # 书签配置
 [params.bookmarks]
   title = "Noise导航-Bookmarks"

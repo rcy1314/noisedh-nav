@@ -1,0 +1,27 @@
+docs/
+
+# 热门站点点击计数（运行时生成，不应提交）
+extension/yaml-server/hot_site_clicks.json
+extension/yaml-server/hot_site_clicks.json.tmp
+
+### NuxtJS ###
+# Generated dirs
+dist
+.nuxt
+.nuxt-*
+.output
+.gen
+
+# Node dependencies
+node_modules
+
+# System files
+*.log
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets

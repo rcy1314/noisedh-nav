@@ -8,6 +8,7 @@ const { exec } = require('child_process');
 const axios = require('axios'); // 用于发送 HTTP 请求
 const TOML = require('@iarna/toml');
 const { paginateArray } = require('./utils/pagination');
+const hotSitesRouter = require('./hot-sites');
 
 const app = express();
 const PORT = Number(process.env.PORT || 8990);
@@ -217,6 +218,9 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '20mb' }));
+
+// 热门站点点击排行（公开只读 + 公开上报，不需要 Token）
+app.use('/api/hot-sites', hotSitesRouter);
 
 app.use('/admin/assets', express.static(path.resolve(__dirname, 'admin'), { index: false, maxAge: '7d' }));
 
