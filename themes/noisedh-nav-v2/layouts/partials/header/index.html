@@ -40,6 +40,20 @@
     <meta name="sogou_site_verification" content="c5kms0qkyL"/>
     <meta name="360-site-verification" content="fcc13eac55051e381be8a06453359bc1" />
     {{ $assetVer := $.Site.Params.assetVersion | default $.Site.Params.assetsVersion | default (now.Unix) }}
+    <!-- 提前与首屏要用到的第三方服务建立连接，降低音乐接口 / 热榜接口 / logo 兜底图标的握手延迟 -->
+    <link rel="preconnect" href="https://api.injahow.cn" crossorigin>
+    <link rel="dns-prefetch" href="https://api.injahow.cn">
+    {{ with ($.Site.Params.header.serverUrl | default $.Site.Params.serverUrl) }}
+    <link rel="preconnect" href="{{ . }}" crossorigin>
+    <link rel="dns-prefetch" href="{{ . }}">
+    {{ end }}
+    <link rel="preconnect" href="https://favicon.yandex.net">
+    <link rel="dns-prefetch" href="https://favicon.yandex.net">
+    <link rel="preconnect" href="https://www.google.com">
+    <link rel="dns-prefetch" href="https://www.google.com">
+    <link rel="preconnect" href="https://favicon.im">
+    <link rel="dns-prefetch" href="https://favicon.im">
+    <link rel="dns-prefetch" href="https://rssserversub.fly.dev">
     <link rel='stylesheet' id='iconfont-css' href='{{ $.Site.Params.siteurl }}/assets/css/iconfont-3.03029.1.css?v={{ $assetVer }}' type='text/css' media='all'>
     <link rel='stylesheet' id='bootstrap-css' href='{{ $.Site.Params.siteurl }}/assets/css/bootstrap.min-4.3.1.css?v={{ $assetVer }}' type='text/css' media='all'>
     <link rel='stylesheet' id='iowen-css' href='{{ $.Site.Params.siteurl }}/assets/css/styles.css?v={{ $assetVer }}' type='text/css' media='all'>
@@ -47,8 +61,15 @@
     <link rel='stylesheet' id='custom-css' href='{{ $.Site.Params.siteurl }}/assets/css/custom-style.css?v={{ $assetVer }}' type='text/css' media='all'>
     <link rel='stylesheet' id='sticker-theme-css' href='{{ $.Site.Params.siteurl }}/assets/css/sticker-theme.css?v={{ $assetVer }}' type='text/css' media='all'>
     <link rel='stylesheet' id='APlayer.min-css' href='{{ $.Site.Params.siteurl }}/assets/css/APlayer.min.css?v={{ $assetVer }}' type='text/css' media='all'>
-    <link rel="stylesheet" id="fortawesome-css" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/all.min.css?v={{ $assetVer }}" type="text/css">
-    <link rel="stylesheet" id="fortawesome-v4shims-css" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/v4-shims.min.css?v={{ $assetVer }}" type="text/css">
+    <!-- FontAwesome 仅用于图标装饰，不再阻塞首屏渲染：先 preload 再异步应用，noscript 兜底 -->
+    <link rel="preload" as="style" id="fortawesome-preload" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/all.min.css?v={{ $assetVer }}">
+    <link rel="preload" as="style" id="fortawesome-v4shims-preload" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/v4-shims.min.css?v={{ $assetVer }}">
+    <link rel="stylesheet" id="fortawesome-css" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/all.min.css?v={{ $assetVer }}" type="text/css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" id="fortawesome-v4shims-css" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/v4-shims.min.css?v={{ $assetVer }}" type="text/css" media="print" onload="this.media='all'">
+    <noscript>
+    <link rel="stylesheet" id="fortawesome-css-noscript" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/all.min.css?v={{ $assetVer }}" type="text/css">
+    <link rel="stylesheet" id="fortawesome-v4shims-css-noscript" href="{{ $.Site.Params.siteurl }}/assets/fontawesome-5.15.4/css/v4-shims.min.css?v={{ $assetVer }}" type="text/css">
+    </noscript>
     <script defer type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/jquery.min.js?v={{ $assetVer }}' id='jquery-js'></script>
     <!-- 添加Service Worker -->
     <script>

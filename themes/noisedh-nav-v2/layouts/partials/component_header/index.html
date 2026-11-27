@@ -2971,6 +2971,98 @@
     visibility: visible !important;
   }
 
+  /* ===== 播放器控件可用性优化：切歌按钮 / 按钮热区 / 与歌单的分隔 ===== */
+
+  /* 1. 放开普通模式下被 APlayer 默认样式隐藏的上一首/下一首按钮
+        （图标在 DOM 中已存在且 JS 已绑定 skipBack/skipForward 事件，仅需 CSS 显示） */
+  .player-stage .aplayer .aplayer-time .aplayer-icon.aplayer-icon-back,
+  .player-stage .aplayer .aplayer-time .aplayer-icon.aplayer-icon-forward {
+    display: inline-block !important;
+    flex: none !important;
+  }
+
+  /* 2. 控制按钮行：允许在窄容器内收缩，保持单行，避免按钮被挤出可视区导致无法点击；
+        空间不足时整体换行（进度条独占一行），而不是溢出被裁切 */
+  .player-stage .aplayer .aplayer-info .aplayer-controller {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
+  .player-stage .aplayer .aplayer-info .aplayer-controller .aplayer-time {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: auto;
+    bottom: 0;
+    gap: 2px;
+    padding-left: 6px;
+    white-space: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  /* 3. 进度条保底宽度：之前按钮过宽时进度条会被挤压到 0 而无法拖动 */
+  .player-stage .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap {
+    flex: 1 1 60px;
+    min-width: 56px;
+  }
+
+  /* 4. 按钮热区：视觉 14px 图标 + 紧凑点击区（18px），保证整行在窄面板内放得下；
+        flex 居中让 SVG 不再受行内基线偏移影响（“下一首”整体旋转 180° 会把基线偏移翻转成反向，
+        导致 ⏮⏭ 看起来一高一低，此处精确居中后完全一致） */
+  .player-stage .aplayer .aplayer-info .aplayer-controller .aplayer-time .aplayer-icon {
+    position: relative;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    padding: 2px;
+    box-sizing: content-box;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .player-stage .aplayer .aplayer-info .aplayer-controller .aplayer-time .aplayer-icon svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+  }
+
+  .player-stage .aplayer .aplayer-info .aplayer-controller .aplayer-time .aplayer-time-inner {
+    flex: 0 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    margin-right: 2px;
+  }
+
+  .player-stage .aplayer .aplayer-info .aplayer-controller .aplayer-volume-wrap {
+    flex: none;
+  }
+
+  /* 5. 控制区与歌单之间的分隔：边框 + 间距 + 图层隔离，保证按钮永远在歌单之上可点击 */
+  .player-stage .aplayer .aplayer-body {
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 3;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed rgba(18, 21, 33, 0.22);
+  }
+
+  .player-stage .aplayer .aplayer-list {
+    position: relative;
+    z-index: 1;
+    padding-top: 4px;
+    border-top: 0 !important;
+  }
+
+  body.io-black-mode .player-stage .aplayer .aplayer-body {
+    border-bottom-color: rgba(255, 255, 255, 0.16);
+  }
+
   .ad-section {
     width: 100%;
     overflow: hidden;

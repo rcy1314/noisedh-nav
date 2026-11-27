@@ -1064,7 +1064,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const LOGO_FAILED_URL_KEY = 'logo_failed_url_v3';
     const LOGO_BLOCKED_DOMAIN_KEY = 'logo_blocked_domain_v3';
 
-    const inflightLogoLoads = new Map();
     const runtimeLogoResolveCache = new Map();
     const failedUrlCache = new Map();
     const blockedDomainCache = new Map();
@@ -1475,64 +1474,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return merged;
     }
 
-    function probeImage(url) {
-        const normalized = normalizeUrl(url);
-        if (!normalized) return Promise.reject(new Error('invalid_url'));
-        if (inflightLogoLoads.has(normalized)) {
-            return inflightLogoLoads.get(normalized);
-        }
-        const requestPromise = new Promise((resolve, reject) => {
-            const temp = new Image();
-            temp.decoding = 'async';
-            temp.onload = () => {
-                if (typeof isTransparentImage === 'function') {
-                    try {
-                        if (isTransparentImage(temp)) {
-                            reject(new Error('transparent'));
-                            return;
-                        }
-                    } catch (e) {}
-                }
-                resolve(normalized);
-            };
-            temp.onerror = () => reject(new Error('load_failed'));
-            temp.src = normalized;
-        });
-        const wrapped = requestPromise.finally(() => {
-            inflightLogoLoads.delete(normalized);
-        });
-        inflightLogoLoads.set(normalized, wrapped);
-        return wrapped;
-    }
-
-    async function resolveLogoUrl(img) {
-        const src = normalizeUrl(img.dataset.src || '');
-        const candidates = buildCandidateList(img);
-        for (const candidate of candidates) {
-            if (isUrlFailed(candidate) || isDomainBlocked(candidate)) {
-                continue;
-            }
-            const candidateResolved = readSuccessCache(candidate);
-            const target = normalizeUrl(candidateResolved || candidate);
-            if (!target || isUrlFailed(target) || isDomainBlocked(target)) {
-                continue;
-            }
-            try {
-                const okUrl = await probeImage(target);
-                writeSuccessCache(candidate, okUrl);
-                if (src) {
-                    writeSuccessCache(src, okUrl);
-                }
-                clearFailure(candidate);
-                clearFailure(okUrl);
-                return okUrl;
-            } catch (e) {
-                markFailure(target);
-            }
-        }
-        return '';
-    }
-
     function setDefaultLogoIfNeeded(img) {
         const defaultLogo = img.dataset.default || "{{ $defaultLogo }}";
         if (!img.src || img.src === '' || img.src.endsWith('/') || img.src.endsWith('about:blank')) {
@@ -1572,6 +1513,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadImage(img) {
         if (img._loaded || img._loading) return;
         setDefaultLogoIfNeeded(img);
+        const primary = normalizeUrl(img.dataset.src || '');
         const candidates = buildCandidateList(img);
         if (!candidates.length) {
             img._loaded = true;
@@ -1605,14 +1547,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             img.onload = function() {
                 if (imageLooksBlank(img)) {
+                    markFailure(current);
                     tryNext();
                     return;
                 }
                 img._loaded = true;
                 img.removeAttribute('data-src');
+                // 记录最终可用的 logo 地址：下次访问直接命中缓存，跳过整条兜底探测链
+                if (primary) {
+                    writeSuccessCache(primary, current);
+                }
+                clearFailure(current);
+                if (primary) {
+                    clearFailure(primary);
+                }
                 cleanup();
             };
             img.onerror = function() {
+                markFailure(current);
                 tryNext();
             };
             img.src = current;
@@ -1646,7 +1598,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const preloadQueue = [];
     let preloadPumping = false;
-    const PRELOAD_CONCURRENCY = 5;
+    const PRELOAD_CONCURRENCY = 8;
     let preloadActive = 0;
 
     function pumpPreloadQueue() {
@@ -1713,8 +1665,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function preloadListImages(list) {
         const images = Array.from(list.querySelectorAll('img.lazy'));
         if (!images.length) return;
-        const eagerLimit = 6;
-        scheduleBurstLoad(images.slice(0, eagerLimit), 2);
+        const eagerLimit = 10;
+        scheduleBurstLoad(images.slice(0, eagerLimit), 3);
         const lazyPart = images.slice(eagerLimit).filter((img) => !img._loaded);
         if (!lazyPart.length) return;
         if ('requestIdleCallback' in window) {
@@ -1738,7 +1690,7 @@ document.addEventListener('DOMContentLoaded', function() {
             pendingLazyImages.delete(entry.target);
             obs.unobserve(entry.target);
         });
-    }, { rootMargin: '260px 0px' }) : null;
+    }, { rootMargin: '400px 0px' }) : null;
 
     function observeLazyImage(img) {
         if (img.classList.contains('_observed')) return;
