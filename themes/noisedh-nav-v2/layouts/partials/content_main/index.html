@@ -664,14 +664,16 @@ body.io-black-mode .large-text {
     {{ $hotCfg := .Site.Params.hotSites }}
     {{ $hotEnabled := true }}
     {{ $hotTaxonomy := "热门站点" }}
-    {{ $hotLimit := 12 }}
+    {{ $hotLimit := 100 }}{{/* limit=0 或未设置时不限制榜单数量，取服务端接口上限 100 */}}
+    {{ $hotCollapseLimit := 12 }}
     {{ $hotStorageKey := "noisedh_site_clicks_v1" }}
-    {{ $hotApi := .Site.Params.serverUrl }}
+    {{ $hotApi := .Site.Params.header.serverUrl | default .Site.Params.serverUrl }}
     {{ $hotDefaults := slice }}
     {{ with $hotCfg }}
         {{ if eq (printf "%v" .enable) "false" }}{{ $hotEnabled = false }}{{ end }}
         {{ with .taxonomy }}{{ $hotTaxonomy = . }}{{ end }}
         {{ with .limit }}{{ if gt (int .) 0 }}{{ $hotLimit = int . }}{{ end }}{{ end }}
+        {{ with .collapseLimit }}{{ if gt (int .) 0 }}{{ $hotCollapseLimit = int . }}{{ end }}{{ end }}
         {{ with .storageKey }}{{ $hotStorageKey = . }}{{ end }}
         {{ with .apiBase }}{{ $hotApi = . }}{{ end }}
         {{ with .defaults }}{{ $hotDefaults = . }}{{ end }}
@@ -701,7 +703,7 @@ body.io-black-mode .large-text {
                     {{ end }}
                 </div>
                 {{ range $j, $sub := $cat.list }}
-                    <div class="row card-list" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 (print $cat.taxonomy $sub.term) }}" data-initial-hidden="{{ if ne $j 0 }}1{{ else }}0{{ end }}" data-collapse-limit="{{ $collapseLimit }}">
+                    <div class="row card-list" data-subcat="subcat{{ $i }}_{{ $j }}" id="{{ md5 (print $cat.taxonomy $sub.term) }}" data-initial-hidden="{{ if ne $j 0 }}1{{ else }}0{{ end }}" data-collapse-limit="{{ if $isHot }}{{ $hotCollapseLimit }}{{ else }}{{ $collapseLimit }}{{ end }}">
                         {{ range $k, $link := $sub.links }}
                         {{ $customLogo := "" }}
                         {{ if $link.logo }}
@@ -757,7 +759,7 @@ body.io-black-mode .large-text {
                 {{ end }}
             {{ else if and (isset $cat "list") (eq (len (default (slice) $cat.list)) 1) }}
                 {{ range $j, $sub := $cat.list }}
-                    <div class="row card-list" data-collapse-limit="{{ $collapseLimit }}">
+                    <div class="row card-list" data-collapse-limit="{{ if $isHot }}{{ $hotCollapseLimit }}{{ else }}{{ $collapseLimit }}{{ end }}">
                         {{ range $sub.links }}
                         {{ $customLogo := "" }}
                         {{ if .logo }}
@@ -812,7 +814,7 @@ body.io-black-mode .large-text {
                     </div>
                 {{ end }}
             {{ else }}
-                <div class="row card-list" data-collapse-limit="{{ $collapseLimit }}">
+                <div class="row card-list" data-collapse-limit="{{ if $isHot }}{{ $hotCollapseLimit }}{{ else }}{{ $collapseLimit }}{{ end }}">
                     {{ range $cat.links }}
                     {{ $customLogo := "" }}
                     {{ if .logo }}

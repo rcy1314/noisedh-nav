@@ -59,7 +59,8 @@ relativeURLs = true
   [params.hotSites]
     enable = true
     taxonomy = "热门站点"        # data/webstack.yml 中对应的一级分类名
-    limit = 12                   # 首屏固定展示的卡片数，其余通过「查看更多网址」展开
+    limit = 18                   # 榜单卡片总数（自动组榜时补足到该数量）；设为 0 或不设置则不限制，上限 100（与服务端接口一致）
+    collapseLimit = 12           # 首屏折叠展示数：卡片超过该数量时下方出现「查看更多网址」展开按钮
     storageKey = "noisedh_site_clicks_v1"  # 本机排行缓存键前缀（用于接口超时兜底）
     # apiBase = "https://extension.noisework.cn"  # 可选：覆盖 [params] 的 serverUrl
     # 热门站点为空（或不足 limit）时，优先展示这些网址；仍然不足则从全站随机补足

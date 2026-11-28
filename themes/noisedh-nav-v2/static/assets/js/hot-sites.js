@@ -1,7 +1,7 @@
 /*
  * 热门站点（全站共享排序）
  * 1. 点击卡片时上报到 yaml-server 的 /api/hot-sites/click
- * 2. 首页加载时读取 /api/hot-sites?limit=200，按所有访客的累计点击量排序
+ * 2. 首页加载时读取 /api/hot-sites?limit=100，按所有访客的累计点击量排序
  * 3. 热门站点为空时：先放 config.toml 的 defaults，再按点击量补，最后从全站随机补足
  * 4. 接口不可用时退回本机缓存/本地计数，页面不会卡住
  * 5. 配合 content_main 的折叠逻辑固定首屏数量（data-collapse-limit）
@@ -15,7 +15,8 @@
     var grids = Array.prototype.slice.call(block.querySelectorAll('.row.card-list'));
 
     var limit = parseInt(block.getAttribute('data-hot-limit'), 10);
-    if (!(limit > 0)) limit = 12;
+    // limit=0 或未设置时不限制榜单数量，兜底取服务端接口上限 100（服务端 MAX_LIMIT）
+    if (!(limit > 0)) limit = 100;
 
     var storageKey = block.getAttribute('data-hot-storage-key') || 'noisedh_site_clicks_v1';
     var cacheKey = storageKey + '_server';
@@ -79,7 +80,6 @@
 
         grid = document.createElement('div');
         grid.className = 'row card-list';
-        grid.setAttribute('data-collapse-limit', String(limit));
 
         var title = block.querySelector('.category-title');
         if (title && title.parentNode === block) {
@@ -178,10 +178,13 @@
     }
 
     // 排序后同步折叠边界；始终保留标记，展开/收起由 .is-expanded 的 CSS 控制
+    // 折叠阈值读网格自身的 data-collapse-limit（首屏展示数），与榜单总数 limit 相互独立
     function syncCollapse(grid) {
         if (!grid.dataset.collapseId) return;
+        var collapseAttr = parseInt(grid.getAttribute('data-collapse-limit'), 10);
+        var collapseAt = collapseAttr > 0 ? collapseAttr : limit;
         getCards(grid).forEach(function (card, index) {
-            card.classList.toggle('is-collapsed-item', index >= limit);
+            card.classList.toggle('is-collapsed-item', index >= collapseAt);
         });
     }
 
@@ -189,7 +192,6 @@
         if (!next || typeof next !== 'object') return;
         counts = next;
         grids.forEach(function (grid) {
-            grid.setAttribute('data-collapse-limit', String(limit));
             var cards = getCards(grid);
             if (!cards.length) return;
 
@@ -226,7 +228,7 @@
         var controller = window.AbortController ? new AbortController() : null;
         var timer = controller ? setTimeout(function () { controller.abort(); }, 5000) : null;
 
-        fetch(apiBase + '/api/hot-sites?limit=200', {
+        fetch(apiBase + '/api/hot-sites?limit=100', {
             mode: 'cors',
             credentials: 'omit',
             signal: controller ? controller.signal : undefined
