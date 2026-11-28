@@ -171,6 +171,7 @@
                                     server="{{ $.Site.Params.musicServer }}"
                                     type="playlist"
                                     fixed="false"
+                                    preload="none"
                                     api="{{ $.Site.Params.musicApi | default "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r" }}"
                                     id="{{ $.Site.Params.musicId }}"></meting-js>
                             </div>
@@ -226,14 +227,33 @@
                     </div>
                     <div class="header-bilibili-panel">
                         <div class="bilibiliindex top-bilibili-block">
-                            <iframe src='{{ printf "%s?id=%s" (( $.Site.Params.bilibili.iframeUrl | default "bilibili.html") | relURL) ($.Site.Params.bilibili.mediaId | default "") }}'
+                            <iframe data-src='{{ printf "%s?id=%s" (( $.Site.Params.bilibili.iframeUrl | default "bilibili.html") | relURL) ($.Site.Params.bilibili.mediaId | default "") }}'
                                 class="bilibili-frame"
                                 allowtransparency="true"
                                 allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                                allowfullscreen
-                                loading="{{ $.Site.Params.bilibili.iframeLoading | default "lazy" }}"></iframe>
+                                allowfullscreen></iframe>
                         </div>
                     </div>
+                    <script>
+                    // 直播组件延后加载:iframe 内嵌 B 站播放器的 load 会链式阻塞父页面 window.load,
+                    // 导致地址栏一直转圈;改为页面整体加载完成后再挂 src,不占用首屏载入
+                    (function() {
+                        function loadBilibiliFrame() {
+                            var frame = document.querySelector('.bilibili-frame[data-src]');
+                            if (frame) {
+                                frame.src = frame.getAttribute('data-src');
+                                frame.removeAttribute('data-src');
+                            }
+                        }
+                        if (document.readyState === 'complete') {
+                            window.setTimeout(loadBilibiliFrame, 0);
+                        } else {
+                            window.addEventListener('load', function() {
+                                window.setTimeout(loadBilibiliFrame, 0);
+                            });
+                        }
+                    })();
+                    </script>
                 </div>
                 <div class="header-page-region">
                     {{ range .Site.Params.header.tabs }}
