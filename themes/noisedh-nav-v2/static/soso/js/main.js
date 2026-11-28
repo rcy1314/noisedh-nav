@@ -533,4 +533,173 @@ var content = `
 Github:  https://github.com/imsyy/Snavigation
 `
 console.log(`%c${title1} %c${title2}
-%c${content}`, styleTitle1, styleTitle2, styleContent)
+%c${content}`, styleTitle1, styleTitle2, styleContent);
+
+//最近收录的站点（数据源与逻辑参考主页 component_header：先渲染缓存再拉取更新，无数据时隐藏）
+(function () {
+    var RECENT_API = (window.CONFIG && window.CONFIG.recentSitesApi) || "https://extension.noisework.cn/api/notifications";
+    var CACHE_KEY = "recentSites";
+
+    function hideRecent() {
+        var box = document.getElementById("soso-recent");
+        if (box) {
+            box.style.display = "none";
+        }
+    }
+
+    function safeExternalHref(url) {
+        var value = String(url || "").trim();
+        if (/^https?:\/\//i.test(value)) {
+            return value;
+        }
+        return "#";
+    }
+
+    function renderItem(site) {
+        var li = document.createElement("li");
+        var title = document.createElement("strong");
+        title.className = "recent-site-title";
+        title.textContent = String((site && site.title) ? site.title : "") + "：";
+
+        var link = document.createElement("a");
+        link.className = "recent-site-url";
+        link.href = safeExternalHref(site && site.url);
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = String((site && site.url) ? site.url : "");
+
+        var desc = document.createElement("span");
+        desc.className = "recent-site-desc";
+        desc.textContent = String((site && site.description) ? site.description : "无描述");
+
+        li.appendChild(title);
+        li.appendChild(link);
+        li.appendChild(desc);
+        return li;
+    }
+
+    //书签/设置面板打开期间（openBox 已收纳卡片）不强制重新显示
+    function isPanelOpen() {
+        var content = document.getElementById("content");
+        return !!(content && content.classList.contains("box"));
+    }
+
+    function renderRecent(data) {
+        var box = document.getElementById("soso-recent");
+        var list = document.getElementById("soso-recent-list");
+        if (!box || !list) {
+            return;
+        }
+        list.innerHTML = "";
+        list.removeAttribute("data-scrolling");
+        list.scrollTop = 0;
+
+        //与主页一致：公告消息直接展示
+        if (data && data.message) {
+            var messageItem = document.createElement("li");
+            messageItem.className = "recent-site-message";
+            messageItem.textContent = String(data.message);
+            list.appendChild(messageItem);
+            if (!isPanelOpen()) {
+                box.style.display = "";
+            }
+            return;
+        }
+
+        if (!Array.isArray(data) || !data.length) {
+            hideRecent();
+            return;
+        }
+        data.forEach(function (site) {
+            list.appendChild(renderItem(site));
+        });
+        if (!isPanelOpen()) {
+            box.style.display = "";
+            startScrolling(list);
+        }
+    }
+
+    function startScrolling(element) {
+        if (!element || element.dataset.scrolling === "true") {
+            return;
+        }
+        var scrollHeight = element.scrollHeight;
+        var visibleHeight = element.clientHeight;
+        var maxScrollTop = Math.max(0, scrollHeight - visibleHeight);
+        var scrollTop = 0;
+        var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduceMotion || scrollHeight <= visibleHeight + 4) {
+            return;
+        }
+        element.dataset.scrolling = "true";
+        var lastFrameTime = 0;
+        function scroll(now) {
+            if (document.visibilityState !== "visible") {
+                requestAnimationFrame(scroll);
+                return;
+            }
+            if (now - lastFrameTime < 42) {
+                requestAnimationFrame(scroll);
+                return;
+            }
+            lastFrameTime = now;
+            scrollTop += 0.3;
+            if (scrollTop >= maxScrollTop) {
+                scrollTop = 0;
+            }
+            element.scrollTop = scrollTop;
+            requestAnimationFrame(scroll);
+        }
+        requestAnimationFrame(scroll);
+    }
+
+    function loadRecent() {
+        var box = document.getElementById("soso-recent");
+        if (!box) {
+            return;
+        }
+        var cached = null;
+        try {
+            cached = localStorage.getItem(CACHE_KEY);
+        } catch (error) {}
+        var renderedCache = false;
+        if (cached) {
+            try {
+                renderRecent(JSON.parse(cached));
+                renderedCache = true;
+            } catch (error) {}
+        }
+        var splitter = RECENT_API.indexOf("?") > -1 ? "&" : "?";
+        fetch(RECENT_API + splitter + "r=" + Date.now(), { cache: "no-store" })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("recent api status " + response.status);
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                if ((data && data.message) || (Array.isArray(data) && data.length)) {
+                    try {
+                        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+                    } catch (error) {}
+                    renderRecent(data);
+                } else if (!renderedCache) {
+                    hideRecent();
+                }
+            })
+            .catch(function () {
+                if (!renderedCache) {
+                    hideRecent();
+                }
+            });
+    }
+
+    //暴露手动刷新入口，便于复用与排查
+    window.loadSosoRecent = loadRecent;
+
+    try {
+        loadRecent();
+    } catch (error) {
+        window.__sosoRecentError = error.message;
+    }
+})();

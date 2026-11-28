@@ -153,6 +153,9 @@ var project_settings_preinstall = {
     show_welcome: "1",
     auto_focus: "0",
     show_aplayer: "1",
+    show_clock: "1",
+    show_foot: "1",
+    show_doodle: "1",
     music_playlist_id: "2141128031",
 };
 
@@ -265,7 +268,7 @@ function getProjectSettings() {
             changed = true;
         }
     }
-    var boolKeys = ["show_weather", "show_welcome", "auto_focus", "show_aplayer"];
+    var boolKeys = ["show_weather", "show_welcome", "auto_focus", "show_aplayer", "show_clock", "show_foot", "show_doodle"];
     for (var i = 0; i < boolKeys.length; i++) {
         var boolKey = boolKeys[i];
         var boolValue = String(settings[boolKey]);
@@ -301,6 +304,9 @@ function applyProjectSettings() {
     var projectSettings = getProjectSettings();
     var hideWeather = !isSettingEnabled(projectSettings.show_weather);
     $(".weather").toggle(!hideWeather);
+    $(".tool-all .time").toggle(isSettingEnabled(projectSettings.show_clock));
+    $(".foot").toggle(isSettingEnabled(projectSettings.show_foot));
+    $(".doodle-layer").toggle(isSettingEnabled(projectSettings.show_doodle));
     if (isSettingEnabled(projectSettings.auto_focus) && window.innerWidth > 768) {
         setTimeout(function () {
             $(".wd").focus();
@@ -615,6 +621,8 @@ function openBox() {
         "filter": "blur(4px)",
         "transition": "ease 0.3s",
     });
+    //收纳最近收录卡片，避免与书签/设置面板叠加展示
+    $(".recent").stop(true, true).slideUp(220);
 }
 
 // 书签关闭
@@ -633,6 +641,10 @@ function closeBox() {
         "filter": "blur(0px)",
         "transition": "ease 0.3s",
     });
+    //恢复最近收录卡片（有数据时）
+    if ($("#soso-recent-list").children().length > 0) {
+        $(".recent").stop(true, true).slideDown(280);
+    }
 }
 
 //显示设置搜索引擎列表
@@ -751,9 +763,11 @@ $(document).ready(function () {
         closeSet();
     });
 
-    // 点击搜索引擎时隐藏自动提示
+    // 点击搜索引擎时隐藏自动提示（无建议内容时不显示空白提示条）
     $(document).on('click', '.se', function () {
-        $('#keywords').toggle();
+        if ($("#keywords").children().length > 0) {
+            $('#keywords').toggle();
+        }
     });
 
     // 恢复自动提示

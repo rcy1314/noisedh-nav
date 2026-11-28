@@ -36,20 +36,27 @@
             --main-input-color: rgba(255, 255, 255, 0.95);
             --main-input-text-placeholder-color: rgba(20, 19, 26, 0.5);
             --main-text-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
-            --main-search-shadow: 0 14px 0 rgba(10, 10, 18, 0.28);
-            --main-search-hover-shadow: 0 18px 0 rgba(10, 10, 18, 0.34);
+            --main-search-shadow: 0 12px 0 rgba(16, 14, 28, 0.2);
+            --main-search-hover-shadow: 0 16px 0 rgba(16, 14, 28, 0.26);
             --border-bottom-color-hover: rgba(20, 19, 26, 0.35);
             --border-bottom-color-active: rgba(20, 19, 26, 0.9);
-            --sticker-outline: rgba(20, 19, 26, 0.92);
-            --sticker-outline-soft: rgba(20, 19, 26, 0.35);
-            --sticker-glow: rgba(255, 255, 255, 0.32);
+            /* 手绘风 */
+            --ink: rgba(31, 27, 46, 0.92);
+            --ink-soft: rgba(31, 27, 46, 0.4);
+            --paper: rgba(255, 255, 255, 0.92);
+            --crayon-yellow: rgba(255, 214, 102, 0.9);
+            --crayon-pink: rgba(255, 122, 172, 0.85);
+            --crayon-mint: rgba(148, 240, 223, 0.9);
+            --crayon-purple: rgba(186, 158, 255, 0.85);
+            --crayon-cyan: rgba(104, 224, 255, 0.85);
+            --doodle-ink: rgba(255, 255, 255, 0.92);
+            --hand-radius: 18px 24px 20px 26px / 24px 18px 26px 20px;
+            --hand-radius-sm: 10px 14px 12px 15px / 13px 11px 15px 12px;
+            --hand-shadow: 0 10px 0 rgba(16, 14, 28, 0.18);
         }
 
         body {
-            background:
-                radial-gradient(18px 18px at 18px 18px, rgba(255, 255, 255, 0.09) 0 2px, transparent 3px) 0 0 / 24px 24px,
-                radial-gradient(22px 22px at 14px 10px, rgba(255, 255, 255, 0.06) 0 2px, transparent 3px) 0 0 / 28px 28px,
-                var(--body-background-color);
+            background: var(--body-background-color);
         }
 
         .cover {
@@ -58,71 +65,66 @@
                 radial-gradient(rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.22) 130%);
         }
 
+        /* ===== 手绘卡片基础 ===== */
+        .tool-all,
+        .all-search,
+        #keywords,
+        .search-engine,
+        .mark,
+        .set {
+            border: 2.5px solid var(--ink);
+            background:
+                radial-gradient(200px 90px at 12% 0%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 65%),
+                var(--paper);
+            box-shadow: var(--hand-shadow);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+        }
+
         .tool-all {
             position: relative;
             width: clamp(320px, calc(100% - 120px), 560px);
             box-sizing: border-box;
             padding: 14px 14px 12px;
-            border-radius: 18px;
-            border: 2px solid var(--sticker-outline);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78));
-            box-shadow: 0 12px 0 rgba(10, 10, 18, 0.22);
-            backdrop-filter: blur(8px);
+            /* 保持与原版一致的 2px 边框，不改变时间块高度 */
+            border-width: 2px;
+            border-radius: 22px 26px 24px 28px / 26px 22px 28px 24px;
         }
 
-        .tool-all::before {
+        /* 卡片顶部的手绘星光（纯线条涂鸦，非贴纸） */
+        .tool-all::after {
             content: "";
             position: absolute;
-            inset: -10px -10px auto auto;
-            width: 72px;
-            height: 26px;
-            transform: rotate(8deg);
-            background: linear-gradient(90deg, rgba(255, 214, 102, 0.92), rgba(255, 107, 164, 0.92));
-            border: 2px solid var(--sticker-outline);
-            border-radius: 999px;
-            box-shadow: 0 8px 0 rgba(10, 10, 18, 0.18);
-            filter: saturate(1.05);
-            opacity: 0.92;
+            top: -38px;
+            right: 40px;
+            width: 36px;
+            height: 36px;
+            transform: rotate(14deg);
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 6C26 15 33 22 42 24 33 26 26 33 24 42 22 33 15 26 6 24 15 22 22 15 24 6Z' fill='rgba(255,214,102,0.4)' stroke='rgba(255,255,255,0.92)' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
             pointer-events: none;
-        }
-
-        #time_text,
-        #day,
-        .weather,
-        .brand-badge,
-        .power,
-        .set_version-text,
-        .set_version-text2 {
-            color: var(--main-text-color) !important;
-            text-shadow: none !important;
         }
 
         .brand-badge {
-            border: 2px solid var(--sticker-outline);
-            background: linear-gradient(90deg, rgba(164, 255, 239, 0.92), rgba(194, 168, 255, 0.92));
-            box-shadow: 0 10px 0 rgba(10, 10, 18, 0.22);
+            border: 2px solid var(--ink);
+            border-radius: var(--hand-radius-sm);
+            background: var(--crayon-mint);
+            box-shadow: 0 5px 0 rgba(16, 14, 28, 0.16);
+            transform: rotate(-1deg);
+        }
+
+        .brand-badge:hover {
+            transform: rotate(1deg) translateY(-2px);
         }
 
         .all-search {
-            border-radius: 22px;
-            border: 2px solid var(--sticker-outline);
             position: relative;
-            background:
-                radial-gradient(160px 64px at 15% 15%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 62%),
-                linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.86));
-            box-shadow: 0 14px 0 rgba(10, 10, 18, 0.28);
             overflow: visible;
+            border-radius: 24px 20px 26px 22px / 20px 26px 22px 24px;
         }
 
-        .all-search::after {
-            content: "";
-            position: absolute;
-            inset: 2px;
-            border-radius: 20px;
-            border: 0;
-            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.22);
-            pointer-events: none;
-            filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+        /* 搜索框容器作为建议下拉的定位基准 */
+        .sou {
+            position: relative;
         }
 
         .sou form .se,
@@ -131,117 +133,161 @@
         }
 
         #icon-se,
-        #icon-sou {
-            color: rgba(20, 19, 26, 0.92) !important;
+        #icon-sou,
+        #icon-menu {
+            color: var(--ink) !important;
         }
 
+        /* 图标悬停不出现白色背景块 */
         .sou form .se:hover,
         .sou-button:hover {
-            background: rgba(255, 255, 255, 0.75) !important;
+            background: none !important;
         }
 
         #keywords {
-            border: 2px solid var(--sticker-outline);
-            box-shadow: 0 12px 0 rgba(10, 10, 18, 0.22);
-            background: rgba(255, 255, 255, 0.92);
+            /* 贴在搜索框正下方（跟随上移后的搜索框），不再遮挡输入内容 */
+            top: auto;
+            margin-top: 10px;
+            border-radius: var(--hand-radius);
+            padding: 6px;
+            box-shadow: 0 8px 0 rgba(16, 14, 28, 0.16);
+            animation: fade 0.5s;
+        }
+
+        .onsearch #keywords {
+            /* 搜索框上移 1.4 × 43px ≈ 60px，建议下拉同步跟随 */
+            transform: translateY(-60px);
+        }
+
+        /* 无搜索建议时不渲染空白提示条 */
+        #keywords:empty {
+            display: none !important;
         }
 
         .keyword:hover,
         .keyword.choose {
-            background:
-                linear-gradient(90deg, rgba(255, 214, 102, 0.52), rgba(255, 107, 164, 0.32)) !important;
+            background: rgba(255, 214, 102, 0.5) !important;
+        }
+
+        .search-engine {
+            border-radius: var(--hand-radius);
+        }
+
+        .search-engine .se-li {
+            border: 2px solid var(--ink-soft);
+            border-radius: var(--hand-radius-sm);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .search-engine .se-li:hover {
+            border-color: var(--ink);
+            background: #fff;
+            transform: rotate(-0.6deg);
         }
 
         .mark,
         .set {
-            border: 2px solid var(--sticker-outline);
-            border-radius: 18px;
-            box-shadow: 0 14px 0 rgba(10, 10, 18, 0.18);
-            background:
-                radial-gradient(220px 120px at 10% 0%, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0) 62%),
-                rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(10px);
-        }
-
-        .mark .tab,
-        .set .tabs {
-            padding: 8px 8px 0;
+            border-radius: 20px 24px 22px 26px / 24px 20px 26px 22px;
         }
 
         .mark .tab .tab-item,
         .set .tabs .tab-items {
-            border-radius: 14px 14px 12px 12px;
-            margin: 0 6px;
+            margin: 0 5px;
             border: 2px solid transparent;
+            border-radius: var(--hand-radius-sm);
         }
 
         .mark .tab .tab-item:hover,
         .set .tabs .tab-items:hover {
-            border-color: var(--sticker-outline-soft);
+            border-color: var(--ink-soft);
+            background: rgba(255, 255, 255, 0.55);
         }
 
         .mark .tab .tab-item.active,
         .set .tabs .tab-items.actives {
-            background: linear-gradient(90deg, rgba(164, 255, 239, 0.78), rgba(194, 168, 255, 0.78));
-            border-color: var(--sticker-outline);
+            border-color: var(--ink);
+            background: var(--crayon-yellow);
+            transform: rotate(-1.2deg);
+            box-shadow: 0 4px 0 rgba(16, 14, 28, 0.14);
         }
 
+        /* ===== 书签纸片与蜡笔下划线 ===== */
         .quick,
         .quicks {
-            border: 2px solid var(--sticker-outline);
-            border-radius: 16px;
-            background:
-                linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.84));
-            box-shadow: 0 10px 0 rgba(10, 10, 18, 0.16);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            border: 2px solid var(--ink);
+            border-radius: var(--hand-radius-sm);
+            background: var(--paper);
+            box-shadow: 0 6px 0 rgba(16, 14, 28, 0.12);
         }
 
-        .quick::before,
-        .quicks::before {
+        .quick::after,
+        .quicks::after {
             content: "";
             position: absolute;
-            left: -18%;
-            top: -45%;
-            width: 60%;
-            height: 110%;
-            transform: rotate(-18deg);
-            background: linear-gradient(90deg, rgba(255, 214, 102, 0.55), rgba(255, 107, 164, 0.35));
-            filter: saturate(1.1);
-            opacity: 0.9;
+            left: 20%;
+            right: 20%;
+            bottom: 6px;
+            height: 3px;
+            border-radius: 99px;
+            background: var(--chip-c, var(--crayon-yellow));
+            opacity: 0.8;
             pointer-events: none;
         }
 
-        .quick[data-s="github"]::before,
-        .quicks[data-s="github"]::before {
-            background: linear-gradient(90deg, rgba(194, 168, 255, 0.6), rgba(93, 230, 255, 0.3));
+        .quick[data-s="bilibili"],
+        .quicks[data-s="bilibili"] {
+            --chip-c: var(--crayon-pink);
         }
 
-        .quick[data-s="steam"]::before,
-        .quicks[data-s="steam"]::before {
-            background: linear-gradient(90deg, rgba(93, 230, 255, 0.55), rgba(164, 255, 239, 0.35));
+        .quick[data-s="github"],
+        .quicks[data-s="github"] {
+            --chip-c: var(--crayon-purple);
         }
 
-        .quick[data-s="bilibili"]::before,
-        .quicks[data-s="bilibili"]::before {
-            background: linear-gradient(90deg, rgba(255, 107, 164, 0.55), rgba(255, 214, 102, 0.32));
+        .quick[data-s="steam"],
+        .quicks[data-s="steam"] {
+            --chip-c: var(--crayon-cyan);
         }
 
+        .quick[data-s="v2ex"],
+        .quicks[data-s="v2ex"] {
+            --chip-c: var(--crayon-mint);
+        }
+
+        .quick[data-s="scp"],
+        .quicks[data-s="scp"] {
+            --chip-c: rgba(143, 183, 255, 0.9);
+        }
+
+        .quick:hover,
+        .quicks:hover {
+            background: #fff;
+            transform: translateY(-2px) rotate(-0.5deg);
+        }
+
+        .quick:active,
+        .quicks:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 0 rgba(16, 14, 28, 0.12);
+        }
+
+        /* ===== 设置按钮 ===== */
         #menu {
-            border: 2px solid var(--sticker-outline);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78));
-            box-shadow: 0 12px 0 rgba(10, 10, 18, 0.22);
             position: fixed;
-            top: 8px;
-            right: 8px;
+            top: 14px;
+            right: 14px;
             z-index: 2147483100;
-            isolation: isolate;
-            pointer-events: auto;
-            transform: translateZ(0);
+            border: 2.5px solid var(--ink);
+            background: var(--paper);
+            border-radius: 46% 54% 52% 48% / 52% 46% 54% 48%;
+            box-shadow: 0 8px 0 rgba(16, 14, 28, 0.18);
         }
 
-        #icon-menu {
-            color: rgba(20, 19, 26, 0.92) !important;
+        #menu:hover {
+            background: #fff;
+            transform: rotate(8deg);
         }
 
         .quick_list_div,
@@ -258,149 +304,558 @@
         .quick_add_cancel,
         .quick_add_save,
         .wallpaper_save {
-            border: 2px solid var(--sticker-outline);
-            background: rgba(255, 255, 255, 0.9) !important;
-            box-shadow: 0 10px 0 rgba(10, 10, 18, 0.16);
+            border: 2px solid var(--ink);
+            border-radius: var(--hand-radius-sm);
+            background: var(--paper) !important;
+            box-shadow: 0 5px 0 rgba(16, 14, 28, 0.14);
+        }
+
+        .quick_list_div:hover,
+        .se_list_div:hover {
+            background: #fff !important;
+        }
+
+        .set_se_list_add,
+        .set_quick_list_add {
+            background: var(--crayon-yellow) !important;
+        }
+
+        .set_se_list_preinstall,
+        .set_quick_list_preinstall {
+            background: rgba(255, 158, 194, 0.75) !important;
+        }
+
+        .se_add_save,
+        .quick_add_save,
+        .wallpaper_save,
+        #project_settings_save,
+        #my_data_out {
+            background: var(--crayon-mint) !important;
+        }
+
+        .but-ordinary:hover,
+        .set_se_list_add:hover,
+        .set_se_list_preinstall:hover,
+        .set_quick_list_add:hover,
+        .set_quick_list_preinstall:hover,
+        .se_add_save:hover,
+        .se_add_cancel:hover,
+        .quick_add_save:hover,
+        .quick_add_cancel:hover,
+        .wallpaper_save:hover {
+            transform: translateY(-2px);
+        }
+
+        .but-ordinary:active,
+        .set_se_list_add:active,
+        .set_se_list_preinstall:active,
+        .set_quick_list_add:active,
+        .set_quick_list_preinstall:active,
+        .se_add_save:active,
+        .se_add_cancel:active,
+        .quick_add_save:active,
+        .quick_add_cancel:active,
+        .wallpaper_save:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(16, 14, 28, 0.14);
         }
 
         .set_blocks_content button {
-            border: 2px solid var(--sticker-outline);
-            background: rgba(255, 255, 255, 0.94);
+            border: 2px solid var(--ink-soft);
+            border-radius: 9px 12px 10px 13px / 12px 9px 13px 10px;
+            background: rgba(255, 255, 255, 0.9);
         }
 
-        .sticker-layer {
+        .set_blocks_content button:hover {
+            border-color: var(--ink);
+            background: var(--crayon-yellow);
+        }
+
+        /* ===== 表单 ===== */
+        .add_content input,
+        #wallpaper_url input,
+        .playlist-input {
+            border: 2px solid var(--ink-soft);
+            border-radius: var(--hand-radius-sm);
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--main-text-color);
+        }
+
+        .add_content input:focus,
+        #wallpaper_url input:focus,
+        .playlist-input:focus {
+            outline: none;
+            border-color: var(--ink);
+            box-shadow: 0 4px 0 rgba(16, 14, 28, 0.12);
+        }
+
+        .playlist-row {
+            margin-top: 4px;
+        }
+
+        .playlist-wrap {
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        .playlist-label {
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--main-text-color);
+        }
+
+        .playlist-input {
+            width: 100%;
+            height: 42px;
+            box-sizing: border-box;
+            padding: 0 14px;
+            font-size: 1rem;
+            transition: 0.25s;
+        }
+
+        /* ===== 最近收录（参考主页 component_header：便签列表 + 自动滚动） ===== */
+        /* 挂载槽高度为 0，不参与居中布局：时间块位置与原版保持一致 */
+        .recent-slot {
+            position: relative;
+            width: 100%;
+            height: 0;
+            pointer-events: none;
+        }
+
+        .recent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: calc(100% - 60px);
+            max-width: 680px;
+            box-sizing: border-box;
+            margin: 16px auto 0;
+            padding: 12px 14px 10px;
+            border: 2.5px solid var(--ink);
+            border-radius: 20px 24px 22px 26px / 24px 20px 26px 22px;
+            background: var(--paper);
+            box-shadow: var(--hand-shadow);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            animation: fade 0.5s;
+            pointer-events: auto;
+        }
+
+        .recent-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--main-text-color);
+        }
+
+        .recent-title svg {
+            flex: none;
+            width: 18px;
+            height: 18px;
+            transform: rotate(-8deg);
+            fill: rgba(255, 214, 102, 0.5);
+            stroke: var(--ink);
+            stroke-width: 2.4;
+            stroke-linejoin: round;
+        }
+
+        .recent-list {
+            list-style: none;
+            margin: 0;
+            padding: 0 2px 4px;
+            max-height: 156px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+        }
+
+        .recent-list li {
+            margin-top: 8px;
+            padding: 8px 14px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border: 2px solid var(--ink);
+            border-radius: 14px 14px 14px 6px;
+            background: rgba(255, 255, 255, 0.88);
+            box-shadow: 0 4px 0 rgba(16, 14, 28, 0.1);
+            transform: rotate(-1deg);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--main-text-color);
+            transition: 0.25s;
+        }
+
+        .recent-list li:first-child {
+            margin-top: 0;
+        }
+
+        .recent-list li:nth-child(2n) {
+            transform: rotate(1deg);
+        }
+
+        .recent-list li:hover {
+            background: #fff;
+            transform: rotate(0deg) translateY(-1px);
+        }
+
+        .recent-site-title {
+            font-weight: 700;
+            color: var(--main-text-color);
+        }
+
+        .recent-site-url {
+            color: rgb(244, 167, 89);
+        }
+
+        .recent-list li:hover .recent-site-url {
+            color: rgb(226, 141, 56);
+        }
+
+        .recent-site-desc {
+            color: var(--main-text-color);
+            opacity: 0.6;
+        }
+
+        .recent-site-message {
+            text-align: center;
+        }
+
+        /* ===== 选项纸片（单选 / 复选通用） ===== */
+        .form-radio {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            margin: 0 10px 12px 0;
+            border: 2px solid var(--ink-soft);
+            border-radius: var(--hand-radius-sm);
+            background: rgba(255, 255, 255, 0.85);
+            cursor: pointer;
+            transition: 0.25s;
+            box-sizing: border-box;
+        }
+
+        .form-radio:hover {
+            border-color: var(--ink);
+            transform: translateY(-2px) rotate(-0.4deg);
+        }
+
+        .form-radio:has(input:checked) {
+            border-color: var(--ink);
+            background: rgba(255, 214, 102, 0.45);
+            box-shadow: 0 4px 0 rgba(16, 14, 28, 0.12);
+        }
+
+        input[type="radio"]+label,
+        input[type="radio"]:checked+label {
+            padding: 0;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        input[type="radio"]:checked+label {
+            font-weight: 700;
+        }
+
+        .option-grid {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .option-grid .form-radio {
+            width: calc(50% - 10px);
+        }
+
+        /* 项目设置页：内容较多时允许面板内滚动 */
+        .project-pane {
+            height: 340px;
+            overflow-y: auto;
+        }
+
+        .project-pane .set_blocks {
+            height: auto;
+            width: 100%;
+        }
+
+        .project-pane .set_blocks_content {
+            height: auto;
+        }
+
+        .set-project-option[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            flex: none;
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            border: 2px solid var(--ink);
+            border-radius: 6px 9px 7px 10px / 9px 6px 10px 7px;
+            background: #fff;
+            display: inline-grid;
+            place-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .set-project-option[type="checkbox"]::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            background: var(--ink);
+            clip-path: polygon(14% 44%, 0 62%, 38% 100%, 100% 18%, 82% 2%, 36% 64%);
+            transform: scale(0);
+            transition: 0.15s;
+        }
+
+        .set-project-option[type="checkbox"]:checked {
+            background: var(--crayon-mint);
+        }
+
+        .set-project-option[type="checkbox"]:checked::before {
+            transform: scale(1) rotate(-2deg);
+        }
+
+        /* ===== 提示便签 ===== */
+        .set_tip {
+            position: relative;
+            border: 2px dashed var(--ink-soft);
+            border-radius: var(--hand-radius);
+            background: rgba(255, 244, 205, 0.92);
+            box-shadow: 0 8px 0 rgba(16, 14, 28, 0.1);
+        }
+
+        .set_version-text {
+            border-bottom: 2px solid var(--crayon-yellow);
+        }
+
+        /* ===== 深浅文字修正 ===== */
+        #time_text,
+        #day,
+        .weather,
+        .brand-badge,
+        .set_version-text,
+        .set_version-text2,
+        .set_text,
+        .playlist-label {
+            color: var(--main-text-color) !important;
+            text-shadow: none !important;
+        }
+
+        .power,
+        .power a {
+            color: rgba(255, 255, 255, 0.85) !important;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        /* ===== 手绘涂鸦层 ===== */
+        .doodle-layer {
             position: fixed;
             inset: 0;
-            z-index: 2;
+            z-index: 1;
             pointer-events: none;
-            opacity: 0.95;
+            filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.22));
         }
 
-        .sticker-float {
+        .doodle {
             position: absolute;
-            border-radius: 18px;
-            border: 2px solid var(--sticker-outline);
-            box-shadow: 0 14px 0 rgba(10, 10, 18, 0.16);
-            background: linear-gradient(120deg, rgba(255, 214, 102, 0.92), rgba(255, 107, 164, 0.92));
-            filter: saturate(1.05);
+            overflow: visible;
+            animation: doodle-bob 7s ease-in-out infinite alternate;
         }
 
-        .sf-1 {
-            width: 74px;
-            height: 38px;
-            left: 14px;
-            top: 16px;
-            transform: rotate(-8deg);
+        .doodle path,
+        .doodle ellipse {
+            fill: none;
+            stroke: var(--doodle-ink);
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .sf-2 {
-            width: 96px;
-            height: 44px;
-            right: 18px;
-            top: 78px;
-            transform: rotate(10deg);
-            background: linear-gradient(120deg, rgba(93, 230, 255, 0.9), rgba(194, 168, 255, 0.9));
+        .doodle .ghost {
+            opacity: 0.35;
         }
 
-        .sf-3 {
+        .doodle .trail {
+            stroke-dasharray: 1 8;
+            opacity: 0.75;
+        }
+
+        .d-sparkle-1 .body {
+            fill: rgba(255, 214, 102, 0.45);
+        }
+
+        .d-sparkle-2 .body {
+            fill: rgba(93, 230, 255, 0.4);
+        }
+
+        .d-heart .body {
+            fill: rgba(255, 122, 172, 0.45);
+        }
+
+        .d-cloud .body {
+            fill: rgba(255, 255, 255, 0.16);
+        }
+
+        .d-plane .body {
+            fill: rgba(255, 255, 255, 0.18);
+        }
+
+        .d-note .head {
+            fill: var(--doodle-ink);
+            stroke: none;
+        }
+
+        .d-sparkle-1 {
+            width: 44px;
+            left: 9%;
+            top: 13%;
+            --r: -10deg;
+        }
+
+        .d-sparkle-2 {
+            width: 30px;
+            right: 11%;
+            top: 20%;
+            --r: 8deg;
+            animation-duration: 9s;
+            animation-delay: -3s;
+        }
+
+        .d-cloud {
             width: 84px;
-            height: 40px;
-            left: 18px;
-            bottom: 86px;
-            transform: rotate(7deg);
-            background: linear-gradient(120deg, rgba(164, 255, 239, 0.9), rgba(255, 214, 102, 0.9));
+            right: 20%;
+            top: 7%;
+            opacity: 0.85;
+            animation-duration: 11s;
         }
 
-        .sf-4 {
-            width: 110px;
-            height: 52px;
-            right: 20px;
-            bottom: 120px;
-            transform: rotate(-6deg);
-            background: linear-gradient(120deg, rgba(255, 107, 164, 0.9), rgba(93, 230, 255, 0.88));
+        .d-plane {
+            width: 130px;
+            left: 5%;
+            top: 30%;
+            animation-duration: 8s;
         }
 
-        .sf-5 {
-            width: 56px;
-            height: 56px;
-            left: 22px;
-            top: 120px;
-            transform: rotate(14deg);
-            border-radius: 999px;
-            background: linear-gradient(120deg, rgba(194, 168, 255, 0.92), rgba(255, 214, 102, 0.92));
+        .d-spiral {
+            width: 60px;
+            left: 8%;
+            bottom: 15%;
+            animation: doodle-spin 26s linear infinite;
         }
 
-        .sf-6 {
-            width: 78px;
-            height: 36px;
-            right: 24px;
-            top: 16px;
-            transform: rotate(-10deg);
-            background: linear-gradient(120deg, rgba(164, 255, 239, 0.92), rgba(93, 230, 255, 0.9));
+        .d-heart {
+            width: 36px;
+            right: 9%;
+            bottom: 21%;
+            --r: 10deg;
+            animation-duration: 8s;
+            animation-delay: -2s;
         }
 
-        .sf-2,
-        .sf-6 {
-            display: none;
+        .d-note {
+            width: 34px;
+            right: 22%;
+            bottom: 33%;
+            --r: -8deg;
+            animation-duration: 6.5s;
+            animation-delay: -1s;
         }
 
-        .sticker-star {
-            position: absolute;
-            width: 46px;
-            height: 46px;
-            border: 2px solid var(--sticker-outline);
-            background: linear-gradient(120deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.6));
-            box-shadow: 0 12px 0 rgba(10, 10, 18, 0.14);
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 92%, 50% 71%, 21% 92%, 32% 57%, 2% 35%, 39% 35%);
-            filter: saturate(1.02);
-            opacity: 0.92;
-        }
-
-        .ss-1 {
-            left: 14px;
-            top: 54%;
-            transform: rotate(-8deg);
-        }
-
-        .ss-2 {
-            right: 18px;
-            top: 52%;
-            transform: rotate(10deg);
-        }
-
-        .sticker-doodle {
-            position: absolute;
-            width: 160px;
-            height: 160px;
-            border-radius: 999px;
-            border: 2px dashed rgba(255, 255, 255, 0.28);
-            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-            filter: drop-shadow(0 10px 0 rgba(10, 10, 18, 0.14));
-            opacity: 0.7;
-        }
-
-        .sd-1 {
-            left: -54px;
+        .d-plus-1 {
+            width: 18px;
+            left: 16%;
             top: 44%;
-            transform: rotate(10deg);
+            opacity: 0.55;
+            animation-duration: 10s;
         }
 
-        .sd-2 {
-            right: -64px;
-            top: 36%;
-            transform: rotate(-12deg);
+        .d-plus-2 {
+            width: 22px;
+            right: 7%;
+            top: 46%;
+            --r: 18deg;
+            opacity: 0.5;
+            animation-duration: 9.5s;
+            animation-delay: -4s;
+        }
+
+        @keyframes doodle-bob {
+            from {
+                transform: translate(0, 0) rotate(var(--r, 0deg));
+            }
+
+            to {
+                transform: translate(3px, -10px) rotate(calc(var(--r, 0deg) + 4deg));
+            }
+        }
+
+        @keyframes doodle-spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         @media (max-width: 768px) {
-            .sticker-layer {
-                opacity: 0.72;
+            .doodle-layer {
+                opacity: 0.65;
             }
 
-            .sf-2,
-            .sf-4,
-            .sf-6,
-            .sd-2 {
+            .d-cloud,
+            .d-plane,
+            .d-spiral,
+            .d-plus-2 {
                 display: none;
+            }
+
+            .d-sparkle-1 {
+                width: 32px;
+                left: 6%;
+                top: 10%;
+            }
+
+            .d-sparkle-2 {
+                width: 24px;
+                right: 7%;
+            }
+
+            .d-heart {
+                width: 28px;
+                right: 6%;
+                bottom: 24%;
+            }
+
+            .d-note {
+                width: 26px;
+                right: 12%;
+                bottom: 36%;
+            }
+
+            .d-plus-1 {
+                width: 14px;
+                left: 8%;
+            }
+
+            .option-grid .form-radio {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .doodle {
+                animation: none !important;
             }
         }
     </style>
@@ -413,17 +868,45 @@
 </head>
 
 <body>
-    <div class="sticker-layer" aria-hidden="true">
-        <span class="sticker-float sf-1"></span>
-        <span class="sticker-float sf-2"></span>
-        <span class="sticker-float sf-3"></span>
-        <span class="sticker-float sf-4"></span>
-        <span class="sticker-float sf-5"></span>
-        <span class="sticker-float sf-6"></span>
-        <span class="sticker-star ss-1"></span>
-        <span class="sticker-star ss-2"></span>
-        <span class="sticker-doodle sd-1"></span>
-        <span class="sticker-doodle sd-2"></span>
+    <!-- 手绘涂鸦装饰层（可在"项目设置"中关闭） -->
+    <div class="doodle-layer" aria-hidden="true">
+        <svg class="doodle d-sparkle-1" viewBox="0 0 48 48">
+            <path class="ghost" transform="translate(1.6 1.3)" d="M24 6C26 15 33 22 42 24 33 26 26 33 24 42 22 33 15 26 6 24 15 22 22 15 24 6Z"/>
+            <path class="body" d="M24 6C26 15 33 22 42 24 33 26 26 33 24 42 22 33 15 26 6 24 15 22 22 15 24 6Z"/>
+        </svg>
+        <svg class="doodle d-sparkle-2" viewBox="0 0 48 48">
+            <path class="ghost" transform="translate(1.4 1.2)" d="M24 8C25.5 15 30 20 38 24 30 24.5 25.5 29 24 40 22.5 29 18 24.5 10 24 18 20 22.5 15 24 8Z"/>
+            <path class="body" d="M24 8C25.5 15 30 20 38 24 30 24.5 25.5 29 24 40 22.5 29 18 24.5 10 24 18 20 22.5 15 24 8Z"/>
+        </svg>
+        <svg class="doodle d-cloud" viewBox="0 0 64 40">
+            <path class="ghost" transform="translate(1.5 1)" d="M9 30C4 30 3 24 8 22 4 15 13 11 17 15 19 8 31 7 33 14 40 10 47 16 43 22 49 25 46 30 40 30Z"/>
+            <path class="body" d="M9 30C4 30 3 24 8 22 4 15 13 11 17 15 19 8 31 7 33 14 40 10 47 16 43 22 49 25 46 30 40 30Z"/>
+            <path d="M14 35H36" opacity="0.5"/>
+        </svg>
+        <svg class="doodle d-plane" viewBox="0 0 120 60">
+            <path class="trail" d="M6 50C22 46 40 40 58 30"/>
+            <path class="body" d="M58 30 90 14 72 36 66 30Z"/>
+            <path d="M66 30 90 14" opacity="0.6"/>
+        </svg>
+        <svg class="doodle d-spiral" viewBox="0 0 48 48">
+            <path class="ghost" transform="translate(1.2 1)" d="M24 26C24 24 27 24 27 26 27 29 22 30 20 27 17 23 23 17 28 20 34 23 33 32 25 34 15 36 10 25 17 16"/>
+            <path d="M24 26C24 24 27 24 27 26 27 29 22 30 20 27 17 23 23 17 28 20 34 23 33 32 25 34 15 36 10 25 17 16"/>
+        </svg>
+        <svg class="doodle d-heart" viewBox="0 0 48 44">
+            <path class="ghost" transform="translate(1.3 1)" d="M24 38C12 29 8 19 15 13 20 9 24 14 24 18 24 14 28 9 33 13 40 19 36 29 24 38Z"/>
+            <path class="body" d="M24 38C12 29 8 19 15 13 20 9 24 14 24 18 24 14 28 9 33 13 40 19 36 29 24 38Z"/>
+        </svg>
+        <svg class="doodle d-note" viewBox="0 0 40 48">
+            <ellipse class="head" cx="14" cy="36" rx="6" ry="4.5" transform="rotate(-14 14 36)"/>
+            <path d="M19.5 35V10"/>
+            <path d="M19.5 10C26 12 30 16 28 23"/>
+        </svg>
+        <svg class="doodle d-plus-1" viewBox="0 0 24 24">
+            <path d="M12 4V20M4 12H20"/>
+        </svg>
+        <svg class="doodle d-plus-2" viewBox="0 0 24 24">
+            <path d="M12 4V20M4 12H20"/>
+        </svg>
     </div>
     <!--加载动画-->
     <div id="loading-box">
@@ -510,6 +993,18 @@
                                 </a>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <!-- 最近收录 -->
+                <div class="recent-slot">
+                    <div class="recent" id="soso-recent" style="display: none;">
+                        <div class="recent-title">
+                            <svg viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M24 6C26 15 33 22 42 24 33 26 26 33 24 42 22 33 15 26 6 24 15 22 22 15 24 6Z"/>
+                            </svg>
+                            <span>最近收录</span>
+                        </div>
+                        <div class="recent-list" id="soso-recent-list"></div>
                     </div>
                 </div>
                 <!-- 书签页 -->
@@ -877,7 +1372,7 @@
                             </div>
                         </div>
                         <!-- 项目设置 -->
-                        <div class="mainConts">
+                        <div class="mainConts project-pane">
                             <div class="set_blocks">
                                 <div class="set_tip">
                                     <span class="set_text">可按需关闭非必要功能以提升页面响应速度</span>
@@ -886,7 +1381,7 @@
                                     <div class="from_container">
                                         <div class="froms">
                                             <div class="from_row">
-                                                <div class="from_row_content">
+                                                <div class="from_row_content option-grid">
                                                     <div class="form-radio">
                                                         <input type="checkbox" id="project_show_welcome" class="set-project-option" data-setting="show_welcome">
                                                         <label class="form-radio-label" for="project_show_welcome">显示欢迎提示</label>
@@ -903,12 +1398,24 @@
                                                         <input type="checkbox" id="project_show_aplayer" class="set-project-option" data-setting="show_aplayer">
                                                         <label class="form-radio-label" for="project_show_aplayer">显示音乐播放器</label>
                                                     </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_clock" class="set-project-option" data-setting="show_clock">
+                                                        <label class="form-radio-label" for="project_show_clock">显示时间与日期</label>
+                                                    </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_foot" class="set-project-option" data-setting="show_foot">
+                                                        <label class="form-radio-label" for="project_show_foot">显示页脚版权</label>
+                                                    </div>
+                                                    <div class="form-radio">
+                                                        <input type="checkbox" id="project_show_doodle" class="set-project-option" data-setting="show_doodle">
+                                                        <label class="form-radio-label" for="project_show_doodle">显示手绘涂鸦装饰</label>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="from_row" style="margin-top: 15px;">
-                                                <div class="from_row_content" style="flex-direction: column; align-items: flex-start;">
-                                                    <div style="font-size: 14px; margin-bottom: 8px; opacity: 0.9;">网易云音乐歌单 ID</div>
-                                                    <input type="text" class="set-project-option" data-setting="music_playlist_id" placeholder="请输入歌单 ID" autocomplete="off" style="width: 100%; height: 38px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); padding: 0 12px; background: rgba(255, 255, 255, 0.1); color: #fff; outline: none; transition: 0.3s;" onfocus="this.style.border='1px solid var(--main-background-active-color)';" onblur="this.style.border='1px solid rgba(255,255,255,0.3)';" title="默认：2141128031">
+                                            <div class="from_row playlist-row">
+                                                <div class="from_row_content playlist-wrap">
+                                                    <div class="playlist-label">网易云音乐歌单 ID</div>
+                                                    <input type="text" class="set-project-option playlist-input" data-setting="music_playlist_id" placeholder="请输入歌单 ID" autocomplete="off" title="默认：2141128031">
                                                 </div>
                                             </div>
                                         </div>
@@ -925,7 +1432,6 @@
                                 <div class="set_tip">
                                     <span class="set_text">点击导出会将本站文件导出至下载目录</span>
                                     <span class="set_text">点击导入可选择已备份文件进行恢复</span>
-                                    
                                 </div>
                                 <div class="set_button">
                                     <div class="but-ordinary" id="my_data_in">导入</div>
@@ -934,7 +1440,6 @@
                                 </div>
                                 <div class="set_version">
                                     <a class="set_version-text" id="set-home-link" href="https://www.noisedh.cn">NOISE导航</a>
-                                 
                                 </div>
                             </div>
                         </div>
@@ -948,7 +1453,7 @@
                 <script>
                     document.write(' - ' + (new Date()).getFullYear())
                 </script>&nbsp;<a href="https://www.noisedh.cn">NOISE导航</a>
-                
+
             </div>
         </div>
     </section>
@@ -983,8 +1488,8 @@
     <script src="../assets/js/jquery.min.js"></script>
     <script defer src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/izitoast/1.4.0/js/iziToast.min.js" onerror="this.onerror=null;this.src='https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js';"></script>
     <script defer type="text/javascript" src="./js/js.cookie.js"></script>
-    <script defer type="text/javascript" src="./js/set.js"></script>
-    <script defer type="text/javascript" src="./js/main.js"></script>
+    <script defer type="text/javascript" src="./js/set.js?v=20261128b"></script>
+    <script defer type="text/javascript" src="./js/main.js?v=20261128b"></script>
 <!-- aplayer -->
 <div id="aplayer-wrap">
     <meting-js server="netease" type="playlist" id="2141128031" order="random" fixed="true" autoplay="false" volume="0.8"></meting-js>
