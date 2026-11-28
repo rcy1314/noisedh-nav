@@ -1,4 +1,4 @@
-var cacheName = 'Noise导航-2.8-20261128';
+var cacheName = 'Noise导航-2.9-20261128';
 var IMAGE_CACHE_MAX_ENTRIES = 2000;
 
 function withScope(path) {
@@ -85,15 +85,17 @@ self.addEventListener('fetch', function(event) {
   if (isApiRequest(request)) {
     event.respondWith(
       fetch(request).catch(function() {
-        return caches.match(request);
+        return matchCache(request).then(function(cached) {
+          return cached || Response.error();
+        });
       })
     );
     return;
   }
 
-  // HTML页面：网络优先，慢网络时用缓存页面立即渲染
+  // HTML页面：网络优先，离线时回退缓存
   if (isHtmlRequest(request)) {
-    event.respondWith(networkFirstWithTimeout(request, 800));
+    event.respondWith(networkFirst(request));
     return;
   }
 
@@ -128,53 +130,29 @@ function isStaticAssetRequest(request) {
   }
 }
 
-// 网络优先 + 超时竞速：正常网络下始终拿到最新页面；
-// 网络超过 delayMs 仍未响应时改用缓存页面立即渲染，网络结果回来后仅后台刷新缓存
-function networkFirstWithTimeout(request, delayMs) {
-  return new Promise(function(resolve) {
-    var settled = false;
-    var timer = setTimeout(function() {
-      settled = true;
-      caches.match(request).then(function(cached) {
-        if (cached) {
-          resolve(cached);
-          return;
-        }
-        fetch(request).then(resolve, function() {
-          resolve(Response.error());
-        });
-      });
-    }, delayMs);
-
-    fetch(request).then(function(response) {
-      if (settled) {
-        // 已用缓存先渲染：仅后台刷新缓存，不再切换页面
-        if (response && response.ok) {
-          var staleClone = response.clone();
-          caches.open(cacheName).then(function(cache) {
-            cache.put(request, staleClone).catch(function() {});
-          }).catch(function() {});
-        }
-        return;
-      }
-      clearTimeout(timer);
-      settled = true;
-      if (response && response.ok) {
-        var freshClone = response.clone();
-        caches.open(cacheName).then(function(cache) {
-          cache.put(request, freshClone).catch(function() {});
-        }).catch(function() {});
-      }
-      resolve(response);
-    }, function() {
-      if (settled) return;
-      clearTimeout(timer);
-      settled = true;
-      caches.match(request).then(function(cached) {
-        resolve(cached || Response.error());
-      });
+// 安全读取缓存：caches.match 对 cache:'no-store' 等特殊请求会抛 TypeError，
+// 统一兜底为 undefined，保证 respondWith 的 Promise 在任何请求形态下都必然 settle
+function matchCache(request) {
+  try {
+    return caches.match(request).catch(function() {
+      return undefined;
     });
-  });
+  } catch (e) {
+    return Promise.resolve(undefined);
+  }
+}
+
+// 安全写入缓存：同步 clone 必须在调用方完成；此处仅兜底吞掉所有写入异常
+function cacheWrite(request, clonedResponse) {
+  try {
+    caches.open(cacheName).then(function(cache) {
+      cache.put(request, clonedResponse).catch(function() {
+      });
+      trimImageCache();
+    }).catch(function() {
+    });
+  } catch (e) {
+  }
 }
 
 // 允许入缓存的响应：常规成功响应 + 跨域不透明响应（卡片 logo 大多为外部 favicon，
@@ -184,18 +162,33 @@ function isCacheableResponse(response) {
   return response.ok || response.type === 'opaque';
 }
 
+// HTML：网络优先，离线/断网时回退缓存页面
+function networkFirst(request) {
+  return fetch(request).then(function(response) {
+    if (response && response.ok) {
+      // 关键：必须在返回响应给页面的同一同步帧内完成 clone，
+      // 一旦返回，页面会立刻消费 body，之后再 clone 会抛 "body is already used"
+      var freshClone = response.clone();
+      cacheWrite(request, freshClone);
+    }
+    return response;
+  }, function() {
+    return matchCache(request).then(function(cached) {
+      return cached || Response.error();
+    });
+  });
+}
+
 // 缓存优先：立即返回缓存，后台静默刷新缓存供下次访问使用
 // 注意：按完整 URL（含 ?v= 版本参数）匹配，构建更新版本号后旧缓存自然失效
 function cacheFirst(request) {
-  return caches.match(request).then(function(cachedResponse) {
+  return matchCache(request).then(function(cachedResponse) {
     if (cachedResponse) {
       fetch(request).then(function(networkResponse) {
         if (isCacheableResponse(networkResponse)) {
-          var cloned = networkResponse.clone();
-          caches.open(cacheName).then(function(cache) {
-            cache.put(request, cloned).catch(function() {});
-            trimImageCache();
-          }).catch(function() {});
+          // 同步帧内 clone（原因同 networkFirst）
+          var staleClone = networkResponse.clone();
+          cacheWrite(request, staleClone);
         }
       }).catch(function() {
       });
@@ -206,14 +199,13 @@ function cacheFirst(request) {
         // 关键：必须在返回响应给页面的同一同步帧内完成 clone，
         // 一旦返回，页面会立刻消费 body，之后再 clone 会抛 "body is already used"
         var cloned = networkResponse.clone();
-        caches.open(cacheName).then(function(cache) {
-          cache.put(request, cloned).catch(function() {});
-          trimImageCache();
-        }).catch(function() {});
+        cacheWrite(request, cloned);
       }
       return networkResponse;
-    }).catch(function() {
-      return caches.match(request);
+    }, function() {
+      return matchCache(request).then(function(cached) {
+        return cached || Response.error();
+      });
     });
   });
 }
